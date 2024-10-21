@@ -1,0 +1,71 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model FplEntry {
+  id        Int      @id @default(autoincrement())
+  week      Int
+  player    String
+  points    Int
+  games     Int
+  teamId    String
+  createdAt DateTime @default(now())
+
+  @@unique([week, player])
+}
+
+model GgEntry {
+  id        Int      @id @default(autoincrement())
+  week      Int
+  player    String
+  games     Int
+  wins      Int
+  fiveK     Int
+  points    Int
+  createdAt DateTime @default(now())
+
+  @@unique([week, player])
+}
+
+model BetsEntry {
+  id        Int      @id @default(autoincrement())
+  week      Int
+  player    String
+  games     Int
+  wins      Int      // New column
+  points    Int
+  createdAt DateTime @default(now())
+
+  @@unique([week, player])
+}
+
+model PokerEntry {
+  id        Int      @id @default(autoincrement())
+  week      Int
+  bearo     String
+  games     Int
+  wins      Int
+  points    Int
+  createdAt DateTime @default(now())
+
+  @@unique([week, bearo])
+}
+
+model FifaEntry {
+  id             Int      @id @default(autoincrement())
+  team           String   @unique
+  logo           String
+  games          Int
+  wins           Int
+  draws          Int
+  losses         Int
+  goalsScored    Int
+  goalsConceded  Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

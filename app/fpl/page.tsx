@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import prisma from '../../lib/prisma'
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
 import { unstable_noStore as noStore } from 'next/cache'
@@ -10,7 +9,7 @@ const columns = [
   { header: 'Games', accessor: 'games' },
   { header: 'Points', accessor: 'points' },
   { header: 'Difference', accessor: 'difference' },
-  { header: 'Last Updated', accessor: 'updatedAt' },
+  { header: 'Updated At', accessor: 'updatedAt' },
 ]
 
 const players = [
@@ -32,63 +31,24 @@ async function fetchPlayerData(teamId: string) {
   }
 }
 
-async function updateFplData(playerData: { player: string; games: number; points: number; teamId: string }) {
-  const existingEntry = await prisma.fplEntry.findFirst({
-    where: { 
-      player: playerData.player,
-      week: playerData.games
-    },
-  })
-
-  if (existingEntry) {
-    if (existingEntry.points !== playerData.points) {
-      await prisma.fplEntry.update({
-        where: { id: existingEntry.id },
-        data: {
-          points: playerData.points,
-          games: playerData.games,
-          teamId: playerData.teamId,
-        },
-      })
-    }
-  } else {
-    await prisma.fplEntry.create({
-      data: {
-        week: playerData.games,
-        player: playerData.player,
-        points: playerData.points,
-        games: playerData.games,
-        teamId: playerData.teamId,
-      },
-    })
-  }
-}
-
 async function getFplData() {
   noStore()
   try {
     const playersData = await Promise.all(
       players.map(async (player) => {
         const { games, points } = await fetchPlayerData(player.teamId)
-        const playerData = {
+        return {
           player: player.name,
           games,
           points,
           teamId: player.teamId,
+          updatedAt: new Date().toLocaleString(), // Current time as update time
         }
-        await updateFplData(playerData)
-        return playerData
       })
     )
-    const dbData = await prisma.fplEntry.findMany({
-      orderBy: { points: 'desc' },
-    })
-    return dbData.map(entry => ({
-      ...entry,
-      updatedAt: entry.updatedAt.toLocaleString(),
-    }))
+    return playersData.sort((a, b) => b.points - a.points)
   } catch (error) {
-    console.error('Error fetching and updating FPL data:', error)
+    console.error('Error fetching FPL data:', error)
     throw error
   }
 }
@@ -134,7 +94,7 @@ export default async function FPLPage() {
         <h2 className="text-title font-bold mb-4">Standings</h2>
         <p className="text-red-500">Error loading FPL data. Please try again later.</p>
         {process.env.NODE_ENV === 'development' && (
-          <p className="text-sm text-gray-500 mt-2">Error details: {(error instanceof Error ? error.message : String(error))}</p>
+          <p className="text-sm text-gray-500 mt-2">Error details: {(error as Error).message}</p>
         )}
       </div>
     )

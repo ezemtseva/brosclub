@@ -9,7 +9,6 @@ const columns = [
   { header: 'Games', accessor: 'games' },
   { header: 'Points', accessor: 'points' },
   { header: 'Difference', accessor: 'difference' },
-  { header: 'Updated At', accessor: 'updatedAt' },
 ]
 
 const players = [
@@ -42,7 +41,6 @@ async function getFplData() {
           games,
           points,
           teamId: player.teamId,
-          updatedAt: new Date().toLocaleString(), // Current time as update time
         }
       })
     )
@@ -63,13 +61,12 @@ export default async function FPLPage() {
       games: entry.games,
       points: entry.points,
       difference: index === 0 ? '-' : (data[index - 1].points - entry.points).toString(),
-      updatedAt: entry.updatedAt,
     }))
 
     const images = [
-      { src: "/imgs/fpl/fpl2.png", alt: "New FPL Season Highlight", caption: "Latest highlight from the FPL season" },
-      { src: "/imgs/fpl/fpl1.png", alt: "Top team of the week", caption: "Top team of the week" },
-      { src: "/placeholder.svg?height=400&width=600", alt: "FPL Placeholder", caption: "FPL Placeholder Image" },
+      { src: "/imgs/fpl/fpl2.png", alt: "New FPL Season Highlight", caption: "Team of the week 8" },
+      { src: "/imgs/fpl/fpl1.png", alt: "Top team of the week", caption: "Team of the week 7" },
+      { src: "/imgs/fpl/fpl3.png", alt: "FPL Placeholder", caption: "Team of the week 6" },
     ]
 
     return (

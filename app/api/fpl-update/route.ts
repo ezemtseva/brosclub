@@ -3,6 +3,7 @@ import prisma from '../../../lib/prisma'
 
 export async function POST(request: Request) {
   const data = await request.json()
+  const newWeek = data[0].week
   
   if (!Array.isArray(data) || data.some(entry => !entry.player || !entry.points)) {
     return NextResponse.json({ error: 'Invalid data format' }, { status: 400 })
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
             week: newWeek,
             player: entry.player,
             points: entry.points,
+            games: entry.games,
+            teamId: entry.teamId,
           },
         })
       )

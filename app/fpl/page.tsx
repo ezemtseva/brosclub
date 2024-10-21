@@ -99,9 +99,9 @@ export default async function FPLPage() {
     }))
 
     const images = [
-      { src: "/imgs/fpl/fpl2.png", alt: "New FPL Season Highlight", caption: "Team of the week 8" },
-      { src: "/imgs/fpl/fpl1.png", alt: "Top team of the week", caption: "Team of the week 7" },
-      { src: "/imgs/fpl/fpl3.png", alt: "FPL Placeholder", caption: "Team of the week 6" },
+      { src: "/imgs/fpl/fpl2.png", alt: "New FPL Season Highlight", caption: "Latest highlight from the FPL season" },
+      { src: "/imgs/fpl/fpl1.png", alt: "Top team of the week", caption: "Top team of the week" },
+      { src: "/placeholder.svg?height=400&width=600", alt: "FPL Placeholder", caption: "FPL Placeholder Image" },
     ]
 
     return (

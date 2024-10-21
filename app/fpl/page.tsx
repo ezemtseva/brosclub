@@ -10,6 +10,7 @@ const columns = [
   { header: 'Games', accessor: 'games' },
   { header: 'Points', accessor: 'points' },
   { header: 'Difference', accessor: 'difference' },
+  { header: 'Last Updated', accessor: 'updatedAt' },
 ]
 
 const players = [
@@ -79,7 +80,13 @@ async function getFplData() {
         return playerData
       })
     )
-    return playersData.sort((a, b) => b.points - a.points)
+    const dbData = await prisma.fplEntry.findMany({
+      orderBy: { points: 'desc' },
+    })
+    return dbData.map(entry => ({
+      ...entry,
+      updatedAt: entry.updatedAt.toLocaleString(),
+    }))
   } catch (error) {
     console.error('Error fetching and updating FPL data:', error)
     throw error
@@ -96,6 +103,7 @@ export default async function FPLPage() {
       games: entry.games,
       points: entry.points,
       difference: index === 0 ? '-' : (data[index - 1].points - entry.points).toString(),
+      updatedAt: entry.updatedAt,
     }))
 
     const images = [
@@ -126,7 +134,7 @@ export default async function FPLPage() {
         <h2 className="text-title font-bold mb-4">Standings</h2>
         <p className="text-red-500">Error loading FPL data. Please try again later.</p>
         {process.env.NODE_ENV === 'development' && (
-          <p className="text-sm text-gray-500 mt-2">Error details: {(error as Error).message}</p>
+          <p className="text-sm text-gray-500 mt-2">Error details: {(error instanceof Error ? error.message : String(error))}</p>
         )}
       </div>
     )

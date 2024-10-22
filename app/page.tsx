@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '../lib/prisma'
-import { unstable_noStore as noStore } from 'next/cache'
 
 const clubMembers = [
   { 
@@ -32,6 +31,10 @@ const clubMembers = [
   },
 ]
 
+const summaries = [
+  //fifaSummary will be added here
+]
+
 const historyData = [
   { year: '2023/24', poker: '-', bets: 'Choco', fpl: 'Panda', gg: '-', fifa: 'Vanilla' },
   { year: '2022/23', poker: '-', bets: 'Panda', fpl: 'Panda', gg: '-', fifa: 'Choco' },
@@ -48,149 +51,126 @@ const historyData = [
   { year: '2012', poker: 'DSQ', bets: 'Panda', fpl: '-', gg: '-', fifa: '-' },
 ]
 
-const fplPlayers = [
-  { name: 'Vanilla', teamId: '1546526' },
-  { name: 'Choco', teamId: '3214199' },
-  { name: 'Panda', teamId: '5663' },
-]
-
-async function fetchPlayerData(teamId: string) {
-  const res = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`, { cache: 'no-store' })
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data for team ${teamId}`)
-  }
-  const data = await res.json()
-  const currentEvent = data.current.slice(-1)[0]
-  return {
-    games: currentEvent.event,
-    points: currentEvent.total_points,
-  }
-}
-
-async function getFplData() {
-  noStore()
+async function getLatestFplLeader() {
   try {
-    const playersData = await Promise.all(
-      fplPlayers.map(async (player) => {
-        const { games, points } = await fetchPlayerData(player.teamId)
-        return {
-          player: player.name,
-          games,
-          points,
-          teamId: player.teamId,
-        }
-      })
-    )
-    return playersData.sort((a, b) => b.points - a.points)
+    const latestWeek = await prisma.fplEntry.findFirst({
+      orderBy: { week: 'desc' },
+      select: { week: true },
+    })
+
+    if (!latestWeek) return null
+
+    const leader = await prisma.fplEntry.findFirst({
+      where: { week: latestWeek.week },
+      orderBy: { points: 'desc' },
+    })
+
+    return leader
   } catch (error) {
-    console.error('Error fetching FPL data:', error)
-    throw error
+    console.error('Error fetching FPL leader:', error)
+    return null
   }
 }
 
-async function getGgData() {
-  noStore()
+async function getLatestGgLeader() {
   try {
     const latestWeek = await prisma.ggEntry.findFirst({
       orderBy: { week: 'desc' },
       select: { week: true },
     })
 
-    if (!latestWeek) return []
+    if (!latestWeek) return null
 
-    const entries = await prisma.ggEntry.findMany({
+    const leader = await prisma.ggEntry.findFirst({
       where: { week: latestWeek.week },
       orderBy: { points: 'desc' },
     })
 
-    return entries.map((entry) => ({
-      player: entry.player,
-      points: entry.points,
-    }))
+    return leader
   } catch (error) {
-    console.error('Error fetching GG data:', error)
-    throw error
+    console.error('Error fetching GG leader:', error)
+    return null
   }
 }
 
-async function getPokerData() {
-  noStore()
+async function getLatestPokerLeader() {
   try {
     const latestWeek = await prisma.pokerEntry.findFirst({
       orderBy: { week: 'desc' },
       select: { week: true },
     })
 
-    if (!latestWeek) return []
+    if (!latestWeek) return null
 
-    const entries = await prisma.pokerEntry.findMany({
+    const leader = await prisma.pokerEntry.findFirst({
+      where: { week: latestWeek.week },
+      orderBy: { points: 'desc' },
+      select: { bearo: true, points: true },
+    })
+
+    return leader
+  } catch (error) {
+    console.error('Error fetching Poker leader:', error)
+    return null
+  }
+}
+
+async function getLatestBetsLeader() {
+  try {
+    const latestWeek = await prisma.betsEntry.findFirst({
+      orderBy: { week: 'desc' },
+      select: { week: true },
+    })
+
+    if (!latestWeek) return null
+
+    const leader = await prisma.betsEntry.findFirst({
       where: { week: latestWeek.week },
       orderBy: { points: 'desc' },
     })
 
-    return entries.map((entry) => ({
-      bearo: entry.bearo,
-      points: entry.points,
-    }))
+    return leader
   } catch (error) {
-    console.error('Error fetching Poker data:', error)
-    throw error
+    console.error('Error fetching Bets leader:', error)
+    return null
   }
 }
 
-async function getBetsData() {
-  noStore()
+async function getLatestFifaLeader() {
   try {
-    const entries = await prisma.betsEntry.findMany({
+    const leader = await prisma.fifaEntry.findFirst({
       orderBy: [
-        { week: 'desc' },
-        { points: 'desc' }
+        { wins: 'desc' },
+        { goalsScored: 'desc' },
+        { goalsConceded: 'asc' }
       ],
+      select: {
+        team: true,
+        wins: true,
+        draws: true,
+        losses: true,
+        goalsScored: true,
+        goalsConceded: true,
+      },
     })
-
-    const latestWeek = entries[0]?.week
-
-    if (!latestWeek) return []
-
-    const latestEntries = entries.filter(entry => entry.week === latestWeek)
-
-    return latestEntries.map((entry) => ({
-      player: entry.player,
-      points: entry.points,
-    }))
+    if (leader) {
+      const points = leader.wins * 3 + leader.draws
+      const goalDifference = leader.goalsScored - leader.goalsConceded
+      return { ...leader, points, goalDifference }
+    }
+    return null
   } catch (error) {
-    console.error('Error fetching Bets data:', error)
-    throw error
-  }
-}
-
-async function getFifaData() {
-  noStore()
-  try {
-    const entries = await prisma.fifaEntry.findMany()
-    return entries.map(entry => ({
-      ...entry,
-      goalDifference: entry.goalsScored - entry.goalsConceded,
-      points: entry.wins * 3 + entry.draws,
-    })).sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
-  } catch (error) {
-    console.error('Error fetching FIFA data:', error)
-    throw error
+    console.error('Error fetching FIFA leader:', error)
+    return null
   }
 }
 
 export default async function Home() {
-  const fplData = await getFplData()
-  const ggData = await getGgData()
-  const pokerData = await getPokerData()
-  const betsData = await getBetsData()
-  const fifaData = await getFifaData()
-
-  const fplLeader = fplData[0]
-  const ggLeader = ggData[0]
-  const pokerLeader = pokerData[0]
-  const betsLeader = betsData[0]
-  const fifaLeader = fifaData[0]
+  const fplLeader = await getLatestFplLeader()
+  const ggLeader = await getLatestGgLeader()
+  const pokerLeader = await getLatestPokerLeader()
+  const betsLeader = await getLatestBetsLeader()
+  const fifaLeader = await getLatestFifaLeader()
 
   const fplSummary = {
     title: 'FPL',
@@ -209,7 +189,7 @@ export default async function Home() {
   }
 
   const pokerSummary = {
-    title: 'Poker',
+    title: 'PokerNow',
     content: pokerLeader
       ? `Leader: ${pokerLeader.bearo} with ${pokerLeader.points} points`
       : 'No Poker data available',
@@ -243,9 +223,9 @@ export default async function Home() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <section className="mb-12">
-        <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
-        <p className="text-basic text-gray-600">
-          Here is always Sunday since 06.09.2012.
+        <h1 className="text-4xl font-bold mb-4">Welcome to Bearos Club</h1>
+        <p className="text-xl text-gray-600">
+          Here is always Sunday!
         </p>
       </section>
 
@@ -272,9 +252,9 @@ export default async function Home() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
+        <h2 className="text-3xl font-bold mb-6">XIV Season 2024/25</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {summaries.map((summary, index) => (
+          {[...summaries].map((summary, index) => (
             <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
               <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
               <p className="text-gray-600 mb-4">{summary.content}</p>
@@ -287,7 +267,7 @@ export default async function Home() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-title font-bold mb-6">History</h2>
+        <h2 className="text-3xl font-bold mb-6">History</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-gray-50">

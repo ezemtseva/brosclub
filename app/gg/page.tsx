@@ -46,14 +46,14 @@ export default async function GGPage() {
     }))
 
   const images = [
-    { src: "/imgs/gg/gg1.jpg", alt: "New GeoGuessr Season Highlight", caption: "And that was no move round" },
+    { src: "/imgs/gg/gg1.jpg", alt: "New GeoGuessr Season Highlight", caption: "And that was frozen round" },
     { src: "/imgs/gg/5k1.jpg", alt: "First 5K of the season", caption: "First 5K of the season" },
   ]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">GeoGuessr Cup</h1>
-      <p className="text-base text-gray-600 mb-8">First ever season!</p>
+      <p className="text-base text-gray-600 mb-8">First ever season! Move, no move and frozen rounds in a row.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={tableData} />
 

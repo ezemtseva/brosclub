@@ -1,6 +1,9 @@
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
 import prisma from '../../lib/prisma'
+import dynamic from 'next/dynamic'
+
+const PokerChart = dynamic(() => import('../../components/PokerChart'), { ssr: false })
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -13,35 +16,33 @@ const columns = [
 ]
 
 async function getPokerData() {
-  const latestWeek = await prisma.pokerEntry.findFirst({
-    orderBy: { week: 'desc' },
-    select: { week: true },
-  })
-
-  if (!latestWeek) {
-    return []
-  }
-
   const entries = await prisma.pokerEntry.findMany({
-    where: { week: latestWeek.week },
-    orderBy: { points: 'desc' },
+    orderBy: [
+      { week: 'asc' },
+      { bearo: 'asc' }
+    ],
   })
 
-  return entries
+  const latestWeek = Math.max(...entries.map(entry => entry.week))
+  const latestEntries = entries.filter(entry => entry.week === latestWeek)
+
+  return { entries, latestEntries }
 }
 
 export default async function PokerPage() {
-  const pokerData = await getPokerData()
+  const { entries, latestEntries } = await getPokerData()
 
-  const data = pokerData.map((entry, index, arr) => ({
-    position: index + 1,
-    bearo: entry.bearo,
-    games: entry.games,
-    wins: entry.wins,
-    points: entry.points,
-    pointsDifference: index === 0 ? 0 : arr[0].points - entry.points,
-    winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
-  }))
+  const data = latestEntries
+    .sort((a, b) => b.points - a.points)
+    .map((entry, index, arr) => ({
+      position: index + 1,
+      bearo: entry.bearo,
+      games: entry.games,
+      wins: entry.wins,
+      points: entry.points,
+      pointsDifference: index === 0 ? 0 : arr[0].points - entry.points,
+      winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
+    }))
 
   const images = [
     { src: "/imgs/poker/poker2.jpg", alt: "New Poker Season Highlight", caption: "Last call survivor" },
@@ -56,7 +57,14 @@ export default async function PokerPage() {
       <DataTable columns={columns} data={data} />
 
       <section className="mt-12">
-        <h2 className="text-title font-bold  mb-6">Highlights</h2>
+        <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+        <div className="w-full">
+          <PokerChart entries={entries} />
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-title font-bold mb-6">Highlights</h2>
         <ImageGallery images={images} />
       </section>
     </div>

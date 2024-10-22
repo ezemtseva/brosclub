@@ -48,7 +48,7 @@ const historyData = [
   { year: '2012', poker: 'DSQ', bets: 'Panda', fpl: '-', gg: '-', fifa: '-' },
 ]
 
-const players = [
+const fplPlayers = [
   { name: 'Vanilla', teamId: '1546526' },
   { name: 'Choco', teamId: '3214199' },
   { name: 'Panda', teamId: '5663' },
@@ -71,7 +71,7 @@ async function getFplData() {
   noStore()
   try {
     const playersData = await Promise.all(
-      players.map(async (player) => {
+      fplPlayers.map(async (player) => {
         const { games, points } = await fetchPlayerData(player.teamId)
         return {
           player: player.name,
@@ -88,106 +88,109 @@ async function getFplData() {
   }
 }
 
-async function getLatestGgLeader() {
+async function getGgData() {
+  noStore()
   try {
     const latestWeek = await prisma.ggEntry.findFirst({
       orderBy: { week: 'desc' },
       select: { week: true },
     })
 
-    if (!latestWeek) return null
+    if (!latestWeek) return []
 
-    const leader = await prisma.ggEntry.findFirst({
+    const entries = await prisma.ggEntry.findMany({
       where: { week: latestWeek.week },
       orderBy: { points: 'desc' },
     })
 
-    return leader
+    return entries.map((entry) => ({
+      player: entry.player,
+      points: entry.points,
+    }))
   } catch (error) {
-    console.error('Error fetching GG leader:', error)
-    return null
+    console.error('Error fetching GG data:', error)
+    throw error
   }
 }
 
-async function getLatestPokerLeader() {
+async function getPokerData() {
+  noStore()
   try {
     const latestWeek = await prisma.pokerEntry.findFirst({
       orderBy: { week: 'desc' },
       select: { week: true },
     })
 
-    if (!latestWeek) return null
+    if (!latestWeek) return []
 
-    const leader = await prisma.pokerEntry.findFirst({
-      where: { week: latestWeek.week },
-      orderBy: { points: 'desc' },
-      select: { bearo: true, points: true },
-    })
-
-    return leader
-  } catch (error) {
-    console.error('Error fetching Poker leader:', error)
-    return null
-  }
-}
-
-async function getLatestBetsLeader() {
-  try {
-    const latestWeek = await prisma.betsEntry.findFirst({
-      orderBy: { week: 'desc' },
-      select: { week: true },
-    })
-
-    if (!latestWeek) return null
-
-    const leader = await prisma.betsEntry.findFirst({
+    const entries = await prisma.pokerEntry.findMany({
       where: { week: latestWeek.week },
       orderBy: { points: 'desc' },
     })
 
-    return leader
+    return entries.map((entry) => ({
+      bearo: entry.bearo,
+      points: entry.points,
+    }))
   } catch (error) {
-    console.error('Error fetching Bets leader:', error)
-    return null
+    console.error('Error fetching Poker data:', error)
+    throw error
   }
 }
 
-async function getLatestFifaLeader() {
+async function getBetsData() {
+  noStore()
   try {
-    const leader = await prisma.fifaEntry.findFirst({
+    const entries = await prisma.betsEntry.findMany({
       orderBy: [
-        { wins: 'desc' },
-        { goalsScored: 'desc' },
-        { goalsConceded: 'asc' }
+        { week: 'desc' },
+        { points: 'desc' }
       ],
-      select: {
-        team: true,
-        wins: true,
-        draws: true,
-        losses: true,
-        goalsScored: true,
-        goalsConceded: true,
-      },
     })
-    if (leader) {
-      const points = leader.wins * 3 + leader.draws
-      const goalDifference = leader.goalsScored - leader.goalsConceded
-      return { ...leader, points, goalDifference }
-    }
-    return null
+
+    const latestWeek = entries[0]?.week
+
+    if (!latestWeek) return []
+
+    const latestEntries = entries.filter(entry => entry.week === latestWeek)
+
+    return latestEntries.map((entry) => ({
+      player: entry.player,
+      points: entry.points,
+    }))
   } catch (error) {
-    console.error('Error fetching FIFA leader:', error)
-    return null
+    console.error('Error fetching Bets data:', error)
+    throw error
+  }
+}
+
+async function getFifaData() {
+  noStore()
+  try {
+    const entries = await prisma.fifaEntry.findMany()
+    return entries.map(entry => ({
+      ...entry,
+      goalDifference: entry.goalsScored - entry.goalsConceded,
+      points: entry.wins * 3 + entry.draws,
+    })).sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+  } catch (error) {
+    console.error('Error fetching FIFA data:', error)
+    throw error
   }
 }
 
 export default async function Home() {
   const fplData = await getFplData()
-  const fplLeader = fplData[0] // The first entry is the leader after sorting
-  const ggLeader = await getLatestGgLeader()
-  const pokerLeader = await getLatestPokerLeader()
-  const betsLeader = await getLatestBetsLeader()
-  const fifaLeader = await getLatestFifaLeader()
+  const ggData = await getGgData()
+  const pokerData = await getPokerData()
+  const betsData = await getBetsData()
+  const fifaData = await getFifaData()
+
+  const fplLeader = fplData[0]
+  const ggLeader = ggData[0]
+  const pokerLeader = pokerData[0]
+  const betsLeader = betsData[0]
+  const fifaLeader = fifaData[0]
 
   const fplSummary = {
     title: 'FPL',

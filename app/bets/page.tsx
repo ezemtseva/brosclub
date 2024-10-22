@@ -11,6 +11,7 @@ const columns = [
   { header: 'Wins', accessor: 'wins' },
   { header: 'Points', accessor: 'points' },
   { header: 'Difference', accessor: 'difference' },
+  { header: 'W%', accessor: 'winPercentage' },
 ]
 
 type BetsEntry = {
@@ -47,6 +48,7 @@ export default async function BetsPage() {
       wins: entry.wins,
       points: entry.points,
       difference: index === 0 ? '-' : (latestEntries[index - 1].points - entry.points).toString(),
+      winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
     }))
 
   return (

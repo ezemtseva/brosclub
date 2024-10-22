@@ -14,6 +14,7 @@ const columns = [
   { header: '5K', accessor: 'fiveK' },
   { header: 'Points', accessor: 'points' },
   { header: 'Difference', accessor: 'difference' },
+  { header: 'W%', accessor: 'winPercentage' },
 ]
 
 async function getGgData() {
@@ -33,6 +34,8 @@ async function getGgData() {
 export default async function GGPage() {
   const { entries, latestEntries } = await getGgData()
 
+  const totalWins = latestEntries.reduce((sum, entry) => sum + entry.wins, 0)
+
   const tableData = latestEntries
     .sort((a, b) => b.points - a.points)
     .map((entry, index) => ({
@@ -43,6 +46,7 @@ export default async function GGPage() {
       fiveK: entry.fiveK,
       points: entry.points,
       difference: index === 0 ? '-' : (latestEntries[index - 1].points - entry.points).toString(),
+      winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : '0%',
     }))
 
   const images = [

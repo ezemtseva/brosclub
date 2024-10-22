@@ -223,9 +223,9 @@ export default async function Home() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <section className="mb-12">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Bearos Club</h1>
-        <p className="text-xl text-gray-600">
-          Here is always Sunday!
+        <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
+        <p className="text-basic text-gray-600">
+          Here is always Sunday since 06.09.2012.
         </p>
       </section>
 
@@ -240,7 +240,7 @@ export default async function Home() {
                 height={200}
                 className="rounded-full object-cover w-48 h-48 mb-4"
               />
-              <h2 className="text-2xl font-semibold mb-2">{member.name}</h2>
+              <h2 className="text-title font-semibold mb-2">{member.name}</h2>
               <ul className="list-disc pl-5 text-sm text-gray-600">
                 {member.achievements.map((achievement, i) => (
                   <li key={i}>{achievement}</li>
@@ -252,7 +252,7 @@ export default async function Home() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">XIV Season 2024/25</h2>
+        <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...summaries].map((summary, index) => (
             <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
@@ -267,7 +267,7 @@ export default async function Home() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6">History</h2>
+        <h2 className="text-title font-bold mb-6">History</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-gray-50">

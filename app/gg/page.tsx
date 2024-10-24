@@ -50,8 +50,11 @@ export default async function GGPage() {
     }))
 
   const images = [
+    { src: "/imgs/gg/5k3.jpg", alt: "Third 5K of the season", caption: "Almost double 5K hit in Zermatt" },
+    { src: "/imgs/gg/5k2.jpg", alt: "Second 5K of the season", caption: "5K for Vanilla in San Marino" },
     { src: "/imgs/gg/gg1.jpg", alt: "New GeoGuessr Season Highlight", caption: "And that was frozen round" },
-    { src: "/imgs/gg/5k1.jpg", alt: "First 5K of the season", caption: "First 5K of the season" },
+    { src: "/imgs/gg/5k1.jpg", alt: "First 5K of the season", caption: "First 5K of the season in Belgrade" },
+    { src: "/imgs/gg/gg.jpg", alt: "First 5K of the season", caption: "And the journey began!" },
   ]
 
   return (

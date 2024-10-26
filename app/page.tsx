@@ -189,7 +189,7 @@ export default async function Home() {
   }
 
   const pokerSummary = {
-    title: 'PokerNow',
+    title: 'Poker',
     content: pokerLeader
       ? `Leader: ${pokerLeader.bearo} with ${pokerLeader.points} points`
       : 'No Poker data available',

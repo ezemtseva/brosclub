@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
-import { unstable_noStore as noStore } from 'next/cache'
+
+export const dynamic = 'force-dynamic'
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -31,7 +32,6 @@ async function fetchPlayerData(teamId: string) {
 }
 
 async function getFplData() {
-  noStore()
   try {
     const playersData = await Promise.all(
       players.map(async (player) => {

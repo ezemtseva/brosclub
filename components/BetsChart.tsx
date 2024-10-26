@@ -39,15 +39,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const CustomYAxisTick = (props: any) => {
   const { x, y, payload } = props;
-  if (payload.value === 299) {
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={4} textAnchor="end" fill="#d7b244" fontWeight="bold">
-          {payload.value}
-        </text>
-      </g>
-    );
-  }
   return (
     <g transform={`translate(${x},${y})`}>
       <text x={0} y={0} dy={4} textAnchor="end" fill="#666">
@@ -73,9 +64,10 @@ export default function BetsChart({ entries }: BetsChartProps) {
     }, {})
 
     const maxGames = Math.max(...entries.map(entry => entry.games))
+    const lastFifteenGames = Math.max(1, maxGames - 14)
 
-    const chartData = Array.from({ length: 38 }, (_, i) => {
-      const gameNumber = i + 1
+    const chartData = Array.from({ length: 15 }, (_, i) => {
+      const gameNumber = lastFifteenGames + i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(player => {
@@ -100,13 +92,13 @@ export default function BetsChart({ entries }: BetsChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 38]} 
-            ticks={Array.from({ length: 38 }, (_, i) => i + 1)}
+            domain={['dataMin', 'dataMax']}
+            ticks={chartData.map(d => d.games)}
           />
           <YAxis 
             type="number"
-            domain={[0, 299]}
-            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 299]}
+            domain={[0, 150]}
+            ticks={[0, 25, 50, 75, 100, 125, 150]}
             interval={0}
             tick={<CustomYAxisTick />}
             width={40}

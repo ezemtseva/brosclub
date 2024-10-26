@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
+import prisma from '../../lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,11 +32,30 @@ async function fetchPlayerData(teamId: string) {
   }
 }
 
-async function getFplData() {
+async function getFplDataAndUpdateDb() {
   try {
     const playersData = await Promise.all(
       players.map(async (player) => {
         const { games, points } = await fetchPlayerData(player.teamId)
+        
+        // Update or create FplEntry in the database
+        await prisma.fplEntry.upsert({
+          where: {
+            week_player: {
+              week: games,
+              player: player.name,
+            },
+          },
+          update: { points, games },
+          create: {
+            week: games,
+            player: player.name,
+            points,
+            games,
+            teamId: player.teamId,
+          },
+        })
+
         return {
           player: player.name,
           games,
@@ -46,14 +66,14 @@ async function getFplData() {
     )
     return playersData.sort((a, b) => b.points - a.points)
   } catch (error) {
-    console.error('Error fetching FPL data:', error)
+    console.error('Error fetching FPL data and updating database:', error)
     throw error
   }
 }
 
 export default async function FPLPage() {
   try {
-    const data = await getFplData()
+    const data = await getFplDataAndUpdateDb() // Fetch data from API and update the database
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,

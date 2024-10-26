@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '../lib/prisma'
-import { unstable_noStore as noStore } from 'next/cache'
 
 const clubMembers = [
   { 
@@ -32,6 +31,10 @@ const clubMembers = [
   },
 ]
 
+const summaries = [
+  //fifaSummary will be added here
+]
+
 const historyData = [
   { year: '2023/24', poker: '-', bets: 'Choco', fpl: 'Panda', gg: '-', fifa: 'Vanilla' },
   { year: '2022/23', poker: '-', bets: 'Panda', fpl: 'Panda', gg: '-', fifa: 'Choco' },
@@ -48,43 +51,24 @@ const historyData = [
   { year: '2012', poker: 'DSQ', bets: 'Panda', fpl: '-', gg: '-', fifa: '-' },
 ]
 
-const players = [
-  { name: 'Vanilla', teamId: '1546526' },
-  { name: 'Choco', teamId: '3214199' },
-  { name: 'Panda', teamId: '5663' },
-]
-
-async function fetchPlayerData(teamId: string) {
-  const res = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`, { cache: 'no-store' })
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data for team ${teamId}`)
-  }
-  const data = await res.json()
-  const currentEvent = data.current.slice(-1)[0]
-  return {
-    games: currentEvent.event,
-    points: currentEvent.total_points,
-  }
-}
-
-async function getFplData() {
-  noStore()
+async function getLatestFplLeader() {
   try {
-    const playersData = await Promise.all(
-      players.map(async (player) => {
-        const { games, points } = await fetchPlayerData(player.teamId)
-        return {
-          player: player.name,
-          games,
-          points,
-          teamId: player.teamId,
-        }
-      })
-    )
-    return playersData.sort((a, b) => b.points - a.points)
+    const latestWeek = await prisma.fplEntry.findFirst({
+      orderBy: { week: 'desc' },
+      select: { week: true },
+    })
+
+    if (!latestWeek) return null
+
+    const leader = await prisma.fplEntry.findFirst({
+      where: { week: latestWeek.week },
+      orderBy: { points: 'desc' },
+    })
+
+    return leader
   } catch (error) {
-    console.error('Error fetching FPL data:', error)
-    throw error
+    console.error('Error fetching FPL leader:', error)
+    return null
   }
 }
 
@@ -182,8 +166,7 @@ async function getLatestFifaLeader() {
 }
 
 export default async function Home() {
-  const fplData = await getFplData()
-  const fplLeader = fplData[0]
+  const fplLeader = await getLatestFplLeader()
   const ggLeader = await getLatestGgLeader()
   const pokerLeader = await getLatestPokerLeader()
   const betsLeader = await getLatestBetsLeader()
@@ -271,7 +254,7 @@ export default async function Home() {
       <section className="mb-12">
         <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {summaries.map((summary, index) => (
+          {[...summaries].map((summary, index) => (
             <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
               <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
               <p className="text-gray-600 mb-4">{summary.content}</p>

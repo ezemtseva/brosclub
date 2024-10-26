@@ -225,7 +225,7 @@ export default async function Home() {
       <section className="mb-12">
         <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
         <p className="text-basic text-gray-600">
-          Here is always Sunday since 06.09.2012.
+          Here is always Sunday since 06.09.2012
         </p>
       </section>
 

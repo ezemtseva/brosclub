@@ -8,19 +8,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid data format' }, { status: 400 })
   }
 
-  const latestWeek = await prisma.fplEntry.findFirst({
-    orderBy: { week: 'desc' },
-    select: { week: true },
-  })
-
-  const newWeek = data[0].week
-
   try {
     await prisma.$transaction(
       data.map(entry =>
-        prisma.fplEntry.create({
-          data: {
-            week: newWeek,
+        prisma.fplEntry.upsert({
+          where: {
+            week_player: {
+              week: entry.games,
+              player: entry.player,
+            },
+          },
+          update: {
+            points: entry.points,
+            games: entry.games,
+            teamId: entry.teamId,
+          },
+          create: {
+            week: entry.games,
             player: entry.player,
             points: entry.points,
             games: entry.games,

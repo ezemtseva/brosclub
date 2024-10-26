@@ -38,23 +38,26 @@ async function getFplDataAndUpdateDb() {
       players.map(async (player) => {
         const { games, points } = await fetchPlayerData(player.teamId)
         
-        // Update or create FplEntry in the database
-        await prisma.fplEntry.upsert({
-          where: {
-            week_player: {
+        try {
+          await prisma.fplEntry.upsert({
+            where: {
+              week_player: {
+                week: games,
+                player: player.name,
+              },
+            },
+            update: { points, games },
+            create: {
               week: games,
               player: player.name,
+              points,
+              games,
+              teamId: player.teamId,
             },
-          },
-          update: { points, games },
-          create: {
-            week: games,
-            player: player.name,
-            points,
-            games,
-            teamId: player.teamId,
-          },
-        })
+          })
+        } catch (dbError) {
+          console.error('Error updating database:', dbError)
+        }
 
         return {
           player: player.name,
@@ -66,14 +69,14 @@ async function getFplDataAndUpdateDb() {
     )
     return playersData.sort((a, b) => b.points - a.points)
   } catch (error) {
-    console.error('Error fetching FPL data and updating database:', error)
+    console.error('Error fetching FPL data:', error)
     throw error
   }
 }
 
 export default async function FPLPage() {
   try {
-    const data = await getFplDataAndUpdateDb() // Fetch data from API and update the database
+    const data = await getFplDataAndUpdateDb()
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,

@@ -48,7 +48,7 @@ const historyData = [
   { year: '2012', poker: 'DSQ', bets: 'Panda', fpl: '-', gg: '-', fifa: '-' },
 ]
 
-const fplPlayers = [
+const players = [
   { name: 'Vanilla', teamId: '1546526' },
   { name: 'Choco', teamId: '3214199' },
   { name: 'Panda', teamId: '5663' },
@@ -71,7 +71,7 @@ async function getFplData() {
   noStore()
   try {
     const playersData = await Promise.all(
-      fplPlayers.map(async (player) => {
+      players.map(async (player) => {
         const { games, points } = await fetchPlayerData(player.teamId)
         return {
           player: player.name,

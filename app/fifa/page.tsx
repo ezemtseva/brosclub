@@ -49,7 +49,7 @@ export default async function FIFAPage() {
   const highlights = [
     { videoId: 'MAdZDsPaeKI', title: 'Gyökeres scissors shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
     { videoId: '6cDyxHRGFJg', title: 'Thuram scores out of the box', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
-    { videoId: 'G3DRPDA_xQk', title: 'Lautaro right in the 9', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
+    { videoId: 'G3DRPDA_xQk', title: 'Lautaro right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
   ]
 
   return (

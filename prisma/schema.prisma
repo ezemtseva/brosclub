@@ -16,6 +16,8 @@ model FplEntry {
   teamId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([week, player])
 }
 
 model GgEntry {

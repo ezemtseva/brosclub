@@ -2,7 +2,6 @@ import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
 import { unstable_noStore as noStore } from 'next/cache'
-import { headers } from 'next/headers'
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -52,37 +51,9 @@ async function getFplData() {
   }
 }
 
-async function updateFplEntries(data: any[]) {
-  const headersList = headers()
-  const host = headersList.get('host') || 'localhost:3000'
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-
-  try {
-    const response = await fetch(`${protocol}://${host}/api/fpl-update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to update FPL entries')
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error('Error updating FPL entries:', error)
-    throw error
-  }
-}
-
 export default async function FPLPage() {
   try {
     const data = await getFplData()
-
-    // Update the database with the new data
-    await updateFplEntries(data)
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,

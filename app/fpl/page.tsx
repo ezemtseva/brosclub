@@ -2,6 +2,7 @@ import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageGallery from '../../components/ImageGallery'
 import { unstable_noStore as noStore } from 'next/cache'
+import prisma from '../../lib/prisma'
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -51,9 +52,41 @@ async function getFplData() {
   }
 }
 
+async function updateFplEntries(data: any[]) {
+  const latestWeek = Math.max(...data.map(entry => entry.games))
+
+  await prisma.$transaction(
+    data.map(entry =>
+      prisma.fplEntry.upsert({
+        where: {
+          week_player: {
+            week: latestWeek,
+            player: entry.player,
+          },
+        },
+        update: {
+          points: entry.points,
+          games: entry.games,
+          teamId: entry.teamId,
+        },
+        create: {
+          week: latestWeek,
+          player: entry.player,
+          points: entry.points,
+          games: entry.games,
+          teamId: entry.teamId,
+        },
+      })
+    )
+  )
+}
+
 export default async function FPLPage() {
   try {
     const data = await getFplData()
+
+    // Update the database with the new data
+    await updateFplEntries(data)
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,

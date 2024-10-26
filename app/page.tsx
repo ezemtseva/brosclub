@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '../lib/prisma'
+import { unstable_noStore as noStore } from 'next/cache'
 
 const clubMembers = [
   { 
@@ -31,10 +32,6 @@ const clubMembers = [
   },
 ]
 
-const summaries = [
-  //fifaSummary will be added here
-]
-
 const historyData = [
   { year: '2023/24', poker: '-', bets: 'Choco', fpl: 'Panda', gg: '-', fifa: 'Vanilla' },
   { year: '2022/23', poker: '-', bets: 'Panda', fpl: 'Panda', gg: '-', fifa: 'Choco' },
@@ -52,6 +49,7 @@ const historyData = [
 ]
 
 async function getLatestFplLeader() {
+  noStore()
   try {
     const latestWeek = await prisma.fplEntry.findFirst({
       orderBy: { week: 'desc' },
@@ -73,6 +71,7 @@ async function getLatestFplLeader() {
 }
 
 async function getLatestGgLeader() {
+  noStore()
   try {
     const latestWeek = await prisma.ggEntry.findFirst({
       orderBy: { week: 'desc' },
@@ -94,6 +93,7 @@ async function getLatestGgLeader() {
 }
 
 async function getLatestPokerLeader() {
+  noStore()
   try {
     const latestWeek = await prisma.pokerEntry.findFirst({
       orderBy: { week: 'desc' },
@@ -116,6 +116,7 @@ async function getLatestPokerLeader() {
 }
 
 async function getLatestBetsLeader() {
+  noStore()
   try {
     const latestWeek = await prisma.betsEntry.findFirst({
       orderBy: { week: 'desc' },
@@ -137,6 +138,7 @@ async function getLatestBetsLeader() {
 }
 
 async function getLatestFifaLeader() {
+  noStore()
   try {
     const leader = await prisma.fifaEntry.findFirst({
       orderBy: [
@@ -254,7 +256,7 @@ export default async function Home() {
       <section className="mb-12">
         <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...summaries].map((summary, index) => (
+          {summaries.map((summary, index) => (
             <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
               <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
               <p className="text-gray-600 mb-4">{summary.content}</p>

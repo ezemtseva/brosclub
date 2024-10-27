@@ -63,6 +63,7 @@ export default async function FIFAPage() {
     goalsConceded: entry.goalsConceded,
     goalDifference: entry.goalDifference,
     points: entry.points,
+    hoverColor: getTeamColor(entry.team),
   }))
 
   const highlights = [

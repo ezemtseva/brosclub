@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useState } from 'react'
 
 interface Column {
   header: string
@@ -11,6 +13,8 @@ interface DataTableProps {
 }
 
 export default function DataTable({ columns, data }: DataTableProps) {
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null)
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
@@ -23,7 +27,15 @@ export default function DataTable({ columns, data }: DataTableProps) {
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-b border-gray-200 hover:bg-gray-100">
+            <tr 
+              key={rowIndex} 
+              className="border-b border-gray-200 transition-colors duration-200"
+              style={{
+                backgroundColor: hoveredRow === rowIndex ? `${row.hoverColor}80` : 'transparent',
+              }}
+              onMouseEnter={() => setHoveredRow(rowIndex)}
+              onMouseLeave={() => setHoveredRow(null)}
+            >
               {columns.map((column, colIndex) => (
                 <td key={colIndex} className="py-3 px-6 text-left whitespace-nowrap">
                   {row[column.accessor]}

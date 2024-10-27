@@ -7,13 +7,12 @@ const PokerChart = dynamic(() => import('../../components/PokerChart'), { ssr: f
 const PieChart = dynamic(() => import('../../components/PieChart'), { ssr: false })
 
 const columns = [
-  { header: '#', accessor: 'position' },
+  { header: '#', accessor:  'position' },
   { header: 'Bearo', accessor: 'bearo' },
   { header: 'G', accessor: 'games' },
   { header: 'W', accessor: 'wins' },
   { header: 'P', accessor: 'points' },
   { header: 'PD', accessor: 'pointsDifference' },
-  
   { header: 'W%', accessor: 'winPercentage' },
 ]
 
@@ -58,6 +57,7 @@ export default async function PokerPage() {
       points: entry.points,
       pointsDifference: index === 0 ? 0 : arr[0].points - entry.points,
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
+      hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
 
   const pieChartData = latestEntries.map(entry => ({

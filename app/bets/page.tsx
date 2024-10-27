@@ -58,6 +58,7 @@ export default async function BetsPage() {
       points: entry.points,
       difference: index === 0 ? '-' : (latestEntries[index - 1].points - entry.points).toString(),
       winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : '0%',
+      hoverColor: playerColors[entry.player as keyof typeof playerColors],
     }))
 
   const pieChartData = latestEntries.map(entry => ({

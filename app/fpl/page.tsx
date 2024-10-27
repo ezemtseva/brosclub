@@ -93,6 +93,7 @@ export default async function FPLPage() {
       games: entry.games,
       points: entry.points,
       difference: index === 0 ? '-' : (data[index - 1].points - entry.points).toString(),
+      hoverColor: entry.color,
     }))
 
     const images = [

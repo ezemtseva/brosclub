@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import prisma from '../../lib/prisma'
-import VideoGallery from '../../components/VideoGallery'
+import VideoCarousel from '../../components/VideoCarousel'
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -64,7 +64,9 @@ export default async function FIFAPage() {
 
       <section className="mt-12">
         <h2 className="text-title font-bold mb-6">Highlights</h2>
-        <VideoGallery videos={highlights} />
+        <div className="px-12">
+          <VideoCarousel videos={highlights} />
+        </div>
       </section>
     </div>
   )

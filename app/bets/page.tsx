@@ -1,8 +1,9 @@
-import prisma from '../../lib/prisma'
 import DataTable from '../../components/DataTable'
+import prisma from '../../lib/prisma'
 import dynamic from 'next/dynamic'
 
 const BetsChart = dynamic(() => import('../../components/BetsChart'), { ssr: false })
+const PieChart = dynamic(() => import('../../components/PieChart'), { ssr: false })
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -13,14 +14,6 @@ const columns = [
   { header: 'Difference', accessor: 'difference' },
   { header: 'W%', accessor: 'winPercentage' },
 ]
-
-type BetsEntry = {
-  player: string;
-  week: number;
-  games: number;
-  wins: number;
-  points: number;
-}
 
 async function getBetsData() {
   const entries = await prisma.betsEntry.findMany({
@@ -39,6 +32,8 @@ async function getBetsData() {
 export default async function BetsPage() {
   const { entries, latestEntries } = await getBetsData()
 
+  const totalWins = latestEntries.reduce((sum, entry) => sum + entry.wins, 0)
+
   const tableData = latestEntries
     .sort((a, b) => b.points - a.points)
     .map((entry, index) => ({
@@ -48,19 +43,32 @@ export default async function BetsPage() {
       wins: entry.wins,
       points: entry.points,
       difference: index === 0 ? '-' : (latestEntries[index - 1].points - entry.points).toString(),
-      winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
+      winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : '0%',
     }))
+
+  const pieChartData = latestEntries.map(entry => ({
+    name: entry.player,
+    value: entry.wins,
+    color: entry.player === 'Vanilla' ? '#ea7878' : entry.player === 'Choco' ? '#4b98de' : '#4fcb90'
+  }))
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
-      <p className="text-basic text-gray-600 mb-8">XII season of betting on English Premier League matches.</p>
+      <p className="text-base text-gray-600 mb-8">Season of sports betting predictions.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={tableData} />
 
       <section className="mt-12">
         <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-        <BetsChart entries={entries} />
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-full md:w-2/3">
+            <BetsChart entries={entries} />
+          </div>
+          <div className="w-full md:w-1/3">
+            <PieChart data={pieChartData} />
+          </div>
+        </div>
       </section>
     </div>
   )

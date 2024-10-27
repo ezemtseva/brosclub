@@ -1,10 +1,10 @@
-import Image from 'next/image'
-import prisma from '../../lib/prisma'
 import DataTable from '../../components/DataTable'
-import ImageCarousel from '../../components/ImageCarousel'
+import prisma from '../../lib/prisma'
 import dynamic from 'next/dynamic'
+import ImageCarousel from '../../components/ImageCarousel'
 
 const GGChart = dynamic(() => import('../../components/GGChart'), { ssr: false })
+const PieChart = dynamic(() => import('../../components/PieChart'), { ssr: false })
 
 const columns = [
   { header: '#', accessor: 'position' },
@@ -49,6 +49,12 @@ export default async function GGPage() {
       winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : '0%',
     }))
 
+  const pieChartData = latestEntries.map(entry => ({
+    name: entry.player,
+    value: entry.wins,
+    color: entry.player === 'Vanilla' ? '#ea7878' : entry.player === 'Choco' ? '#4b98de' : '#4fcb90'
+  }))
+
   const images = [
     { src: "/imgs/gg/5k3.jpg", alt: "Third 5K of the season", caption: "Almost double 5K hit in Zermatt" },
     { src: "/imgs/gg/5k2.jpg", alt: "Second 5K of the season", caption: "5K for Vanilla in San Marino" },
@@ -66,8 +72,13 @@ export default async function GGPage() {
 
       <section className="mt-12">
         <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-        <div className="w-full">
-          <GGChart entries={entries} />
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-full md:w-2/3">
+            <GGChart entries={entries} />
+          </div>
+          <div className="w-full md:w-1/3">
+            <PieChart data={pieChartData} />
+          </div>
         </div>
       </section>
 

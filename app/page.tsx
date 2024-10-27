@@ -310,7 +310,7 @@ export default async function Home() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.bets} /></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fpl} /></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.gg} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} isFifaTeam={true} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} /></td>
                 </tr>
               ))}
             </tbody>

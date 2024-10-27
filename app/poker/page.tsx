@@ -45,6 +45,8 @@ export default async function PokerPage() {
     }))
 
   const images = [
+    { src: "/imgs/poker/poker4.jpg", alt: "Poker Season Highlight - Full House", caption: "Straights fight" },
+    { src: "/imgs/poker/poker3.jpg", alt: "Poker Season Highlight - Full House", caption: "Never fold to early" },    
     { src: "/imgs/poker/poker2.jpg", alt: "New Poker Season Highlight", caption: "Last call survivor" },
     { src: "/imgs/poker/poker1.jpg", alt: "Poker Season Highlight - Full House", caption: "Full house, triple seven and two pairs" },
   ]

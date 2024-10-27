@@ -47,6 +47,9 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'OAWMDmaf9Bk', title: 'Musiala did it again', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
+    { videoId: 'yTEhQIjNgyM', title: 'Beautiful assist from Zaccagni', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
+    { videoId: 'qYX6R6ITVCQ', title: 'Musiala long shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
     { videoId: 'MAdZDsPaeKI', title: 'Gyökeres scissors shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
     { videoId: '6cDyxHRGFJg', title: 'Thuram scores out of the box', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },
     { videoId: 'G3DRPDA_xQk', title: 'Lautaro right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg' },

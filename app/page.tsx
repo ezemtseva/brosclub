@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '../lib/prisma'
+import { getTeamColor } from '../lib/teamColors'
 
 const clubMembers = [
   { 
@@ -167,17 +168,18 @@ async function getLatestFifaLeader() {
   }
 }
 
-const UnderlinedPlayer = ({ name }: { name: string }) => {
+const UnderlinedPlayer = ({ name, isFifaTeam = false }: { name: string; isFifaTeam?: boolean }) => {
   if (name === '-' || name === 'DNF' || name === 'DSQ') {
     return <span>{name}</span>
   }
+  const color = isFifaTeam ? getTeamColor(name) : playerColors[name as keyof typeof playerColors]
   return (
     <span className="relative">
       <span className="relative">
         {name[0]}
         <span 
           className="absolute bottom-[-2px] left-0 w-[0.85em] h-[2px]" 
-          style={{ backgroundColor: playerColors[name as keyof typeof playerColors] }}
+          style={{ backgroundColor: color }}
         />
       </span>
       {name.slice(1)}
@@ -227,7 +229,7 @@ export default async function Home() {
   const fifaSummary = {
     title: 'FIFA',
     content: fifaLeader
-      ? <>Leader: <UnderlinedPlayer name={fifaLeader.team} /> with {fifaLeader.points} points</>
+      ? <>Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points</>
       : 'No FIFA data available',
     link: '/fifa'
   }
@@ -308,7 +310,7 @@ export default async function Home() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.bets} /></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fpl} /></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.gg} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} isFifaTeam={true} /></td>
                 </tr>
               ))}
             </tbody>

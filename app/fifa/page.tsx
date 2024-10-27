@@ -16,6 +16,19 @@ const columns = [
   { header: 'P', accessor: 'points' },
 ]
 
+const teamColors = {
+  red: ['Liverpool', 'Bayern Munich', 'Inter', 'Bayer Leverkusen', 'Newcastle', 'AS Roma', 'Galatasaray', 'Sporting CP', 'SS Lazio', 'AS Monaco'],
+  blue: ['Chelsea', 'Manchester City', 'Barcelona', 'Tottenham', 'Milan', 'Aston Villa', 'Athletic Bilbao', 'Manchester United', 'Benfica', 'Olympique Lyonnais'],
+  green: ['Juventus', 'Real Madrid', 'Arsenal', 'Borussia Dortmund', 'PSG', 'Atletico Madrid', 'Napoli', 'RB Leipzig', 'Fenerbahçe', 'Al Hilal']
+}
+
+const getTeamColor = (team: string) => {
+  if (teamColors.red.includes(team)) return '#ea7878'
+  if (teamColors.blue.includes(team)) return '#4b98de'
+  if (teamColors.green.includes(team)) return '#4fcb90'
+  return 'transparent'
+}
+
 async function getFifaData() {
   const entries = await prisma.fifaEntry.findMany()
   return entries.map(entry => ({
@@ -33,7 +46,13 @@ export default async function FIFAPage() {
     team: (
       <div className="flex items-center space-x-2">
         <Image src={entry.logo} alt={entry.team} width={24} height={24} className="rounded-full" />
-        <span>{entry.team}</span>
+        <span className="relative">
+          {entry.team}
+          <span 
+            className="absolute bottom-0 left-0 w-[0.85em] h-[2px]" 
+            style={{ backgroundColor: getTeamColor(entry.team) }}
+          />
+        </span>
       </div>
     ),
     games: entry.games,

@@ -31,9 +31,11 @@ const clubMembers = [
   },
 ]
 
-const summaries = [
-  //fifaSummary will be added here
-]
+const playerColors = {
+  'Vanilla': '#ea7878',
+  'Choco': '#4b98de',
+  'Panda': '#4fcb90'
+}
 
 const historyData = [
   { year: '2023/24', poker: '-', bets: 'Choco', fpl: 'Panda', gg: '-', fifa: 'Vanilla' },
@@ -165,6 +167,24 @@ async function getLatestFifaLeader() {
   }
 }
 
+const UnderlinedPlayer = ({ name }: { name: string }) => {
+  if (name === '-' || name === 'DNF' || name === 'DSQ') {
+    return <span>{name}</span>
+  }
+  return (
+    <span className="relative">
+      <span className="relative">
+        {name[0]}
+        <span 
+          className="absolute bottom-[-2px] left-0 w-[0.85em] h-[2px]" 
+          style={{ backgroundColor: playerColors[name as keyof typeof playerColors] }}
+        />
+      </span>
+      {name.slice(1)}
+    </span>
+  )
+}
+
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
   const ggLeader = await getLatestGgLeader()
@@ -175,7 +195,7 @@ export default async function Home() {
   const fplSummary = {
     title: 'FPL',
     content: fplLeader
-      ? `Leader: ${fplLeader.player} with ${fplLeader.points} points`
+      ? <>Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points</>
       : 'No FPL data available',
     link: '/fpl'
   }
@@ -183,7 +203,7 @@ export default async function Home() {
   const ggSummary = {
     title: 'GeoGuessr',
     content: ggLeader
-      ? `Leader: ${ggLeader.player} with ${ggLeader.points} points`
+      ? <>Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points</>
       : 'No GG data available',
     link: '/gg'
   }
@@ -191,7 +211,7 @@ export default async function Home() {
   const pokerSummary = {
     title: 'Poker',
     content: pokerLeader
-      ? `Leader: ${pokerLeader.bearo} with ${pokerLeader.points} points`
+      ? <>Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points</>
       : 'No Poker data available',
     link: '/poker'
   }
@@ -199,7 +219,7 @@ export default async function Home() {
   const betsSummary = {
     title: 'Bets',
     content: betsLeader
-      ? `Leader: ${betsLeader.player} with ${betsLeader.points} points`
+      ? <>Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points</>
       : 'No Bets data available',
     link: '/bets'
   }
@@ -207,7 +227,7 @@ export default async function Home() {
   const fifaSummary = {
     title: 'FIFA',
     content: fifaLeader
-      ? `Leader: ${fifaLeader.team} with ${fifaLeader.points} points`
+      ? <>Leader: <UnderlinedPlayer name={fifaLeader.team} /> with {fifaLeader.points} points</>
       : 'No FIFA data available',
     link: '/fifa'
   }
@@ -254,7 +274,7 @@ export default async function Home() {
       <section className="mb-12">
         <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...summaries].map((summary, index) => (
+          {summaries.map((summary, index) => (
             <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
               <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
               <p className="text-gray-600 mb-4">{summary.content}</p>
@@ -284,11 +304,11 @@ export default async function Home() {
               {historyData.map((row, index) => (
                 <tr key={index} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 transition-colors duration-200`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.poker}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.bets}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.fpl}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.gg}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.fifa}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.poker} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.bets} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fpl} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.gg} /></td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} /></td>
                 </tr>
               ))}
             </tbody>

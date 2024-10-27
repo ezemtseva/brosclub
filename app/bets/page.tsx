@@ -69,7 +69,7 @@ export default async function BetsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
-      <p className="text-base text-gray-600 mb-8">Season of sports betting predictions.</p>
+      <p className="text-base text-gray-600 mb-8">XII season of betting on top football leagues matches. Currently only on English Premier League.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={tableData} />
 

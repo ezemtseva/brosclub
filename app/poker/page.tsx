@@ -13,8 +13,15 @@ const columns = [
   { header: 'W', accessor: 'wins' },
   { header: 'P', accessor: 'points' },
   { header: 'PD', accessor: 'pointsDifference' },
+  
   { header: 'W%', accessor: 'winPercentage' },
 ]
+
+const playerColors = {
+  'Vanilla': '#ea7878',
+  'Choco': '#4b98de',
+  'Panda': '#4fcb90'
+}
 
 async function getPokerData() {
   const entries = await prisma.pokerEntry.findMany({
@@ -37,7 +44,15 @@ export default async function PokerPage() {
     .sort((a, b) => b.points - a.points)
     .map((entry, index, arr) => ({
       position: index + 1,
-      bearo: entry.bearo,
+      bearo: (
+        <span className="relative">
+          {entry.bearo}
+          <span 
+            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
+            style={{ backgroundColor: playerColors[entry.bearo as keyof typeof playerColors] }}
+          />
+        </span>
+      ),
       games: entry.games,
       wins: entry.wins,
       points: entry.points,
@@ -48,7 +63,7 @@ export default async function PokerPage() {
   const pieChartData = latestEntries.map(entry => ({
     name: entry.bearo,
     value: entry.wins,
-    color: entry.bearo === 'Vanilla' ? '#ea7878' : entry.bearo === 'Choco' ? '#4b98de' : '#4fcb90'
+    color: playerColors[entry.bearo as keyof typeof playerColors]
   }))
 
   const images = [

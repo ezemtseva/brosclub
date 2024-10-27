@@ -14,9 +14,9 @@ const columns = [
 ]
 
 const players = [
-  { name: 'Vanilla', teamId: '1546526' },
-  { name: 'Choco', teamId: '3214199' },
-  { name: 'Panda', teamId: '5663' },
+  { name: 'Vanilla', teamId: '1546526', color: '#ea7878' },
+  { name: 'Choco', teamId: '3214199', color: '#4b98de' },
+  { name: 'Panda', teamId: '5663', color: '#4fcb90' },
 ]
 
 async function fetchPlayerData(teamId: string) {
@@ -64,6 +64,7 @@ async function getFplDataAndUpdateDb() {
           games,
           points,
           teamId: player.teamId,
+          color: player.color,
         }
       })
     )
@@ -80,7 +81,15 @@ export default async function FPLPage() {
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,
-      player: entry.player,
+      player: (
+        <span className="relative">
+          {entry.player}
+          <span 
+            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
+            style={{ backgroundColor: entry.color }}
+          />
+        </span>
+      ),
       games: entry.games,
       points: entry.points,
       difference: index === 0 ? '-' : (data[index - 1].points - entry.points).toString(),

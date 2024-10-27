@@ -17,6 +17,12 @@ const columns = [
   { header: 'W%', accessor: 'winPercentage' },
 ]
 
+const playerColors = {
+  'Vanilla': '#ea7878',
+  'Choco': '#4b98de',
+  'Panda': '#4fcb90'
+}
+
 async function getGgData() {
   const entries = await prisma.ggEntry.findMany({
     orderBy: [
@@ -40,7 +46,15 @@ export default async function GGPage() {
     .sort((a, b) => b.points - a.points)
     .map((entry, index) => ({
       position: index + 1,
-      player: entry.player,
+      player: (
+        <span className="relative">
+          {entry.player}
+          <span 
+            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
+            style={{ backgroundColor: playerColors[entry.player as keyof typeof playerColors] }}
+          />
+        </span>
+      ),
       games: entry.games,
       wins: entry.wins,
       fiveK: entry.fiveK,
@@ -52,7 +66,7 @@ export default async function GGPage() {
   const pieChartData = latestEntries.map(entry => ({
     name: entry.player,
     value: entry.wins,
-    color: entry.player === 'Vanilla' ? '#ea7878' : entry.player === 'Choco' ? '#4b98de' : '#4fcb90'
+    color: playerColors[entry.player as keyof typeof playerColors]
   }))
 
   const images = [

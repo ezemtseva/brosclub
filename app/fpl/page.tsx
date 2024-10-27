@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import DataTable from '../../components/DataTable'
-import ImageGallery from '../../components/ImageGallery'
+import ImageCarousel from '../../components/ImageCarousel'
 import prisma from '../../lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -101,7 +101,9 @@ export default async function FPLPage() {
 
         <section className="mt-12">
           <h2 className="text-title font-bold mb-6">Highlights</h2>
-          <ImageGallery images={images} />
+          <div className="px-12">
+            <ImageCarousel images={images} />
+          </div>
         </section>
       </div>
     )

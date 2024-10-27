@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import prisma from '../../lib/prisma'
 import DataTable from '../../components/DataTable'
-import ImageGallery from '../../components/ImageGallery'
+import ImageCarousel from '../../components/ImageCarousel'
 import dynamic from 'next/dynamic'
 
 const GGChart = dynamic(() => import('../../components/GGChart'), { ssr: false })
@@ -73,7 +73,9 @@ export default async function GGPage() {
 
       <section className="mt-12">
         <h2 className="text-title font-bold mb-6">Highlights</h2>
-        <ImageGallery images={images} />
+        <div className="px-12">
+          <ImageCarousel images={images} />
+        </div>
       </section>
     </div>
   )

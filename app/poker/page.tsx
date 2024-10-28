@@ -55,7 +55,7 @@ export default async function PokerPage() {
       games: entry.games,
       wins: entry.wins,
       points: entry.points,
-      pointsDifference: index === 0 ? 0 : arr[0].points - entry.points,
+      pointsDifference: index === 0 ? '-' : arr[0].points - entry.points,
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))

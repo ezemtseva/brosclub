@@ -62,7 +62,7 @@ const sections = [
   {
     title: "Geo Guessr",
     records: [
-      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 17 m, Hagia Sophia (Istanbul), 2024/25</>,
+      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa), 2024/25</>,
       <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa), 2024/25</>,
       <><UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25</>
     ]

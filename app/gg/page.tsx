@@ -71,6 +71,7 @@ export default async function GGPage() {
   }))
 
   const images = [
+    { src: "/imgs/gg/5k7.jpg", alt: "Third 5K of the season", caption: "Boring 5k in Monaco" }, 
     { src: "/imgs/gg/5k6.jpg", alt: "Third 5K of the season", caption: "Last min win by 5k in Arequipa!" },
     { src: "/imgs/gg/5k5.jpg", alt: "Third 5K of the season", caption: "Double 5k in a game, both in San Marino.." },
     { src: "/imgs/gg/5k3.jpg", alt: "Third 5K of the season", caption: "Almost double 5K hit in Zermatt" },

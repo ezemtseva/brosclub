@@ -67,6 +67,7 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'pXJHDQxF1IA', title: 'Gonçalves smooth finish', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 5' },
     { videoId: 'OAWMDmaf9Bk', title: 'Musiala did it again', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
     { videoId: 'yTEhQIjNgyM', title: 'Beautiful assist from Zaccagni', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
     { videoId: 'qYX6R6ITVCQ', title: 'Musiala long shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },

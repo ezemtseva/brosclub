@@ -80,13 +80,13 @@ export default function GGChart({ entries }: GGChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 15]} 
-            ticks={Array.from({ length: 15 }, (_, i) => i + 1)}
+            domain={[0, 20]} 
+            ticks={Array.from({ length: 20 }, (_, i) => i + 1)}
           />
           <YAxis 
             type="number"
             domain={[0, 150]}
-            ticks={[0, 25, 50, 75, 100, 125, 150]}
+            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200]}
             interval={0}
             width={40}
           />

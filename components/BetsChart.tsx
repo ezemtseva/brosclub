@@ -64,9 +64,9 @@ export default function BetsChart({ entries }: BetsChartProps) {
     }, {})
 
     const maxGames = Math.max(...entries.map(entry => entry.games))
-    const lastFifteenGames = Math.max(1, maxGames - 14)
+    const lastFifteenGames = Math.max(0, maxGames - 21)
 
-    const chartData = Array.from({ length: 15 }, (_, i) => {
+    const chartData = Array.from({ length: 21 }, (_, i) => {
       const gameNumber = lastFifteenGames + i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 

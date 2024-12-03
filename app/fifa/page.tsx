@@ -67,6 +67,12 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'piylDb5uj3s', title: 'Flawless curve from Cherki', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: 's3g0RVD8OFg', title: 'Simple magic from Salah', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: '8Laa6qgNW_Q', title: 'Almiron right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: '0nhw_IeN-QM', title: 'Crazy long distance shot by Calabria', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: 'stmM4vE4mJw', title: 'Wilson from the crossbar', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 6' },
+    { videoId: 'b3f66F0NDow', title: 'A rocket shot by Ramsey', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 6' },
     { videoId: 'pXJHDQxF1IA', title: 'Gonçalves smooth finish', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 5' },
     { videoId: 'OAWMDmaf9Bk', title: 'Musiala did it again', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
     { videoId: 'yTEhQIjNgyM', title: 'Beautiful assist from Zaccagni', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },

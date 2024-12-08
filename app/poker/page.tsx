@@ -67,6 +67,8 @@ export default async function PokerPage() {
   }))
 
   const images = [
+    { src: "/imgs/poker/poker10.jpg", alt: "Poker Season Highlight - Full House", caption: "Panda King is back!" },
+    { src: "/imgs/poker/poker9.jpg", alt: "Poker Season Highlight - Full House", caption: "Лох это и правда судьба.." },
     { src: "/imgs/poker/poker8.jpg", alt: "Poker Season Highlight - Full House", caption: "That was epic - double knock out by aces" },
     { src: "/imgs/poker/poker7.jpg", alt: "Poker Season Highlight - Full House", caption: "Some people just don't ever learn their lessons.." },
     { src: "/imgs/poker/poker5.jpg", alt: "Poker Season Highlight - Full House", caption: "The King and his luck are back" },

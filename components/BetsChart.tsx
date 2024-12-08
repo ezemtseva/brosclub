@@ -98,7 +98,7 @@ export default function BetsChart({ entries }: BetsChartProps) {
           <YAxis 
             type="number"
             domain={[0, 150]}
-            ticks={[0, 25, 50, 75, 100, 125, 150]}
+            ticks={[0, 25, 50, 75, 100, 125, 150, 175]}
             interval={0}
             tick={<CustomYAxisTick />}
             width={40}

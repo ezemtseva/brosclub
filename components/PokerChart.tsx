@@ -52,7 +52,7 @@ export default function PokerChart({ entries }: PokerChartProps) {
       return acc
     }, {})
 
-    const maxGames = Math.min(15, Math.max(...entries.map(entry => entry.games)))
+    const maxGames = Math.min(20, Math.max(...entries.map(entry => entry.games)))
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
       const gameNumber = i + 1
@@ -86,7 +86,7 @@ export default function PokerChart({ entries }: PokerChartProps) {
           <YAxis 
             type="number"
             domain={[0, 30]}
-            ticks={[0, 5, 10, 15, 20, 25, 30]}
+            ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40]}
             interval={0}
             width={40}
           />

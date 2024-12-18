@@ -96,7 +96,11 @@ export default async function FPLPage() {
       hoverColor: entry.color,
     }))
 
+
+    
     const images = [
+      { src: "/imgs/fpl/fpl16.png", alt: "New FPL Season Highlight", caption: "Team of the week 16 - Panda" }, 
+      { src: "/imgs/fpl/fpl15.png", alt: "New FPL Season Highlight", caption: "Team of the week 15 - Choco" }, 
       { src: "/imgs/fpl/fpl14.png", alt: "New FPL Season Highlight", caption: "Team of the week 14 - Vanilla" }, 
       { src: "/imgs/fpl/fpl13.png", alt: "New FPL Season Highlight", caption: "Team of the week 13 - Choco" },     
       { src: "/imgs/fpl/fpl12.png", alt: "New FPL Season Highlight", caption: "Team of the week 12 - Vanilla" },

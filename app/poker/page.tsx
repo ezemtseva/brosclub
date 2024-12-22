@@ -55,7 +55,7 @@ export default async function PokerPage() {
       games: entry.games,
       wins: entry.wins,
       points: entry.points,
-      pointsDifference: index === 0 ? '-' : arr[0].points - entry.points,
+      pointsDifference: index === 0 ? '-' : arr[index - 1].points - entry.points,
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : '0%',
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
@@ -67,6 +67,8 @@ export default async function PokerPage() {
   }))
 
   const images = [
+    { src: "/imgs/poker/poker13.jpg", alt: "Poker Season Highlight - Full House", caption: "Never mess with Panda!" },
+    { src: "/imgs/poker/poker12.jpg", alt: "Poker Season Highlight - Full House", caption: "Classic Vanilla.." },
     { src: "/imgs/poker/poker11.jpg", alt: "Poker Season Highlight - Full House", caption: "Kneel before the King!" },
     { src: "/imgs/poker/poker10.jpg", alt: "Poker Season Highlight - Full House", caption: "Panda King is back!" },
     { src: "/imgs/poker/poker9.jpg", alt: "Poker Season Highlight - Full House", caption: "Лох это и правда судьба.." },
@@ -107,3 +109,4 @@ export default async function PokerPage() {
     </div>
   )
 }
+

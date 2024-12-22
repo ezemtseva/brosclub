@@ -11,7 +11,7 @@ type FplEntry = {
 }
 
 type ChartDataPoint = {
-  week: number;
+  games: number;
   [key: string]: number | null;
 }
 
@@ -19,12 +19,12 @@ type FplChartProps = {
   entries: FplEntry[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
+    const sortedPayload = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
     return (
       <div className="bg-white border border-gray-300 p-2 shadow-md">
-        <p className="font-bold">Week {label}</p>
-        {payload.map((entry: any, index: number) => (
+        {sortedPayload.map((entry: any, index: number) => (
           entry.value !== null && (
             <p key={index} style={{ color: entry.color }}>
               {entry.name}: {entry.value} points
@@ -52,25 +52,24 @@ export default function FplChart({ entries }: FplChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
-    const playerData = entries.reduce<Record<string, { week: number; points: number }[]>>((acc, entry) => {
+    const playerData = entries.reduce<Record<string, { games: number; points: number }[]>>((acc, entry) => {
       if (!acc[entry.player]) {
         acc[entry.player] = []
       }
       acc[entry.player].push({
-        week: entry.week,
+        games: entry.games,
         points: entry.points,
       })
       return acc
     }, {})
 
-    const maxWeek = Math.max(...entries.map(entry => entry.week))
-    const chartData = Array.from({ length: maxWeek }, (_, i) => {
-      const weekNumber = i + 1
-      const dataPoint: ChartDataPoint = { week: weekNumber }
+    const chartData = Array.from({ length: 19 }, (_, i) => {
+      const gameNumber = i + 1
+      const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(player => {
-        const weekData = playerData[player].find(entry => entry.week === weekNumber)
-        dataPoint[player] = weekData ? weekData.points : null
+        const gameData = playerData[player].find(entry => entry.games === gameNumber)
+        dataPoint[player] = gameData ? gameData.points : null
       })
 
       return dataPoint
@@ -101,15 +100,16 @@ export default function FplChart({ entries }: FplChartProps) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
-            dataKey="week" 
+            dataKey="games" 
             type="number" 
-            domain={[1, 'dataMax']}
-            ticks={Array.from({ length: chartData.length }, (_, i) => i + 1)}
+            domain={[1, 19]}
+            ticks={Array.from({ length: 19 }, (_, i) => i + 1)}
             tick={{ fontSize: 12 }}
           />
           <YAxis 
             type="number"
-            domain={[0, 'dataMax']}
+            domain={[0, 1250]}
+            ticks={[0, 250, 500, 750, 1000, 1250]}
             tick={<CustomYAxisTick />}
             width={40}
           />

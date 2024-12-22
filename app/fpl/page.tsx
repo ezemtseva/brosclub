@@ -8,6 +8,15 @@ const FplChart = dynamicImport(() => import('../../components/FplChart'), { ssr:
 
 export const dynamic = 'force-dynamic'
 
+type TableDataItem = {
+  position: number;
+  player: React.ReactNode;
+  games: number;
+  points: number;
+  difference: string;
+  hoverColor: string;
+};
+
 const columns = [
   { header: '#', accessor: 'position' },
   { header: 'Bearo', accessor: 'player' },
@@ -22,79 +31,43 @@ const players = [
   { name: 'Panda', teamId: '5663', color: '#4fcb90' },
 ]
 
-type WeekData = {
-  event: number;
-  points: number;
-};
-
-type PlayerData = {
-  player: string;
-  weeklyData: WeekData[];
-  color: string;
-}
-
-async function fetchPlayerData(teamId: string): Promise<WeekData[]> {
-  const res = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`, { cache: 'no-store' })
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data for team ${teamId}`)
-  }
-  const data = await res.json()
-  return data.current.map((week: any) => ({
-    event: week.event,
-    points: week.total_points,
-  }))
-}
-
-async function getFplDataAndUpdateDb(): Promise<PlayerData[]> {
+async function getFplDataFromDb() {
   try {
-    const playersData = await Promise.all(
-      players.map(async (player) => {
-        const weeklyData = await fetchPlayerData(player.teamId)
-        
-        for (const week of weeklyData) {
-          try {
-            await prisma.fplEntry.upsert({
-              where: {
-                week_player: {
-                  week: week.event,
-                  player: player.name,
-                },
-              },
-              update: { points: week.points },
-              create: {
-                week: week.event,
-                player: player.name,
-                points: week.points,
-                games: week.event,
-                teamId: player.teamId,
-              },
-            })
-          } catch (dbError) {
-            console.error('Error updating database:', dbError)
-          }
-        }
+    const fplEntries = await prisma.fplEntry.findMany({
+      orderBy: [
+        { player: 'asc' },
+        { week: 'asc' },
+      ],
+    })
 
-        return {
-          player: player.name,
-          weeklyData,
-          color: player.color,
-        }
-      })
-    )
-    return playersData
+    const playerData = players.map(player => ({
+      ...player,
+      entries: fplEntries.filter(entry => entry.player === player.name),
+    }))
+
+    return playerData
   } catch (error) {
-    console.error('Error fetching FPL data:', error)
+    console.error('Error fetching FPL data from database:', error)
     throw error
   }
 }
 
 export default async function FPLPage() {
   try {
-    const playersData = await getFplDataAndUpdateDb()
+    const playersData = await getFplDataFromDb()
     
-    const tableData = playersData
-      .sort((a, b) => b.weeklyData[b.weeklyData.length - 1].points - a.weeklyData[a.weeklyData.length - 1].points)
-      .map((entry, index) => ({
+    const tableData: TableDataItem[] = playersData
+      .map(player => {
+        const lastEntry = player.entries[player.entries.length - 1]
+        return {
+          player: player.name,
+          games: lastEntry.games,
+          points: lastEntry.points,
+          color: player.color,
+        }
+      })
+      .sort((a, b) => b.points - a.points)
+      .map((entry, index, sortedData) => ({
         position: index + 1,
         player: (
           <span className="relative">
@@ -105,21 +78,18 @@ export default async function FPLPage() {
             />
           </span>
         ),
-        games: entry.weeklyData.length,
-        points: entry.weeklyData[entry.weeklyData.length - 1].points,
-        difference: index === 0 ? '-' : (
-          playersData[index - 1].weeklyData[playersData[index - 1].weeklyData.length - 1].points - 
-          entry.weeklyData[entry.weeklyData.length - 1].points
-        ).toString(),
+        games: entry.games,
+        points: entry.points,
+        difference: index === 0 ? '-' : (sortedData[index - 1].points - entry.points).toString(),
         hoverColor: entry.color,
       }))
 
     const chartData = playersData.flatMap(player => 
-      player.weeklyData.map((week, index, array) => ({
-        player: player.player,
-        week: week.event,
-        points: index === 0 ? week.points : week.points - array[index - 1].points,
-        games: week.event, 
+      player.entries.map(entry => ({
+        player: player.name,
+        week: entry.week,
+        games: entry.games,
+        points: entry.points,
       }))
     )
 

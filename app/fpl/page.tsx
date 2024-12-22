@@ -31,6 +31,51 @@ const players = [
   { name: 'Panda', teamId: '5663', color: '#4fcb90' },
 ]
 
+async function fetchFplData(teamId: string) {
+  const response = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch FPL data for team ${teamId}`)
+  }
+  return response.json()
+}
+
+async function updateFplDataIfNeeded() {
+  for (const player of players) {
+    const fplData = await fetchFplData(player.teamId)
+    const latestEntry = fplData.current[fplData.current.length - 1]
+    
+    const dbEntry = await prisma.fplEntry.findFirst({
+      where: {
+        player: player.name,
+        week: latestEntry.event
+      }
+    })
+
+    if (!dbEntry || dbEntry.points < latestEntry.total_points) {
+      await prisma.fplEntry.upsert({
+        where: {
+          week_player: {
+            week: latestEntry.event,
+            player: player.name
+          }
+        },
+        update: {
+          points: latestEntry.total_points,
+          games: latestEntry.event,
+          teamId: player.teamId
+        },
+        create: {
+          player: player.name,
+          week: latestEntry.event,
+          points: latestEntry.total_points,
+          games: latestEntry.event,
+          teamId: player.teamId
+        }
+      })
+    }
+  }
+}
+
 async function getFplDataFromDb() {
   try {
     const fplEntries = await prisma.fplEntry.findMany({
@@ -54,6 +99,7 @@ async function getFplDataFromDb() {
 
 export default async function FPLPage() {
   try {
+    await updateFplDataIfNeeded()
     const playersData = await getFplDataFromDb()
     
     const tableData: TableDataItem[] = playersData

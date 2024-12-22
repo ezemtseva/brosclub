@@ -1,105 +1,106 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useMemo, useCallback } from 'react'
 
 const Snowfall: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+  const lastUpdateTimeRef = useRef<number>(0)
+
+  const createSnowflakes = useCallback((width: number, height: number) => {
+    const snowflakes = []
+    const snowflakeCount = Math.min(150, Math.floor((width * height) / 10000))
+    for (let i = 0; i < snowflakeCount; i++) {
+      snowflakes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 8 + 4,
+        speed: Math.random() * 1 + 0.5,
+        rotation: Math.random() * Math.PI * 2
+      })
+    }
+    return snowflakes
+  }, [])
+
+  const drawSnowflake = useCallback((ctx: CanvasRenderingContext2D, x: number, y: number, size: number, rotation: number) => {
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(rotation)
+    
+    for (let i = 0; i < 6; i++) {
+      ctx.rotate(Math.PI / 3)
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(0, -size)
+      ctx.moveTo(0, -size * 0.6)
+      ctx.lineTo(-size * 0.3, -size * 0.9)
+      ctx.moveTo(0, -size * 0.6)
+      ctx.lineTo(size * 0.3, -size * 0.9)
+      ctx.stroke()
+    }
+    
+    ctx.restore()
+  }, [])
+
+  const updateAndDrawSnowflakes = useCallback((ctx: CanvasRenderingContext2D, snowflakes: any[], width: number, height: number, deltaTime: number) => {
+    ctx.clearRect(0, 0, width, height)
+    ctx.strokeStyle = 'rgba(173, 216, 230, 0.8)'
+    ctx.lineWidth = 1
+
+    for (let flake of snowflakes) {
+      flake.y += flake.speed * deltaTime / 16
+      flake.rotation += 0.02 * deltaTime / 16
+      if (flake.y > height) {
+        flake.y = 0
+        flake.x = Math.random() * width
+      }
+      drawSnowflake(ctx, flake.x, flake.y, flake.size, flake.rotation)
+    }
+  }, [drawSnowflake])
+
+  const animate = useCallback((time: number) => {
+    if (!canvasRef.current) return
+
+    const deltaTime = time - lastUpdateTimeRef.current
+    if (deltaTime < 16) {  // Cap at ~60 FPS
+      animationRef.current = requestAnimationFrame(animate)
+      return
+    }
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    updateAndDrawSnowflakes(ctx, snowflakesRef.current, canvas.width, canvas.height, deltaTime)
+
+    lastUpdateTimeRef.current = time
+    animationRef.current = requestAnimationFrame(animate)
+  }, [updateAndDrawSnowflakes])
+
+  const snowflakesRef = useRef<any[]>([])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
     const resizeCanvas = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
+      snowflakesRef.current = createSnowflakes(canvas.width, canvas.height)
     }
 
     resizeCanvas()
-
-    const snowflakes: { x: number; y: number; size: number; speed: number; rotation: number }[] = []
-
-    // Create snowflakes with random positions and sizes
-    for (let i = 0; i < 150; i++) {
-      snowflakes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 8 + 4, // Size between 4 and 12
-        speed: Math.random() * 1 + 0.5,
-        rotation: Math.random() * Math.PI * 2 // Random initial rotation
-      })
-    }
-
-    function drawSnowflake(x: number, y: number, size: number, rotation: number) {
-      if (!ctx) return
-
-      ctx.save()
-      ctx.translate(x, y)
-      ctx.rotate(rotation)
-      
-      // Draw the six arms of the snowflake
-      for (let i = 0; i < 6; i++) {
-        ctx.rotate(Math.PI / 3) // Rotate by 60 degrees
-        ctx.beginPath()
-        // Main arm
-        ctx.moveTo(0, 0)
-        ctx.lineTo(0, -size)
-        
-        // Left branch
-        ctx.moveTo(0, -size * 0.6)
-        ctx.lineTo(-size * 0.3, -size * 0.9)
-        
-        // Right branch
-        ctx.moveTo(0, -size * 0.6)
-        ctx.lineTo(size * 0.3, -size * 0.9)
-        
-        ctx.stroke()
-      }
-      
-      ctx.restore()
-    }
-
-    function drawSnowflakes() {
-      if (!ctx || !canvas) return
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.strokeStyle = 'rgba(173, 216, 230, 0.8)' // Light blue color
-      ctx.lineWidth = 1
-
-      for (let flake of snowflakes) {
-        drawSnowflake(flake.x, flake.y, flake.size, flake.rotation)
-      }
-      
-      moveSnowflakes()
-    }
-
-    function moveSnowflakes() {
-      if (!canvas) return
-      for (let flake of snowflakes) {
-        flake.y += flake.speed
-        flake.rotation += 0.02 // Slowly rotate each snowflake
-        if (flake.y > canvas.height) {
-          flake.y = 0
-          flake.x = Math.random() * canvas.width
-        }
-      }
-    }
-
-    function animate() {
-      drawSnowflakes()
-      requestAnimationFrame(animate)
-    }
-
-    animate()
-
     window.addEventListener('resize', resizeCanvas)
+
+    animationRef.current = requestAnimationFrame(animate)
 
     return () => {
       window.removeEventListener('resize', resizeCanvas)
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
     }
-  }, [])
+  }, [animate, createSnowflakes])
 
   return (
     <canvas

@@ -2,6 +2,10 @@ import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageCarousel from '../../components/ImageCarousel'
 import prisma from '../../lib/prisma'
+import dynamicImport from 'next/dynamic'
+
+const FplChart = dynamicImport(() => import('../../components/FplChart'), { ssr: false })
+const PieChart = dynamicImport(() => import('../../components/PieChart'), { ssr: false })
 
 export const dynamic = 'force-dynamic'
 
@@ -75,9 +79,19 @@ async function getFplDataAndUpdateDb() {
   }
 }
 
+async function getAllFplEntries() {
+  return await prisma.fplEntry.findMany({
+    orderBy: [
+      { week: 'asc' },
+      { player: 'asc' }
+    ],
+  })
+}
+
 export default async function FPLPage() {
   try {
     const data = await getFplDataAndUpdateDb()
+    const allEntries = await getAllFplEntries()
 
     const tableData = data.map((entry, index) => ({
       position: index + 1,
@@ -96,8 +110,12 @@ export default async function FPLPage() {
       hoverColor: entry.color,
     }))
 
+    const pieChartData = data.map(entry => ({
+      name: entry.player,
+      value: entry.points,
+      color: entry.color
+    }))
 
-    
     const images = [
       { src: "/imgs/fpl/fpl16.png", alt: "New FPL Season Highlight", caption: "Team of the week 16 - Panda" }, 
       { src: "/imgs/fpl/fpl15.png", alt: "New FPL Season Highlight", caption: "Team of the week 15 - Choco" }, 
@@ -118,6 +136,18 @@ export default async function FPLPage() {
         <p className="text-base text-gray-600 mb-8">VII season of Fantasy Premier League.</p>
         <h2 className="text-title font-bold mb-6">Standings</h2>
         <DataTable columns={columns} data={tableData} />
+
+        <section className="mt-12">
+          <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="w-full md:w-2/3">
+              <FplChart entries={allEntries} />
+            </div>
+            <div className="w-full md:w-1/3">
+              <PieChart data={pieChartData} />
+            </div>
+          </div>
+        </section>
 
         <section className="mt-12">
           <h2 className="text-title font-bold mb-6">Highlights</h2>
@@ -142,3 +172,4 @@ export default async function FPLPage() {
     )
   }
 }
+

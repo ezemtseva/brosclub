@@ -25,7 +25,7 @@ const players = [
 type WeekData = {
   event: number;
   points: number;
-}
+};
 
 type PlayerData = {
   player: string;
@@ -41,7 +41,7 @@ async function fetchPlayerData(teamId: string): Promise<WeekData[]> {
   const data = await res.json()
   return data.current.map((week: any) => ({
     event: week.event,
-    points: week.points,
+    points: week.total_points,
   }))
 }
 
@@ -88,47 +88,37 @@ async function getFplDataAndUpdateDb(): Promise<PlayerData[]> {
   }
 }
 
-
 export default async function FPLPage() {
   try {
     const playersData = await getFplDataAndUpdateDb()
     
-
     const tableData = playersData
-  .sort((a, b) => 
-    b.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
-    a.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
-  )
-  .map((entry, index) => ({
-    position: index + 1,
-    player: (
-      <span className="relative">
-        {entry.player}
-        <span 
-          className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
-          style={{ backgroundColor: entry.color }}
-        />
-      </span>
-    ),
-    games: entry.weeklyData.length,
-    points: entry.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0),
-    difference: index === 0 ? '-' : (
-      playersData
-        .sort((a, b) => 
-          b.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
-          a.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
-        )[index - 1]
-        .weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
-      entry.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
-    ).toString(),
-    hoverColor: entry.color,
-  }))
+      .sort((a, b) => b.weeklyData[b.weeklyData.length - 1].points - a.weeklyData[a.weeklyData.length - 1].points)
+      .map((entry, index) => ({
+        position: index + 1,
+        player: (
+          <span className="relative">
+            {entry.player}
+            <span 
+              className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
+              style={{ backgroundColor: entry.color }}
+            />
+          </span>
+        ),
+        games: entry.weeklyData.length,
+        points: entry.weeklyData[entry.weeklyData.length - 1].points,
+        difference: index === 0 ? '-' : (
+          playersData[index - 1].weeklyData[playersData[index - 1].weeklyData.length - 1].points - 
+          entry.weeklyData[entry.weeklyData.length - 1].points
+        ).toString(),
+        hoverColor: entry.color,
+      }))
 
     const chartData = playersData.flatMap(player => 
-      player.weeklyData.map(week => ({
+      player.weeklyData.map((week, index, array) => ({
         player: player.player,
         week: week.event,
-        points: week.points,
+        points: index === 0 ? week.points : week.points - array[index - 1].points,
         games: week.event, 
       }))
     )
@@ -155,7 +145,7 @@ export default async function FPLPage() {
         <DataTable columns={columns} data={tableData} />
 
         <section className="mt-12">
-          <h2 className="text-title font-bold mb-6">Weekly progress (test)</h2>
+          <h2 className="text-title font-bold mb-6">Weekly progress</h2>
           <div className="w-full">
             <FplChart entries={chartData} />
           </div>

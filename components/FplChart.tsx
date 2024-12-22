@@ -11,35 +11,26 @@ type FplEntry = {
 }
 
 type ChartDataPoint = {
-  games: number;
-  [key: string]: number | null | { cumulative: number; weekPoints: number };
+  week: number;
+  [key: string]: number | null;
 }
 
 type FplChartProps = {
   entries: FplEntry[];
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    // Sort the payload based on cumulative points (highest first)
-    const sortedPayload = [...payload].sort((a, b) => {
-      const pointsA = a.payload[a.name]?.cumulative || 0;
-      const pointsB = b.payload[b.name]?.cumulative || 0;
-      return pointsB - pointsA;
-    });
-
     return (
       <div className="bg-white border border-gray-300 p-2 shadow-md">
-        {sortedPayload.map((entry: any, index: number) => {
-          if (entry.payload[entry.name]) {
-            return (
-              <p key={index} style={{ color: entry.stroke }}>
-                {entry.name}: {entry.payload[entry.name].cumulative}
-              </p>
-            );
-          }
-          return null;
-        })}
+        <p className="font-bold">Week {label}</p>
+        {payload.map((entry: any, index: number) => (
+          entry.value !== null && (
+            <p key={index} style={{ color: entry.color }}>
+              {entry.name}: {entry.value} points
+            </p>
+          )
+        ))}
       </div>
     );
   }
@@ -61,49 +52,38 @@ export default function FplChart({ entries }: FplChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
-    // First, organize data by player and week
-    const playerWeeklyData: Record<string, Record<number, number>> = {};
-    
-    // Initialize data structure
-    entries.forEach(entry => {
-      if (!playerWeeklyData[entry.player]) {
-        playerWeeklyData[entry.player] = {};
+    const playerData = entries.reduce<Record<string, { week: number; points: number }[]>>((acc, entry) => {
+      if (!acc[entry.player]) {
+        acc[entry.player] = []
       }
-      playerWeeklyData[entry.player][entry.week] = entry.points;
-    });
+      acc[entry.player].push({
+        week: entry.week,
+        points: entry.points,
+      })
+      return acc
+    }, {})
 
-    // Create chart data points
-    const chartData = Array.from({ length: 19 }, (_, i) => {
-      const weekNumber = i + 1;
-      const dataPoint: ChartDataPoint = { games: weekNumber };
+    const maxWeek = Math.max(...entries.map(entry => entry.week))
+    const chartData = Array.from({ length: maxWeek }, (_, i) => {
+      const weekNumber = i + 1
+      const dataPoint: ChartDataPoint = { week: weekNumber }
 
-      Object.entries(playerWeeklyData).forEach(([player, weeklyPoints]) => {
-        if (weeklyPoints[weekNumber]) {
-          // Calculate cumulative points up to this week
-          const cumulative = Object.entries(weeklyPoints)
-            .filter(([week]) => parseInt(week) <= weekNumber)
-            .reduce((sum, [_, points]) => sum + points, 0);
+      Object.keys(playerData).forEach(player => {
+        const weekData = playerData[player].find(entry => entry.week === weekNumber)
+        dataPoint[player] = weekData ? weekData.points : null
+      })
 
-          dataPoint[player] = {
-            cumulative,
-            weekPoints: weeklyPoints[weekNumber]
-          };
-        } else {
-          dataPoint[player] = null;
-        }
-      });
+      return dataPoint
+    })
 
-      return dataPoint;
-    });
-
-    setChartData(chartData);
-  }, [entries]);
+    setChartData(chartData)
+  }, [entries])
 
   const renderLine = (player: string, color: string) => {
     return (
       <Line 
         type="monotone" 
-        dataKey={(dataPoint) => dataPoint[player]?.cumulative} 
+        dataKey={player}
         name={player} 
         stroke={color} 
         activeDot={{ r: 8 }} 
@@ -121,16 +101,15 @@ export default function FplChart({ entries }: FplChartProps) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
-            dataKey="games" 
+            dataKey="week" 
             type="number" 
-            domain={[1, 19]}
-            ticks={Array.from({ length: 19 }, (_, i) => i + 1)}
+            domain={[1, 'dataMax']}
+            ticks={Array.from({ length: chartData.length }, (_, i) => i + 1)}
             tick={{ fontSize: 12 }}
           />
           <YAxis 
             type="number"
-            domain={[0, 1250]}
-            ticks={[0, 250, 500, 750, 1000, 1250]}
+            domain={[0, 'dataMax']}
             tick={<CustomYAxisTick />}
             width={40}
           />

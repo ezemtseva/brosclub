@@ -22,7 +22,8 @@ const clubMembers = [
     image: '/imgs/choco.png',
     achievements: [
       'x2 FIFA cups',
-      'x2 FPL cups'
+      'x2 FPL cups',
+      'x1 BETS cups'
     ]
   },
   { 
@@ -30,8 +31,8 @@ const clubMembers = [
     image: '/imgs/panda.png',
     achievements: [
       'x7 POKER cups',
-      'x6 BETS cups',
-      'x4 FPL cups'
+      'x4 FPL cups',
+      'x6 BETS cups'
     ]
   },
 ]

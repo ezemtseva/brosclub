@@ -3,6 +3,7 @@ import Link from 'next/link'
 import prisma from '../lib/prisma'
 import { getTeamColor } from '../lib/teamColors'
 import dynamic from 'next/dynamic'
+import { SantaHat } from '../components/SantaHat'
 
 const Snowfall = dynamic(() => import('../components/Snowfall'), { ssr: false })
 
@@ -252,7 +253,10 @@ export default async function Home() {
       {(currentMonth === 12 || currentMonth === 1) && <Snowfall />}
       <div className="max-w-6xl mx-auto px-4 py-8">
         <section className="mb-12">
-          <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
+          <h1 className="text-title font-bold mb-4 relative inline-block">
+            Welcome to Bearos Club
+            {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
+          </h1>
           <p className="text-basic text-gray-600">
             Here is always Sunday since 06.09.2012.
           </p>

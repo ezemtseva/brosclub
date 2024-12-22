@@ -12,7 +12,7 @@ type FplEntry = {
 
 type ChartDataPoint = {
   games: number;
-  [key: string]: number | null;
+  [key: string]: number | null | { cumulative: number; weekPoints: number };
 }
 
 type FplChartProps = {
@@ -21,16 +21,25 @@ type FplChartProps = {
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
-    const sortedPayload = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+    // Sort the payload based on cumulative points (highest first)
+    const sortedPayload = [...payload].sort((a, b) => {
+      const pointsA = a.payload[a.name]?.cumulative || 0;
+      const pointsB = b.payload[b.name]?.cumulative || 0;
+      return pointsB - pointsA;
+    });
+
     return (
       <div className="bg-white border border-gray-300 p-2 shadow-md">
-        {sortedPayload.map((entry: any, index: number) => (
-          entry.value !== null && (
-            <p key={index} style={{ color: entry.dataKey === 'Vanilla' ? '#ea7878' : entry.dataKey === 'Choco' ? '#4b98de' : '#4fcb90' }}>
-              {entry.name}: {entry.value}
-            </p>
-          )
-        ))}
+        {sortedPayload.map((entry: any, index: number) => {
+          if (entry.payload[entry.name]) {
+            return (
+              <p key={index} style={{ color: entry.stroke }}>
+                {entry.name}: {entry.payload[entry.name].cumulative}
+              </p>
+            );
+          }
+          return null;
+        })}
       </div>
     );
   }
@@ -41,7 +50,7 @@ const CustomYAxisTick = (props: any) => {
   const { x, y, payload } = props;
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={4} textAnchor="end" fill="#666">
+      <text x={0} y={0} dy={4} textAnchor="end" fill="#666" fontSize={12}>
         {payload.value}
       </text>
     </g>
@@ -52,31 +61,56 @@ export default function FplChart({ entries }: FplChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
-    const playerData = entries.reduce<Record<string, { games: number; points: number }[]>>((acc, entry) => {
-      if (!acc[entry.player]) {
-        acc[entry.player] = []
+    // First, organize data by player and week
+    const playerWeeklyData: Record<string, Record<number, number>> = {};
+    
+    // Initialize data structure
+    entries.forEach(entry => {
+      if (!playerWeeklyData[entry.player]) {
+        playerWeeklyData[entry.player] = {};
       }
-      acc[entry.player].push({
-        games: entry.games,
-        points: entry.points,
-      })
-      return acc
-    }, {})
+      playerWeeklyData[entry.player][entry.week] = entry.points;
+    });
 
+    // Create chart data points
     const chartData = Array.from({ length: 19 }, (_, i) => {
-      const gameNumber = i + 1
-      const dataPoint: ChartDataPoint = { games: gameNumber }
+      const weekNumber = i + 1;
+      const dataPoint: ChartDataPoint = { games: weekNumber };
 
-      Object.keys(playerData).forEach(player => {
-        const playerEntry = playerData[player].find(entry => entry.games === gameNumber)
-        dataPoint[player] = playerEntry ? playerEntry.points : null
-      })
+      Object.entries(playerWeeklyData).forEach(([player, weeklyPoints]) => {
+        if (weeklyPoints[weekNumber]) {
+          // Calculate cumulative points up to this week
+          const cumulative = Object.entries(weeklyPoints)
+            .filter(([week]) => parseInt(week) <= weekNumber)
+            .reduce((sum, [_, points]) => sum + points, 0);
 
-      return dataPoint
-    })
+          dataPoint[player] = {
+            cumulative,
+            weekPoints: weeklyPoints[weekNumber]
+          };
+        } else {
+          dataPoint[player] = null;
+        }
+      });
 
-    setChartData(chartData)
-  }, [entries])
+      return dataPoint;
+    });
+
+    setChartData(chartData);
+  }, [entries]);
+
+  const renderLine = (player: string, color: string) => {
+    return (
+      <Line 
+        type="monotone" 
+        dataKey={(dataPoint) => dataPoint[player]?.cumulative} 
+        name={player} 
+        stroke={color} 
+        activeDot={{ r: 8 }} 
+        connectNulls={false}
+      />
+    )
+  }
 
   return (
     <div className="h-[400px]">
@@ -91,8 +125,7 @@ export default function FplChart({ entries }: FplChartProps) {
             type="number" 
             domain={[1, 19]}
             ticks={Array.from({ length: 19 }, (_, i) => i + 1)}
-            tick={{ fontSize: 10 }}
-            interval={0}
+            tick={{ fontSize: 12 }}
           />
           <YAxis 
             type="number"
@@ -102,9 +135,9 @@ export default function FplChart({ entries }: FplChartProps) {
             width={40}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Choco" stroke="#4b98de" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" activeDot={{ r: 8 }} connectNulls />
+          {renderLine('Vanilla', '#ea7878')}
+          {renderLine('Choco', '#4b98de')}
+          {renderLine('Panda', '#4fcb90')}
         </LineChart>
       </ResponsiveContainer>
     </div>

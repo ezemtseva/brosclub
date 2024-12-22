@@ -5,7 +5,6 @@ import prisma from '../../lib/prisma'
 import dynamicImport from 'next/dynamic'
 
 const FplChart = dynamicImport(() => import('../../components/FplChart'), { ssr: false })
-const PieChart = dynamicImport(() => import('../../components/PieChart'), { ssr: false })
 
 export const dynamic = 'force-dynamic'
 
@@ -23,98 +22,116 @@ const players = [
   { name: 'Panda', teamId: '5663', color: '#4fcb90' },
 ]
 
-async function fetchPlayerData(teamId: string) {
+type WeekData = {
+  event: number;
+  points: number;
+}
+
+type PlayerData = {
+  player: string;
+  weeklyData: WeekData[];
+  color: string;
+}
+
+async function fetchPlayerData(teamId: string): Promise<WeekData[]> {
   const res = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`, { cache: 'no-store' })
   if (!res.ok) {
     throw new Error(`Failed to fetch data for team ${teamId}`)
   }
   const data = await res.json()
-  const currentEvent = data.current.slice(-1)[0]
-  return {
-    games: currentEvent.event,
-    points: currentEvent.total_points,
-  }
+  return data.current.map((week: any) => ({
+    event: week.event,
+    points: week.points,
+  }))
 }
 
-async function getFplDataAndUpdateDb() {
+async function getFplDataAndUpdateDb(): Promise<PlayerData[]> {
   try {
     const playersData = await Promise.all(
       players.map(async (player) => {
-        const { games, points } = await fetchPlayerData(player.teamId)
+        const weeklyData = await fetchPlayerData(player.teamId)
         
-        try {
-          await prisma.fplEntry.upsert({
-            where: {
-              week_player: {
-                week: games,
-                player: player.name,
+        for (const week of weeklyData) {
+          try {
+            await prisma.fplEntry.upsert({
+              where: {
+                week_player: {
+                  week: week.event,
+                  player: player.name,
+                },
               },
-            },
-            update: { points, games },
-            create: {
-              week: games,
-              player: player.name,
-              points,
-              games,
-              teamId: player.teamId,
-            },
-          })
-        } catch (dbError) {
-          console.error('Error updating database:', dbError)
+              update: { points: week.points },
+              create: {
+                week: week.event,
+                player: player.name,
+                points: week.points,
+                games: week.event,
+                teamId: player.teamId,
+              },
+            })
+          } catch (dbError) {
+            console.error('Error updating database:', dbError)
+          }
         }
 
         return {
           player: player.name,
-          games,
-          points,
-          teamId: player.teamId,
+          weeklyData,
           color: player.color,
         }
       })
     )
-    return playersData.sort((a, b) => b.points - a.points)
+    return playersData
   } catch (error) {
     console.error('Error fetching FPL data:', error)
     throw error
   }
 }
 
-async function getAllFplEntries() {
-  return await prisma.fplEntry.findMany({
-    orderBy: [
-      { week: 'asc' },
-      { player: 'asc' }
-    ],
-  })
-}
 
 export default async function FPLPage() {
   try {
-    const data = await getFplDataAndUpdateDb()
-    const allEntries = await getAllFplEntries()
+    const playersData = await getFplDataAndUpdateDb()
+    
 
-    const tableData = data.map((entry, index) => ({
-      position: index + 1,
-      player: (
-        <span className="relative">
-          {entry.player}
-          <span 
-            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
-            style={{ backgroundColor: entry.color }}
-          />
-        </span>
-      ),
-      games: entry.games,
-      points: entry.points,
-      difference: index === 0 ? '-' : (data[index - 1].points - entry.points).toString(),
-      hoverColor: entry.color,
-    }))
+    const tableData = playersData
+  .sort((a, b) => 
+    b.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
+    a.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
+  )
+  .map((entry, index) => ({
+    position: index + 1,
+    player: (
+      <span className="relative">
+        {entry.player}
+        <span 
+          className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
+          style={{ backgroundColor: entry.color }}
+        />
+      </span>
+    ),
+    games: entry.weeklyData.length,
+    points: entry.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0),
+    difference: index === 0 ? '-' : (
+      playersData
+        .sort((a, b) => 
+          b.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
+          a.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
+        )[index - 1]
+        .weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0) - 
+      entry.weeklyData.reduce((sum: number, week: WeekData) => sum + week.points, 0)
+    ).toString(),
+    hoverColor: entry.color,
+  }))
 
-    const pieChartData = data.map(entry => ({
-      name: entry.player,
-      value: entry.points,
-      color: entry.color
-    }))
+    const chartData = playersData.flatMap(player => 
+      player.weeklyData.map(week => ({
+        player: player.player,
+        week: week.event,
+        points: week.points,
+        games: week.event, 
+      }))
+    )
 
     const images = [
       { src: "/imgs/fpl/fpl16.png", alt: "New FPL Season Highlight", caption: "Team of the week 16 - Panda" }, 
@@ -138,14 +155,9 @@ export default async function FPLPage() {
         <DataTable columns={columns} data={tableData} />
 
         <section className="mt-12">
-          <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="w-full md:w-2/3">
-              <FplChart entries={allEntries} />
-            </div>
-            <div className="w-full md:w-1/3">
-              <PieChart data={pieChartData} />
-            </div>
+          <h2 className="text-title font-bold mb-6">Weekly progress (test)</h2>
+          <div className="w-full">
+            <FplChart entries={chartData} />
           </div>
         </section>
 

@@ -67,6 +67,10 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'emHY6c2E2U0', title: 'Big ass goal!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: '5xjIm5-GyGI', title: 'Thats why we love FIFA, right?', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'CKwdP6IPrCw', title: 'Smooth operator Vlahović', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'LZt5vbBoAqY', title: 'Marata-Morata scissors!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
     { videoId: 'piylDb5uj3s', title: 'Flawless curve from Cherki', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
     { videoId: 's3g0RVD8OFg', title: 'Simple magic from Salah', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
     { videoId: '8Laa6qgNW_Q', title: 'Almiron right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },

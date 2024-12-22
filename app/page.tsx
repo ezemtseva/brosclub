@@ -2,6 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import prisma from '../lib/prisma'
 import { getTeamColor } from '../lib/teamColors'
+import dynamic from 'next/dynamic'
+
+const Snowfall = dynamic(() => import('../components/Snowfall'), { ssr: false })
 
 const clubMembers = [
   { 
@@ -242,81 +245,87 @@ export default async function Home() {
     betsSummary
   ]
 
+  const currentMonth = new Date().getMonth() + 1 // getMonth() returns 0-11
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <section className="mb-12">
-        <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
-        <p className="text-basic text-gray-600">
-          Here is always Sunday since 06.09.2012.
-        </p>
-      </section>
+    <>
+      {(currentMonth === 12 || currentMonth === 1) && <Snowfall />}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <section className="mb-12">
+          <h1 className="text-title font-bold mb-4">Welcome to Bearos Club</h1>
+          <p className="text-basic text-gray-600">
+            Here is always Sunday since 06.09.2012.
+          </p>
+        </section>
 
-      <section className="mb-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {clubMembers.map((member, index) => (
-            <div key={index} className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-              <Image
-                src={member.image}
-                alt={member.name}
-                width={200}
-                height={200}
-                className="rounded-full object-cover w-48 h-48 mb-4"
-              />
-              <h2 className="text-title font-semibold mb-2">{member.name}</h2>
-              <ul className="list-disc pl-5 text-sm text-gray-600">
-                {member.achievements.map((achievement, i) => (
-                  <li key={i}>{achievement}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {clubMembers.map((member, index) => (
+              <div key={index} className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  width={200}
+                  height={200}
+                  className="rounded-full object-cover w-48 h-48 mb-4"
+                />
+                <h2 className="text-title font-semibold mb-2">{member.name}</h2>
+                <ul className="list-disc pl-5 text-sm text-gray-600">
+                  {member.achievements.map((achievement, i) => (
+                    <li key={i}>{achievement}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <section className="mb-12">
-        <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {summaries.map((summary, index) => (
-            <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-              <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
-              <p className="text-gray-600 mb-4">{summary.content}</p>
-              <Link href={summary.link} className="text-blue-500 hover:underline">
-                View full {summary.title.split(' ')[0]} standings
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="mb-12">
+          <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {summaries.map((summary, index) => (
+              <div key={index} className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+                <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
+                <p className="text-gray-600 mb-4">{summary.content}</p>
+                <Link href={summary.link} className="text-blue-500 hover:underline">
+                  View full {summary.title.split(' ')[0]} standings
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <section className="mb-12">
-        <h2 className="text-title font-bold mb-6">History</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poker</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bets</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FPL</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GG</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {historyData.map((row, index) => (
-                <tr key={index} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 transition-colors duration-200`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.poker} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.bets} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fpl} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.gg} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} /></td>
+        <section className="mb-12">
+          <h2 className="text-title font-bold mb-6">History</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poker</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bets</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FPL</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GG</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {historyData.map((row, index) => (
+                  <tr key={index} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 transition-colors duration-200`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.poker} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.bets} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fpl} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.gg} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><UnderlinedPlayer name={row.fifa} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </>
   )
 }
+

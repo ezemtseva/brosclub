@@ -2,6 +2,7 @@ import Image from 'next/image'
 import DataTable from '../../components/DataTable'
 import ImageCarousel from '../../components/ImageCarousel'
 import prisma from '../../lib/prisma'
+import { updateFplData } from '../../lib/fplUtils'
 import dynamicImport from 'next/dynamic'
 
 const FplChart = dynamicImport(() => import('../../components/FplChart'), { ssr: false })
@@ -31,51 +32,6 @@ const players = [
   { name: 'Panda', teamId: '5663', color: '#4fcb90' },
 ]
 
-async function fetchFplData(teamId: string) {
-  const response = await fetch(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch FPL data for team ${teamId}`)
-  }
-  return response.json()
-}
-
-async function updateFplDataIfNeeded() {
-  for (const player of players) {
-    const fplData = await fetchFplData(player.teamId)
-    const latestEntry = fplData.current[fplData.current.length - 1]
-    
-    const dbEntry = await prisma.fplEntry.findFirst({
-      where: {
-        player: player.name,
-        week: latestEntry.event
-      }
-    })
-
-    if (!dbEntry || dbEntry.points < latestEntry.total_points) {
-      await prisma.fplEntry.upsert({
-        where: {
-          week_player: {
-            week: latestEntry.event,
-            player: player.name
-          }
-        },
-        update: {
-          points: latestEntry.total_points,
-          games: latestEntry.event,
-          teamId: player.teamId
-        },
-        create: {
-          player: player.name,
-          week: latestEntry.event,
-          points: latestEntry.total_points,
-          games: latestEntry.event,
-          teamId: player.teamId
-        }
-      })
-    }
-  }
-}
-
 async function getFplDataFromDb() {
   try {
     const fplEntries = await prisma.fplEntry.findMany({
@@ -99,8 +55,15 @@ async function getFplDataFromDb() {
 
 export default async function FPLPage() {
   try {
-    await updateFplDataIfNeeded()
+    console.log('Starting FPL data update...')
+    // Update FPL data from the official API
+    await updateFplData()
+    console.log('FPL data update completed')
+
+    // Fetch updated data from the database
+    console.log('Fetching updated data from database...')
     const playersData = await getFplDataFromDb()
+    console.log('Database data fetched:', playersData)
     
     const tableData: TableDataItem[] = playersData
       .map(player => {
@@ -140,7 +103,7 @@ export default async function FPLPage() {
     )
 
     const images = [
-      { src: "/imgs/fpl/fpl17.png", alt: "New FPL Season Highlight", caption: "Team of the week 17 - Panda with 110 points!"},
+      { src: "/imgs/fpl/fpl17.png", alt: "New FPL Season Highlight", caption: "Team of the week 17 - Panda with **110** points!" }, 
       { src: "/imgs/fpl/fpl16.png", alt: "New FPL Season Highlight", caption: "Team of the week 16 - Panda" }, 
       { src: "/imgs/fpl/fpl15.png", alt: "New FPL Season Highlight", caption: "Team of the week 15 - Choco" }, 
       { src: "/imgs/fpl/fpl14.png", alt: "New FPL Season Highlight", caption: "Team of the week 14 - Vanilla" }, 

@@ -10,9 +10,10 @@ interface Column {
 interface DataTableProps {
   columns: Column[]
   data: any[]
+  maxHeight?: string
 }
 
-export default function DataTable({ columns, data }: DataTableProps) {
+export default function DataTable({ columns, data, maxHeight = '400px' }: DataTableProps) {
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
 
   return (
@@ -21,7 +22,9 @@ export default function DataTable({ columns, data }: DataTableProps) {
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             {columns.map((column, index) => (
-              <th key={index} className="py-3 px-6 text-left">{column.header}</th>
+              <th key={index} className={`py-3 px-6 ${column.accessor === 'team' ? 'text-left' : 'text-center'}`}>
+                {column.header}
+              </th>
             ))}
           </tr>
         </thead>
@@ -37,7 +40,7 @@ export default function DataTable({ columns, data }: DataTableProps) {
               onMouseLeave={() => setHoveredRow(null)}
             >
               {columns.map((column, colIndex) => (
-                <td key={colIndex} className="py-3 px-6 text-left whitespace-nowrap">
+                <td key={colIndex} className={`py-3 px-6 ${column.accessor === 'team' ? 'text-left' : 'text-center'}`}>
                   {row[column.accessor]}
                 </td>
               ))}
@@ -48,3 +51,4 @@ export default function DataTable({ columns, data }: DataTableProps) {
     </div>
   )
 }
+

@@ -66,3 +66,29 @@
     @apply text-base;
   }
 }
+
+/* FIFA standings table styles */
+.fifa-standings-table {
+  max-height: 750px; /* Increased from 600px to show approximately 15 rows */
+  overflow-y: auto;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.fifa-standings-table::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.fifa-standings-table {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Ensure the header stays fixed */
+.fifa-standings-table thead {
+  position: sticky;
+  top: 0;
+  background-color: var(--background);
+  z-index: 1;
+}
+

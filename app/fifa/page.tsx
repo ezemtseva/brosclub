@@ -91,7 +91,9 @@ export default async function FIFAPage() {
       <h1 className="text-title font-bold mb-4">EA FC 25 Cup</h1>
       <p className="text-basic text-gray-600 mb-8">IX season of online friendlies matches. First ever cross-platform tournament.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
-      <DataTable columns={columns} data={data} />
+      <div className="fifa-standings-table">
+        <DataTable columns={columns} data={data} />
+      </div>
 
       <section className="mt-12">
         <h2 className="text-title font-bold mb-6">Highlights</h2>
@@ -102,3 +104,4 @@ export default async function FIFAPage() {
     </div>
   )
 }
+

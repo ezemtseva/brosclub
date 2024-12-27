@@ -1,153 +1,104 @@
 import Image from 'next/image'
 import DataTable from '../../components/DataTable'
-import ImageCarousel from '../../components/ImageCarousel'
 import prisma from '../../lib/prisma'
-import { updateFplData } from '../../lib/fplUtils'
-import dynamicImport from 'next/dynamic'
-
-const FplChart = dynamicImport(() => import('../../components/FplChart'), { ssr: false })
-
-export const dynamic = 'force-dynamic'
-
-type TableDataItem = {
-  position: number;
-  player: React.ReactNode;
-  games: number;
-  points: number;
-  difference: string;
-  hoverColor: string;
-};
+import VideoCarousel from '../../components/VideoCarousel'
 
 const columns = [
   { header: '#', accessor: 'position' },
-  { header: 'Bearo', accessor: 'player' },
-  { header: 'Games', accessor: 'games' },
-  { header: 'Points', accessor: 'points' },
-  { header: 'Difference', accessor: 'difference' },
+  { header: 'Team', accessor: 'team' },
+  { header: 'G', accessor: 'games' },
+  { header: 'W', accessor: 'wins' },
+  { header: 'D', accessor: 'draws' },
+  { header: 'L', accessor: 'losses' },
+  { header: 'GS', accessor: 'goalsScored' },
+  { header: 'GC', accessor: 'goalsConceded' },
+  { header: 'GD', accessor: 'goalDifference' },
+  { header: 'P', accessor: 'points' },
 ]
 
-const players = [
-  { name: 'Vanilla', teamId: '1546526', color: '#ea7878' },
-  { name: 'Choco', teamId: '3214199', color: '#4b98de' },
-  { name: 'Panda', teamId: '5663', color: '#4fcb90' },
-]
-
-async function getFplDataFromDb() {
-  try {
-    const fplEntries = await prisma.fplEntry.findMany({
-      orderBy: [
-        { player: 'asc' },
-        { week: 'asc' },
-      ],
-    })
-
-    const playerData = players.map(player => ({
-      ...player,
-      entries: fplEntries.filter(entry => entry.player === player.name),
-    }))
-
-    return playerData
-  } catch (error) {
-    console.error('Error fetching FPL data from database:', error)
-    throw error
-  }
+const teamColors = {
+  red: ['Liverpool', 'Bayern Munich', 'Inter', 'Bayer Leverkusen', 'Newcastle', 'AS Roma', 'Galatasaray', 'Sporting CP', 'SS Lazio', 'AS Monaco'],
+  blue: ['Chelsea', 'Manchester City', 'Barcelona', 'Tottenham', 'Milan', 'Aston Villa', 'Athletic Bilbao', 'Manchester United', 'Benfica', 'Olympique Lyonnais'],
+  green: ['Juventus', 'Real Madrid', 'Arsenal', 'Borussia Dortmund', 'PSG', 'Atletico Madrid', 'Napoli', 'RB Leipzig', 'Fenerbahçe', 'Al Hilal']
 }
 
-export default async function FPLPage() {
-  try {
-    // Update FPL data from the official API
-    await updateFplData()
-
-    // Fetch updated data from the database
-    const playersData = await getFplDataFromDb()
-    
-    const tableData: TableDataItem[] = playersData
-      .map(player => {
-        const lastEntry = player.entries[player.entries.length - 1]
-        return {
-          player: player.name,
-          games: lastEntry.games,
-          points: lastEntry.points,
-          color: player.color,
-        }
-      })
-      .sort((a, b) => b.points - a.points)
-      .map((entry, index, sortedData) => ({
-        position: index + 1,
-        player: (
-          <span className="relative">
-            {entry.player}
-            <span 
-              className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" 
-              style={{ backgroundColor: entry.color }}
-            />
-          </span>
-        ),
-        games: entry.games,
-        points: entry.points,
-        difference: index === 0 ? '-' : (sortedData[index - 1].points - entry.points).toString(),
-        hoverColor: entry.color,
-      }))
-
-    const chartData = playersData.flatMap(player => 
-      player.entries.map(entry => ({
-        player: player.name,
-        week: entry.week,
-        games: entry.games,
-        points: entry.points,
-      }))
-    )
-
-    const images = [
-      { src: "/imgs/fpl/fpl17.png", alt: "New FPL Season Highlight", caption: "Team of the week 17 - Panda with **110** points!" }, 
-      { src: "/imgs/fpl/fpl16.png", alt: "New FPL Season Highlight", caption: "Team of the week 16 - Panda" }, 
-      { src: "/imgs/fpl/fpl15.png", alt: "New FPL Season Highlight", caption: "Team of the week 15 - Choco" }, 
-      { src: "/imgs/fpl/fpl14.png", alt: "New FPL Season Highlight", caption: "Team of the week 14 - Vanilla" }, 
-      { src: "/imgs/fpl/fpl13.png", alt: "New FPL Season Highlight", caption: "Team of the week 13 - Choco" },     
-      { src: "/imgs/fpl/fpl12.png", alt: "New FPL Season Highlight", caption: "Team of the week 12 - Vanilla" },
-      { src: "/imgs/fpl/fpl11.png", alt: "New FPL Season Highlight", caption: "Team of the week 11 - Choco" },
-      { src: "/imgs/fpl/fpl10.png", alt: "New FPL Season Highlight", caption: "Team of the week 10 - Choco" },
-      { src: "/imgs/fpl/fpl4.png", alt: "New FPL Season Highlight", caption: "Team of the week 9 - Vanilla" },
-      { src: "/imgs/fpl/fpl2.png", alt: "New FPL Season Highlight", caption: "Team of the week 8 - Vanilla" },
-      { src: "/imgs/fpl/fpl1.png", alt: "Top team of the week", caption: "Team of the week 7 - Vanilla" },
-      { src: "/imgs/fpl/fpl3.png", alt: "FPL Placeholder", caption: "Team of the week 6 - Vanilla" },
-    ]
-
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">FPL Cup</h1>
-        <p className="text-base text-gray-600 mb-8">VII season of Fantasy Premier League.</p>
-        <h2 className="text-title font-bold mb-6">Standings</h2>
-        <DataTable columns={columns} data={tableData} />
-
-        <section className="mt-12">
-          <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-          <div className="w-full">
-            <FplChart entries={chartData} />
-          </div>
-        </section>
-
-        <section className="mt-12">
-          <h2 className="text-title font-bold mb-6">Highlights</h2>
-          <div className="px-12">
-            <ImageCarousel images={images} />
-          </div>
-        </section>
-      </div>
-    )
-  } catch (error) {
-    console.error('Error in FPLPage:', error)
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">FPL Cup</h1>
-        <p className="text-base text-gray-600 mb-8">VII season of Fantasy Premier League.</p>
-        <h2 className="text-title font-bold mb-4">Standings</h2>
-        <p className="text-red-500">Error loading FPL data. Please try again later.</p>
-        {process.env.NODE_ENV === 'development' && (
-          <p className="text-sm text-gray-500 mt-2">Error details: {(error as Error).message}</p>
-        )}
-      </div>
-    )
-  }
+const getTeamColor = (team: string) => {
+  if (teamColors.red.includes(team)) return '#ea7878'
+  if (teamColors.blue.includes(team)) return '#4b98de'
+  if (teamColors.green.includes(team)) return '#4fcb90'
+  return 'transparent'
 }
 
+async function getFifaData() {
+  const entries = await prisma.fifaEntry.findMany()
+  return entries.map(entry => ({
+    ...entry,
+    goalDifference: entry.goalsScored - entry.goalsConceded,
+    points: entry.wins * 3 + entry.draws,
+  })).sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+}
+
+export default async function FIFAPage() {
+  const fifaData = await getFifaData()
+
+  const data = fifaData.map((entry, index) => ({
+    position: index + 1,
+    team: (
+      <div className="flex items-center space-x-2">
+        <Image src={entry.logo} alt={entry.team} width={24} height={24} className="rounded-full" />
+        <span className="relative">
+          {entry.team}
+          <span 
+            className="absolute bottom-0 left-0 w-[0.85em] h-[2px]" 
+            style={{ backgroundColor: getTeamColor(entry.team) }}
+          />
+        </span>
+      </div>
+    ),
+    games: entry.games,
+    wins: entry.wins,
+    draws: entry.draws,
+    losses: entry.losses,
+    goalsScored: entry.goalsScored,
+    goalsConceded: entry.goalsConceded,
+    goalDifference: entry.goalDifference,
+    points: entry.points,
+    hoverColor: getTeamColor(entry.team),
+  }))
+
+  const highlights = [
+    { videoId: 'emHY6c2E2U0', title: 'Big ass goal!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: '5xjIm5-GyGI', title: 'Thats why we love FIFA, right?', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'CKwdP6IPrCw', title: 'Smooth operator Vlahović', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'LZt5vbBoAqY', title: 'Marata-Morata scissors!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'piylDb5uj3s', title: 'Flawless curve from Cherki', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: 's3g0RVD8OFg', title: 'Simple magic from Salah', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: '8Laa6qgNW_Q', title: 'Almiron right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: '0nhw_IeN-QM', title: 'Crazy long distance shot by Calabria', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 7' },
+    { videoId: 'stmM4vE4mJw', title: 'Wilson from the crossbar', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 6' },
+    { videoId: 'b3f66F0NDow', title: 'A rocket shot by Ramsey', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 6' },
+    { videoId: 'pXJHDQxF1IA', title: 'Gonçalves smooth finish', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 5' },
+    { videoId: 'OAWMDmaf9Bk', title: 'Musiala did it again', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
+    { videoId: 'yTEhQIjNgyM', title: 'Beautiful assist from Zaccagni', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
+    { videoId: 'qYX6R6ITVCQ', title: 'Musiala long shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 2' },
+    { videoId: 'MAdZDsPaeKI', title: 'Gyökeres scissors shot', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 1' },
+    { videoId: '6cDyxHRGFJg', title: 'Thuram scores out of the box', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 1' },
+    { videoId: 'G3DRPDA_xQk', title: 'Lautaro right in the nine', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 1' },
+  ]
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-title font-bold mb-4">EA FC 25 Cup</h1>
+      <p className="text-basic text-gray-600 mb-8">IX season of online friendlies matches. First ever cross-platform tournament.</p>
+      <h2 className="text-title font-bold mb-6">Standings</h2>
+      <DataTable columns={columns} data={data} />
+
+      <section className="mt-12">
+        <h2 className="text-title font-bold mb-6">Highlights</h2>
+        <div className="px-12">
+          <VideoCarousel videos={highlights} />
+        </div>
+      </section>
+    </div>
+  )
+}

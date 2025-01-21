@@ -67,7 +67,10 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
-    { videoId: 'emHY6c2E2U0', title: 'Big ass goal!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
+    { videoId: 'Wmej-0Stsjs', title: 'Brilliant pass!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 12' },
+    { videoId: 'gSMHK41YwrI', title: 'Crazy scissors right to the 9', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 11' },
+    { videoId: 'IJye7gKwcvo', title: 'What a header!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 11' },
+    { videoId: 'emHY6c2E2U0', title: 'Big ass goal', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
     { videoId: '5xjIm5-GyGI', title: 'Thats why we love FIFA, right?', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
     { videoId: 'CKwdP6IPrCw', title: 'Smooth operator Vlahović', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },
     { videoId: 'LZt5vbBoAqY', title: 'Marata-Morata scissors!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 9' },

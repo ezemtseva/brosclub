@@ -41,7 +41,8 @@ const sections = [
   {
     title: "FPL",
     records: [
-      <><UnderlinedPlayer name="Panda" /> holds the record for the most points in a season – 2,511, 2023/24</>,
+      <><UnderlinedPlayer name="Panda" /> holds the record for the most points in a season – 2,511, 2023/24 </>,
+      <><UnderlinedPlayer name="Panda" /> held first place for 25 consecutive rounds, 2022/23 <strong>✯</strong> </>,
       <><UnderlinedPlayer name="Choco" /> scored the most points in a round with a boost – 141, 2021/22</>,
       <><UnderlinedPlayer name="Vanilla" /> scored the most points in a round without boosts – 131, 2022/23</>,
       "The smallest gap between 1st and 2nd place was 23 points, 2021/22",
@@ -52,6 +53,7 @@ const sections = [
     title: "Bets",
     records: [
       <><UnderlinedPlayer name="Choco" /> scored the most points in a season – 299, 2023/24</>,
+      <><UnderlinedPlayer name="Panda" /> held first place for 38 consecutive rounds (whole season), 2022/23 <strong>✯</strong> </>,
       <><UnderlinedPlayer name="Panda" /> and <UnderlinedPlayer name="Vanilla" /> won the betting cup three times in a row – 2012-14, 2020-23, and 2015-18</>,
       <><UnderlinedPlayer name="Vanilla" /> scored the most points in a round – 17/30 (56.67%), 2021</>,
       "The smallest gap between 1st and 2nd place was 4 points, 2019",
@@ -62,9 +64,10 @@ const sections = [
   {
     title: "Geo Guessr",
     records: [
-      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa), 2024/25</>,
-      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa), 2024/25</>,
-      <><UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25</>
+      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa), 2024/25 <strong>✯</strong> </>,
+      <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong> </>,
+      <><UnderlinedPlayer name="Vanilla" /> struck the most 5K's in a season - 9, 2024/25 <strong>✯</strong> </>,
+      <><UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25 <strong>✯</strong> </>
     ]
   },
   {
@@ -75,11 +78,11 @@ const sections = [
       "The longest poker game lasted 1 hour and 41 minutes, 2015",
       "The smallest gap between 1st and 2nd place was 1 point, 2012",
       "The largest gap was 16 points, 2017",
-      <><UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 5 games, 10th season, 2025</>,
+      <><UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 5 games, 10th season, 2025 <strong>✯</strong> </>,
       <><UnderlinedPlayer name="Choco" /> was the first player to get a straight flush and four aces</>,
       <><UnderlinedPlayer name="Vanilla" /> was the first player to get a six- and seven-card straight flush</>,
       <><UnderlinedPlayer name="Panda" /> was the first and only player to get a royal flush (hearts)</>,
-      <><UnderlinedPlayer name="Panda" /> was the first and only player to get second royal flush (again hearts), 2025</>
+      <><UnderlinedPlayer name="Panda" /> was the first and only player to get second royal flush (again hearts), 2025 <strong>✯</strong> </>
     ]
   }
 ]

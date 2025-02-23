@@ -75,7 +75,7 @@ const sections = [
       "The longest poker game lasted 1 hour and 41 minutes, 2015",
       "The smallest gap between 1st and 2nd place was 1 point, 2012",
       "The largest gap was 16 points, 2017",
-      <><UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 4 games, 5th season, 2016</>,
+      <><UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 5 games, 10th season, 2025</>,
       <><UnderlinedPlayer name="Choco" /> was the first player to get a straight flush and four aces</>,
       <><UnderlinedPlayer name="Vanilla" /> was the first player to get a six- and seven-card straight flush</>,
       <><UnderlinedPlayer name="Panda" /> was the first and only player to get a royal flush (hearts)</>,

@@ -67,6 +67,8 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'mOg5XlIHeUo', title: 'Surprise-surprise from Timo Werner', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 15' },
+    { videoId: 'szr6l12D6es', title: 'Magic from Liverpool', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 14' },
     { videoId: 'Wmej-0Stsjs', title: 'Brilliant pass!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 12' },
     { videoId: 'gSMHK41YwrI', title: 'Crazy scissors right to the 9', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 11' },
     { videoId: 'IJye7gKwcvo', title: 'What a header!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 11' },

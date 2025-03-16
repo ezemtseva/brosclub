@@ -67,6 +67,11 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'oXzSTLHYQ3w', title: 'Smooth operator Isak', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
+    { videoId: '0JiK73BRZAo', title: 'Crazy corner finish from Jota', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
+    { videoId: 'X04yK_xIiAA', title: 'Deja-vue goal from Szoboszlai', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
+    { videoId: 'TQm9V-hoVbg', title: 'Beauty from Openga', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 16' },
+    { videoId: 'O6ZMEraVZKM', title: 'Van de Ven scissirs', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 16' },
     { videoId: 'mOg5XlIHeUo', title: 'Surprise-surprise from Timo Werner', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 15' },
     { videoId: 'szr6l12D6es', title: 'Magic from Liverpool', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 14' },
     { videoId: 'Wmej-0Stsjs', title: 'Brilliant pass!', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 12' },

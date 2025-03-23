@@ -66,7 +66,7 @@ const sections = [
     records: [
       <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa), 2024/25 <strong>✯</strong> </>,
       <><UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong> </>,
-      <><UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 9, 2024/25 <strong>✯</strong> </>,
+      <><UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 10, 2024/25 <strong>✯</strong> </>,
       <><UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25 <strong>✯</strong> </>
     ]
   },

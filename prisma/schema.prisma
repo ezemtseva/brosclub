@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model FplEntry {
@@ -38,7 +38,7 @@ model BetsEntry {
   week      Int
   player    String
   games     Int
-  wins      Int      // New column
+  wins      Int
   points    Int
   createdAt DateTime @default(now())
 
@@ -57,16 +57,28 @@ model PokerEntry {
   @@unique([week, bearo])
 }
 
+model SevenOkerEntry {
+  id        Int      @id @default(autoincrement())
+  week      Int
+  bearo     String
+  games     Int
+  wins      Int
+  points    Int
+  createdAt DateTime @default(now())
+
+  @@unique([week, bearo])
+}
+
 model FifaEntry {
-  id             Int      @id @default(autoincrement())
-  team           String   @unique
-  logo           String
-  games          Int
-  wins           Int
-  draws          Int
-  losses         Int
-  goalsScored    Int
-  goalsConceded  Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  team          String   @unique
+  logo          String
+  games         Int
+  wins          Int
+  draws         Int
+  losses        Int
+  goalsScored   Int
+  goalsConceded Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

@@ -2,6 +2,7 @@ import DataTable from "../../components/DataTable"
 import prisma from "../../lib/prisma"
 import dynamic from "next/dynamic"
 import ImageCarousel from "../../components/ImageCarousel"
+import Link from "next/link"
 
 const SevenOkerChart = dynamic(() => import("../../components/SevenOkerChart"), { ssr: false })
 const PieChart = dynamic(() => import("../../components/PieChart"), { ssr: false })
@@ -113,14 +114,23 @@ export default async function SevenOkerPage() {
     color: playerColors[entry.bearo as keyof typeof playerColors],
   }))
 
-  const images = [
-    { src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" },
-  ]
+  const images = [{ src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" }]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
-      <p className="text-base text-gray-600 mb-8">First season of 7-card poker variant with special rules.</p>
+      <p className="text-base text-gray-600 mb-8">
+        First ever season of our local homemade game.{" "}
+        <Link
+          href="https://bearos-poker.vercel.app/"
+          className="text-blue-500 hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Try it now
+        </Link>
+        !
+      </p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={data} />
 

@@ -32,19 +32,19 @@ const playerColors = {
 }
 
 const historyData = [
-  { year: "2023/24", poker: "-", bets: "Choco", fpl: "Panda", gg: "-", fifa: "Vanilla" },
-  { year: "2022/23", poker: "-", bets: "Panda", fpl: "Panda", gg: "-", fifa: "Choco" },
-  { year: "2021/22", poker: "-", bets: "Panda", fpl: "Vanilla", gg: "-", fifa: "Vanilla" },
-  { year: "2020/21", poker: "-", bets: "Panda", fpl: "Panda", gg: "-", fifa: "Vanilla" },
-  { year: "2019/20", poker: "Panda", bets: "Choco", fpl: "Vanilla", gg: "-", fifa: "Vanilla" },
-  { year: "2019", poker: "DNF", bets: "-", fpl: "Panda", gg: "-", fifa: "-" },
-  { year: "2018", poker: "Panda", bets: "-", fpl: "Vanilla", gg: "-", fifa: "DNF" },
-  { year: "2017", poker: "Panda", bets: "Vanilla", fpl: "-", gg: "-", fifa: "Vanilla" },
-  { year: "2016", poker: "Panda", bets: "Vanilla", fpl: "-", gg: "-", fifa: "Choco" },
-  { year: "2015", poker: "Panda", bets: "Vanilla", fpl: "-", gg: "-", fifa: "-" },
-  { year: "2014", poker: "Panda", bets: "Panda", fpl: "-", gg: "-", fifa: "-" },
-  { year: "2013", poker: "Panda", bets: "Panda", fpl: "-", gg: "-", fifa: "-" },
-  { year: "2012", poker: "DSQ", bets: "Panda", fpl: "-", gg: "-", fifa: "-" },
+  { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2020/21", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2019/20", fifa: "Vanilla", fpl: "Vanilla", bets: "Choco", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2019", fifa: "-", fpl: "Panda", bets: "-", poker: "DNF", sevenOker: "-", gg: "-" },
+  { year: "2018", fifa: "DNF", fpl: "Vanilla", bets: "-", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2017", fifa: "Vanilla", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2016", fifa: "Choco", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2015", fifa: "-", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2014", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2013", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-", gg: "-" },
+  { year: "2012", fifa: "-", fpl: "-", bets: "Panda", poker: "DSQ", sevenOker: "-", gg: "-" },
 ]
 
 async function getLatestFplLeader() {
@@ -107,6 +107,31 @@ async function getLatestPokerLeader() {
     return leader
   } catch (error) {
     console.error("Error fetching Poker leader:", error)
+    return null
+  }
+}
+
+async function getLatest7okerLeader() {
+  try {
+    // Use dynamic property access to avoid TypeScript errors
+    const modelName = "sevenOkerEntry"
+
+    const latestWeek = await (prisma as any)[modelName].findFirst({
+      orderBy: { week: "desc" },
+      select: { week: true },
+    })
+
+    if (!latestWeek) return null
+
+    const leader = await (prisma as any)[modelName].findFirst({
+      where: { week: latestWeek.week },
+      orderBy: { points: "desc" },
+      select: { bearo: true, points: true },
+    })
+
+    return leader
+  } catch (error) {
+    console.error("Error fetching 7oker leader:", error)
     return null
   }
 }
@@ -177,70 +202,89 @@ export default async function Home() {
   const fplLeader = await getLatestFplLeader()
   const ggLeader = await getLatestGgLeader()
   const pokerLeader = await getLatestPokerLeader()
+  const sevenOkerLeader = await getLatest7okerLeader()
   const betsLeader = await getLatestBetsLeader()
   const fifaLeader = await getLatestFifaLeader()
 
   const fplSummary = {
     title: "FPL",
-    content: fplLeader ? (
-      <>
-        Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
-      </>
-    ) : (
-      "No FPL data available"
-    ),
+    content:
+      fplLeader && fplLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/fpl",
   }
 
   const ggSummary = {
     title: "GeoGuessr",
-    content: ggLeader ? (
-      <>
-        Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
-      </>
-    ) : (
-      "No GG data available"
-    ),
+    content:
+      ggLeader && ggLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/gg",
   }
 
   const holdemSummary = {
     title: "Holdem",
-    content: pokerLeader ? (
-      <>
-        Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
-      </>
-    ) : (
-      "No Holdem data available"
-    ),
+    content:
+      pokerLeader && pokerLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/poker",
+  }
+
+  const sevenOkerSummary = {
+    title: "7oker",
+    content:
+      sevenOkerLeader && sevenOkerLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> with {sevenOkerLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
+    link: "/7oker",
   }
 
   const betsSummary = {
     title: "Bets",
-    content: betsLeader ? (
-      <>
-        Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
-      </>
-    ) : (
-      "No Bets data available"
-    ),
+    content:
+      betsLeader && betsLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/bets",
   }
 
   const fifaSummary = {
     title: "FIFA",
-    content: fifaLeader ? (
-      <>
-        Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
-      </>
-    ) : (
-      "No FIFA data available"
-    ),
+    content:
+      fifaLeader && fifaLeader.points > 0 ? (
+        <>
+          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/fifa",
   }
 
-  const summaries = [fifaSummary, fplSummary, ggSummary, holdemSummary, betsSummary]
+  const summaries = [fifaSummary, fplSummary, betsSummary, holdemSummary, sevenOkerSummary, ggSummary]
 
   const currentMonth = new Date().getMonth() + 1 // getMonth() returns 0-11
 
@@ -309,18 +353,21 @@ export default async function Home() {
                     Year
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Holdem
+                    FIFA
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    FPL
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Bets
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    FPL
+                    Holdem
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    7oker
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GG</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    FIFA
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -331,19 +378,22 @@ export default async function Home() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.poker} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.bets} />
+                      <UnderlinedPlayer name={row.fifa} isFifaTeam={true} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <UnderlinedPlayer name={row.fpl} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.gg} />
+                      <UnderlinedPlayer name={row.bets} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.fifa} />
+                      <UnderlinedPlayer name={row.poker} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <UnderlinedPlayer name={row.sevenOker} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <UnderlinedPlayer name={row.gg} />
                     </td>
                   </tr>
                 ))}

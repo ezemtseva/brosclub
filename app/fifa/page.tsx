@@ -67,6 +67,7 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: 'tw18MAFGJ4E', title: 'Wiiiiii from Weeeeaaaah', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
     { videoId: 'oXzSTLHYQ3w', title: 'Smooth operator Isak', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
     { videoId: '0JiK73BRZAo', title: 'Crazy corner finish from Jota', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
     { videoId: 'X04yK_xIiAA', title: 'Deja-vue goal from Szoboszlai', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },

@@ -4,10 +4,13 @@ import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 type SevenOkerEntry = {
+  id?: number
   bearo: string
   week: number
   games: number
+  wins: number
   points: number
+  createdAt?: Date
 }
 
 type ChartDataPoint = {
@@ -58,7 +61,8 @@ export default function SevenOkerChart({ entries }: SevenOkerChartProps) {
       return acc
     }, {})
 
-    const maxGames = Math.min(50, Math.max(...entries.map((entry) => entry.games)))
+    // Limit to 10 games for x-axis
+    const maxGames = entries.length > 0 ? Math.min(10, Math.max(...entries.map((entry) => entry.games))) : 0
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
       const gameNumber = i + 1
@@ -80,14 +84,8 @@ export default function SevenOkerChart({ entries }: SevenOkerChartProps) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="games" type="number" domain={[1, 50]} ticks={Array.from({ length: 50 }, (_, i) => i + 1)} />
-          <YAxis
-            type="number"
-            domain={[0, 80]}
-            ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]}
-            interval={0}
-            width={40}
-          />
+          <XAxis dataKey="games" type="number" domain={[1, 10]} ticks={Array.from({ length: 10 }, (_, i) => i + 1)} />
+          <YAxis type="number" domain={[0, 30]} ticks={[0, 5, 10, 15, 20, 25, 30]} interval={0} width={40} />
           <Tooltip content={<CustomTooltip />} />
           <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />
           <Line type="monotone" dataKey="Choco" stroke="#4b98de" activeDot={{ r: 8 }} connectNulls />

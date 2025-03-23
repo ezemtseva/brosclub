@@ -71,6 +71,7 @@ export default async function GGPage() {
   }))
 
   const images = [
+    { src: "/imgs/gg/5k10.jpg", alt: "Third 5K of the season", caption: "10th 5k in the season for Vanilla - Malta" }, 
     { src: "/imgs/gg/5k9.jpg", alt: "Third 5K of the season", caption: "When you're really proud of your 5k in Pompei" }, 
     { src: "/imgs/gg/5k8.jpg", alt: "Third 5K of the season", caption: "5k in Jordan for Vanilla" }, 
     { src: "/imgs/gg/5k7.jpg", alt: "Third 5K of the season", caption: "Boring 5k in Monaco" }, 

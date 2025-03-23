@@ -114,9 +114,7 @@ export default async function SevenOkerPage() {
   }))
 
   const images = [
-    { src: "/imgs/poker/poker15.jpg", alt: "7oker Season Highlight", caption: "First 7oker tournament" },
-    { src: "/imgs/poker/poker14.jpg", alt: "7oker Season Highlight", caption: "Amazing hand in 7oker" },
-    { src: "/imgs/poker/poker13.jpg", alt: "7oker Season Highlight", caption: "7oker championship finals" },
+    { src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" },
   ]
 
   return (

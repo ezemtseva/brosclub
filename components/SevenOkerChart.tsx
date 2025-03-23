@@ -4,13 +4,10 @@ import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 type SevenOkerEntry = {
-  id?: number
   bearo: string
   week: number
   games: number
-  wins: number
   points: number
-  createdAt?: Date
 }
 
 type ChartDataPoint = {
@@ -61,7 +58,7 @@ export default function SevenOkerChart({ entries }: SevenOkerChartProps) {
       return acc
     }, {})
 
-    const maxGames = entries.length > 0 ? Math.min(50, Math.max(...entries.map((entry) => entry.games))) : 0
+    const maxGames = Math.min(50, Math.max(...entries.map((entry) => entry.games)))
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
       const gameNumber = i + 1
@@ -83,12 +80,7 @@ export default function SevenOkerChart({ entries }: SevenOkerChartProps) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="games"
-            type="number"
-            domain={[1, 50]}
-            ticks={Array.from({ length: Math.min(50, chartData.length) }, (_, i) => i + 1)}
-          />
+          <XAxis dataKey="games" type="number" domain={[1, 50]} ticks={Array.from({ length: 50 }, (_, i) => i + 1)} />
           <YAxis
             type="number"
             domain={[0, 80]}

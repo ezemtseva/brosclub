@@ -86,7 +86,7 @@ export default async function PokerPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Poker Cup</h1>
-      <p className="text-base text-gray-600  mb-8">X anniversary season of Texas Hold'em poker is back  after a long 4-year pause.</p>
+      <p className="text-base text-gray-600  mb-8">X anniversary season of Texas Holdem poker is back  after a long 4 year pause.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={data} />
 

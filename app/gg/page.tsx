@@ -87,7 +87,7 @@ export default async function GGPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">GeoGuessr Cup</h1>
-      <p className="text-base text-gray-600 mb-8">First ever season! Move, no move and frozen rounds in a row.</p>
+      <p className="text-base text-gray-600 mb-8">The first ever season! Move, no move and frozen rounds in a row.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={tableData} />
 

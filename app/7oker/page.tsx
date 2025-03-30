@@ -114,13 +114,16 @@ export default async function SevenOkerPage() {
     color: playerColors[entry.bearo as keyof typeof playerColors],
   }))
 
-  const images = [{ src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" }]
+  const images = [
+    { src: "/imgs/7oker/first_official_game.jpeg", alt: "7oker Season Highlight", caption: "The first season has begun!" },
+    { src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" }
+  ]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        First ever season of our local homemade game.{" "}
+        The first ever season of our local homemade game.{" "}
         <Link
           href="https://bearos-poker.vercel.app/"
           className="text-blue-500 hover:underline"

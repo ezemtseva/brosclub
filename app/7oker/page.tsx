@@ -15,6 +15,7 @@ const columns = [
   { header: "P", accessor: "points" },
   { header: "PD", accessor: "pointsDifference" },
   { header: "GP", accessor: "gamepoints" },
+  { header: "GPD", accessor: "gamepointsDifference" },
   { header: "W%", accessor: "winPercentage" },
 ]
 
@@ -107,6 +108,7 @@ export default async function SevenOkerPage() {
       points: entry.points,
       pointsDifference: index === 0 ? "-" : (arr[index - 1].points - entry.points).toString(),
       gamepoints: entry.gamepoints || 0,
+      gamepointsDifference: index === 0 ? "-" : ((arr[index - 1].gamepoints || 0) - (entry.gamepoints || 0)).toString(),
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))

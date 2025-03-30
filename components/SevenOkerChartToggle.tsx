@@ -14,7 +14,7 @@ type SevenOkerEntry = {
   wins: number
   points: number
   gamepoints?: number
-  createdAt?: Date
+  createdAt?: string | null
 }
 
 type SevenOkerChartToggleProps = {
@@ -27,12 +27,12 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-title font-bold">Weekly progress</h2>
-        <div className="flex space-x-2 bg-gray-100 rounded-lg p-1">
+      <div className="flex items-center mb-6">
+        <h2 className="text-title font-bold mr-4">Weekly progress</h2>
+        <div className="flex space-x-2 rounded-lg p-1">
           <button
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "points" ? "bg-white shadow-sm" : "text-gray-600 hover:bg-gray-200"
+              chartView === "points" ? "bg-gray-500/50" : "text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() => setChartView("points")}
           >
@@ -40,7 +40,7 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
           </button>
           <button
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "gamepoints" ? "bg-white shadow-sm" : "text-gray-600 hover:bg-gray-200"
+              chartView === "gamepoints" ? "bg-gray-500/50" : "text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() => setChartView("gamepoints")}
           >

@@ -1,13 +1,8 @@
-"use client"
-
-import { useState } from "react"
 import DataTable from "../../components/DataTable"
-import dynamic from "next/dynamic"
+import prisma from "../../lib/prisma"
 import ImageCarousel from "../../components/ImageCarousel"
 import Link from "next/link"
-
-const SevenOkerChart = dynamic(() => import("../../components/SevenOkerChart"), { ssr: false })
-const PieChart = dynamic(() => import("../../components/PieChart"), { ssr: false })
+import SevenOkerChartToggle from "../../components/SevenOkerChartToggle"
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -39,28 +34,42 @@ type SevenOkerEntry = {
   createdAt?: Date
 }
 
-// This is a client component, so we can't use Prisma directly
-// Instead, we'll use hardcoded sample data
-const sampleData: SevenOkerEntry[] = [
-  { week: 1, bearo: "Vanilla", games: 5, wins: 2, points: 10, gamepoints: 25 },
-  { week: 1, bearo: "Choco", games: 5, wins: 1, points: 5, gamepoints: 18 },
-  { week: 1, bearo: "Panda", games: 5, wins: 2, points: 12, gamepoints: 30 },
-  { week: 2, bearo: "Vanilla", games: 10, wins: 4, points: 20, gamepoints: 45 },
-  { week: 2, bearo: "Choco", games: 10, wins: 3, points: 15, gamepoints: 35 },
-  { week: 2, bearo: "Panda", games: 10, wins: 3, points: 18, gamepoints: 40 },
-]
+async function get7okerData() {
+  try {
+    // Use the exact model name from your schema.prisma file
+    const modelName = "sevenOkerEntry" // Change this to match your schema
 
-export default function SevenOkerPage() {
-  const [chartView, setChartView] = useState<"points" | "gamepoints">("points")
+    // Check if the model exists using dynamic property access
+    if (!(prisma as any)[modelName]) {
+      console.error("Database model not found. Check your schema.prisma file.")
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
 
-  // Use the sample data
-  const entries = sampleData
-  const latestWeek = Math.max(...entries.map((entry) => entry.week))
-  const latestEntries = entries.filter((entry) => entry.week === latestWeek)
+    const entries = (await (prisma as any)[modelName].findMany({
+      orderBy: [{ week: "asc" }, { bearo: "asc" }],
+    })) as SevenOkerEntry[]
+
+    // If no entries exist yet, return empty arrays
+    if (entries.length === 0) {
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
+
+    const latestWeek = Math.max(...entries.map((entry) => entry.week))
+    const latestEntries = entries.filter((entry: SevenOkerEntry) => entry.week === latestWeek)
+
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching 7oker data:", error)
+    return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+  }
+}
+
+export default async function SevenOkerPage() {
+  const { entries, latestEntries } = await get7okerData()
 
   const tableData = latestEntries
-    .sort((a, b) => b.points - a.points)
-    .map((entry, index, arr) => ({
+    .sort((a: SevenOkerEntry, b: SevenOkerEntry) => b.points - a.points)
+    .map((entry: SevenOkerEntry, index: number, arr: SevenOkerEntry[]) => ({
       position: index + 1,
       bearo: (
         <span className="relative">
@@ -81,10 +90,16 @@ export default function SevenOkerPage() {
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
 
-  const pieChartData = latestEntries.map((entry) => ({
+  const pieChartData = latestEntries.map((entry: SevenOkerEntry) => ({
     name: entry.bearo,
     value: entry.wins,
     color: playerColors[entry.bearo as keyof typeof playerColors],
+  }))
+
+  // Serialize the entries for the client component
+  const serializedEntries = entries.map((entry) => ({
+    ...entry,
+    createdAt: entry.createdAt ? entry.createdAt.toISOString() : null,
   }))
 
   const images = [
@@ -116,35 +131,7 @@ export default function SevenOkerPage() {
       <DataTable columns={columns} data={tableData} />
 
       <section className="mt-12">
-        <div className="flex items-center mb-6">
-          <h2 className="text-title font-bold mr-4">Weekly progress</h2>
-          <div className="flex space-x-2 rounded-lg p-1">
-            <button
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                chartView === "points" ? "bg-gray-100" : "text-gray-600 hover:bg-gray-200"
-              }`}
-              onClick={() => setChartView("points")}
-            >
-              Points per Win
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                chartView === "gamepoints" ? "bg-gray-100" : "text-gray-600 hover:bg-gray-200"
-              }`}
-              onClick={() => setChartView("gamepoints")}
-            >
-              Points per Game
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-2/3">
-            <SevenOkerChart entries={entries} dataKey={chartView} />
-          </div>
-          <div className="w-full md:w-1/3">
-            <PieChart data={pieChartData} />
-          </div>
-        </div>
+        <SevenOkerChartToggle entries={serializedEntries} pieChartData={pieChartData} />
       </section>
 
       <section className="mt-12">

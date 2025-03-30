@@ -11,7 +11,7 @@ type SevenOkerEntry = {
   wins: number
   points: number
   gamepoints?: number
-  createdAt?: Date
+  createdAt?: string | null
 }
 
 type ChartDataPoint = {

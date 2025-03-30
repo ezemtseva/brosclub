@@ -32,7 +32,7 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
         <div className="flex space-x-2 rounded-lg p-1">
           <button
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "points" ? "bg-gray-500/50" : "text-gray-600 hover:bg-gray-200"
+              chartView === "points" ? "bg-gray-200" : "text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() => setChartView("points")}
           >
@@ -40,7 +40,7 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
           </button>
           <button
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "gamepoints" ? "bg-gray-500/50" : "text-gray-600 hover:bg-gray-200"
+              chartView === "gamepoints" ? "bg-gray-200" : "text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() => setChartView("gamepoints")}
           >

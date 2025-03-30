@@ -64,6 +64,7 @@ model SevenOkerEntry {
   games     Int
   wins      Int
   points    Int
+  gamepoints Int     @default(0)
   createdAt DateTime @default(now())
 
   @@unique([week, bearo])
@@ -82,3 +83,4 @@ model FifaEntry {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+

@@ -14,6 +14,7 @@ const columns = [
   { header: "W", accessor: "wins" },
   { header: "P", accessor: "points" },
   { header: "PD", accessor: "pointsDifference" },
+  { header: "GP", accessor: "gamepoints" },
   { header: "W%", accessor: "winPercentage" },
 ]
 
@@ -31,6 +32,7 @@ type SevenOkerEntry = {
   games: number
   wins: number
   points: number
+  gamepoints?: number
   createdAt?: Date
 }
 
@@ -104,6 +106,7 @@ export default async function SevenOkerPage() {
       wins: entry.wins,
       points: entry.points,
       pointsDifference: index === 0 ? "-" : (arr[index - 1].points - entry.points).toString(),
+      gamepoints: entry.gamepoints || 0,
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
@@ -115,15 +118,20 @@ export default async function SevenOkerPage() {
   }))
 
   const images = [
-    { src: "/imgs/7oker/first_official_game.jpeg", alt: "7oker Season Highlight", caption: "The first season has begun!" },
-    { src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" }
+    {
+      src: "/imgs/7oker/first_official_game.jpeg",
+      alt: "7oker Season Highlight",
+      caption: "The first season has begun!",
+    },
+    { src: "/imgs/7oker/first_game.jpeg", alt: "7oker Season Highlight", caption: "First ever game!" },
   ]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        The first ever season of our local homemade game. 7oker is a strategic trick-taking card game with trick-betting system, open and blind rounds, unique rules and special cards power. {" "}
+        The first ever season of our local homemade game. 7oker is a strategic trick-taking card game with trick-betting
+        system, open and blind rounds, unique rules and special cards power.{" "}
         <Link
           href="https://bearos-poker.vercel.app/"
           className="text-blue-500 hover:underline"

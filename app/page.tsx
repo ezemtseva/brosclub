@@ -4,6 +4,7 @@ import prisma from "../lib/prisma"
 import { getTeamColor } from "../lib/teamColors"
 import dynamic from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
+import FlippableCard from "../components/FlippableCard"
 
 const Snowfall = dynamic(() => import("../components/Snowfall"), { ssr: false })
 
@@ -12,19 +13,19 @@ const clubMembers = [
     name: "Vanilla",
     image: "/imgs/vanilla.png",
     achievements: ["x5 FIFA cups", "x3 FPL cups", "x3 BETS cups"],
-    bgColor: "bg-red-100",
+    bgColor: "bg-red-50",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
     achievements: ["x2 FIFA cups", "x2 FPL cups", "x1 BETS cups"],
-    bgColor: "bg-blue-100",
+    bgColor: "bg-blue-50",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["x7 HOLDEM cups", "x4 FPL cups", "x6 BETS cups"],
-    bgColor: "bg-green-100",
+    achievements: ["x7 HOLDEM cups", "x6 BETS cups", "x4 FPL cups"],
+    bgColor: "bg-green-50",
   },
 ]
 
@@ -306,23 +307,40 @@ export default async function Home() {
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {clubMembers.map((member, index) => (
-              <div
-                key={index}
-                className={`${member.bgColor} shadow-md rounded-lg p-6 flex flex-col items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105`}
-              >
-                <Image
-                  src={member.image || "/placeholder.svg"}
-                  alt={member.name}
-                  width={200}
-                  height={200}
-                  className="rounded-full object-cover w-48 h-48 mb-4"
+              <div key={index} className="h-[300px]">
+                <FlippableCard
+                  bgColor={member.bgColor}
+                  frontContent={
+                    <div className="flex flex-col justify-between h-full w-full">
+                      <div className="flex flex-col items-center">
+                        <Image
+                          src={member.image || "/placeholder.svg"}
+                          alt={member.name}
+                          width={200}
+                          height={200}
+                          className="rounded-full object-cover w-48 h-48"
+                        />
+                      </div>
+                      <div className="flex flex-col items-center mt-auto">
+                        <h2 className="text-title font-semibold mb-2">{member.name}</h2>
+                        <p className="text-sm text-gray-300 italic">Click to see achievements</p>
+                      </div>
+                    </div>
+                  }
+                  backContent={
+                    <>
+                      <h2 className="text-xl font-semibold mb-6">{member.name}'s Achievements:</h2>
+                      <ul className="list-disc pl-5 text-sm text-gray-600">
+                        {member.achievements.map((achievement, i) => (
+                          <li key={i} className="mb-2 text-base">
+                            {achievement}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-sm text-gray-400 mt-6 italic">Click to flip back</p>
+                    </>
+                  }
                 />
-                <h2 className="text-title font-semibold mb-2">{member.name}</h2>
-                <ul className="list-disc pl-5 text-sm text-gray-600">
-                  {member.achievements.map((achievement, i) => (
-                    <li key={i}>{achievement}</li>
-                  ))}
-                </ul>
               </div>
             ))}
           </div>
@@ -339,7 +357,7 @@ export default async function Home() {
                 <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
                 <p className="text-gray-600 mb-4">{summary.content}</p>
                 <Link href={summary.link} className="text-blue-500 hover:underline">
-                  View full {summary.title.split(" ")[0]} standings
+                  View full standings
                 </Link>
               </div>
             ))}

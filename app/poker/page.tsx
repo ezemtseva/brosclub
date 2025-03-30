@@ -67,7 +67,7 @@ export default async function PokerPage() {
   }))
 
   const images = [
-    { src: "/imgs/poker/poker15.jpg", alt: "Poker Season Highlight - Full House", caption: "Straight Flush in the next rount - just wow!" },
+    { src: "/imgs/poker/poker15.jpg", alt: "Poker Season Highlight - Full House", caption: "Straight Flush in the next round - just wow!" },
     { src: "/imgs/poker/poker14.jpg", alt: "Poker Season Highlight - Full House", caption: "✯ First Royal Flush in the new era for Panda ✯" },
     { src: "/imgs/poker/poker13.jpg", alt: "Poker Season Highlight - Full House", caption: "Never mess with Panda!" },
     { src: "/imgs/poker/poker12.jpg", alt: "Poker Season Highlight - Full House", caption: "Classic Vanilla.." },
@@ -86,7 +86,7 @@ export default async function PokerPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Poker Cup</h1>
-      <p className="text-base text-gray-600  mb-8">X anniversary season of texas holdem poker after long 4 years pause.</p>
+      <p className="text-base text-gray-600  mb-8">X anniversary season of Texas Hold'em poker is back  after a long 4-year pause.</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <DataTable columns={columns} data={data} />
 

@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation"
 const mainNavItems = [
   { href: "/fifa", label: "FIFA" },
   { href: "/fpl", label: "FPL" },
-  { href: "/bets", label: "Bets" },
-  { href: "/poker", label: "Holdem" },
-  { href: "/7oker", label: "7oker" },
+  { href: "/bets", label: "BETS" },
+  { href: "/poker", label: "HOLDEM" },
+  { href: "/7oker", label: "7OKER" },
   { href: "/gg", label: "GG" },
 ]
 
@@ -44,7 +44,7 @@ export default function NavBar() {
         </div>
 
         {/* Right - Brecords */}
-        <div className="flex-none">{renderNavLink("/brecords", "Brecords")}</div>
+        <div className="flex-none">{renderNavLink("/brecords", "BRECORDS")}</div>
       </div>
     </nav>
   )

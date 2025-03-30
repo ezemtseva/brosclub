@@ -12,16 +12,19 @@ const clubMembers = [
     name: "Vanilla",
     image: "/imgs/vanilla.png",
     achievements: ["x5 FIFA cups", "x3 FPL cups", "x3 BETS cups"],
+    bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
     achievements: ["x2 FIFA cups", "x2 FPL cups", "x1 BETS cups"],
+    bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
     achievements: ["x7 HOLDEM cups", "x4 FPL cups", "x6 BETS cups"],
+    bgColor: "bg-green-100",
   },
 ]
 
@@ -305,7 +308,7 @@ export default async function Home() {
             {clubMembers.map((member, index) => (
               <div
                 key={index}
-                className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
+                className={`${member.bgColor} shadow-md rounded-lg p-6 flex flex-col items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105`}
               >
                 <Image
                   src={member.image || "/placeholder.svg"}
@@ -331,7 +334,7 @@ export default async function Home() {
             {summaries.map((summary, index) => (
               <div
                 key={index}
-                className="bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
+                className="bg-gray-50 shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
               >
                 <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
                 <p className="text-gray-600 mb-4">{summary.content}</p>
@@ -347,27 +350,19 @@ export default async function Home() {
           <h2 className="text-title font-bold mb-6">History</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Year
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    FIFA
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    FPL
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Bets
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Year</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FIFA</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FPL</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Bets</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
                     Holdem
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
                     7oker
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GG</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">GG</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -378,7 +373,7 @@ export default async function Home() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.fifa} isFifaTeam={true} />
+                      <UnderlinedPlayer name={row.fifa} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <UnderlinedPlayer name={row.fpl} />

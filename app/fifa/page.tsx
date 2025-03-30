@@ -100,7 +100,15 @@ export default async function FIFAPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">EA FC 25 Cup</h1>
-      <p className="text-basic text-gray-600 mb-8">IX season of online friendlies matches. First ever cross-platform tournament.</p>
+      <p className="text-basic text-gray-600 mb-8">IX season of the online friendly matches features two stages: the Main and the Championship. During the Main stage, 30 teams compete in a single match against each opponent. Only the top 15 teams, preliminarily selected by the players, advance to the Championship stage, where they face their opponents in a second round of matches. The results from both stages are combined into a single Standings table. The team that finishes first in the standings takes the cup.
+
+
+
+
+
+
+
+</p>
       <h2 className="text-title font-bold mb-6">Standings</h2>
       <div className="fifa-standings-table">
         <DataTable columns={columns} data={data} />

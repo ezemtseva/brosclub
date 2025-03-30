@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-
 const playerColors = {
   Vanilla: "#ea7878",
   Choco: "#4b98de",
@@ -165,8 +163,6 @@ const sections = [
 ]
 
 export default function BrecordsPage() {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Brecords</h1>
@@ -176,13 +172,7 @@ export default function BrecordsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {sections.map((section, index) => (
           <div key={index} className="flex">
-            <section
-              className={`bg-white shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out flex-1 flex flex-col ${
-                hoveredIndex === index ? "scale-105 shadow-lg" : ""
-              }`}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
+            <section className="bg-gray-50 shadow-lg rounded-lg p-6 flex-1 flex flex-col">
               <h2 className="text-title font-semibold mb-4">{section.title}</h2>
               <ul className="space-y-2 list-disc pl-5 flex-1">
                 {section.records.map((record, recordIndex) => (

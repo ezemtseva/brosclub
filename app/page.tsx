@@ -13,19 +13,19 @@ const clubMembers = [
     name: "Vanilla",
     image: "/imgs/vanilla.png",
     achievements: ["x5 FIFA cups", "x3 FPL cups", "x3 BETS cups"],
-    bgColor: "bg-red-50",
+    bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
     achievements: ["x2 FIFA cups", "x2 FPL cups", "x1 BETS cups"],
-    bgColor: "bg-blue-50",
+    bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
     achievements: ["x7 HOLDEM cups", "x6 BETS cups", "x4 FPL cups"],
-    bgColor: "bg-green-50",
+    bgColor: "bg-green-100",
   },
 ]
 
@@ -329,7 +329,7 @@ export default async function Home() {
                   }
                   backContent={
                     <>
-                      <h2 className="text-xl font-semibold mb-6">{member.name}'s Achievements:</h2>
+                      <h2 className="text-xl font-semibold mb-6">Achievements of {member.name}:</h2>
                       <ul className="list-disc pl-5 text-sm text-gray-600">
                         {member.achievements.map((achievement, i) => (
                           <li key={i} className="mb-2 text-base">
@@ -337,7 +337,7 @@ export default async function Home() {
                           </li>
                         ))}
                       </ul>
-                      <p className="text-sm text-gray-400 mt-6 italic">Click to flip back</p>
+                      <p className="text-sm text-gray-300 mt-6 italic">Click to flip back</p>
                     </>
                   }
                 />

@@ -67,6 +67,7 @@ export default async function PokerPage() {
   }))
 
   const images = [
+    { src: "/imgs/poker/poker16.jpg", alt: "Poker Season Highlight - Full House", caption: "Девятка - это для меня (c)" },
     { src: "/imgs/poker/poker15.jpg", alt: "Poker Season Highlight - Full House", caption: "Straight Flush in the next round - just wow!" },
     { src: "/imgs/poker/poker14.jpg", alt: "Poker Season Highlight - Full House", caption: "✯ First Royal Flush in the new era for Panda ✯" },
     { src: "/imgs/poker/poker13.jpg", alt: "Poker Season Highlight - Full House", caption: "Never mess with Panda!" },

@@ -67,6 +67,9 @@ export default async function FIFAPage() {
   }))
 
   const highlights = [
+    { videoId: '39evDXu--Xc', title: 'Royal build-up from Real Madrid', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 19' },
+    { videoId: 's5SPfN5n6ao', title: 'One touch chip from Boniface', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 18' },
+    { videoId: 'lFU_IxBGjOg', title: 'Wirtz did it smooth', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 18' },
     { videoId: 'tw18MAFGJ4E', title: 'Wiiiiii from Weeeeaaaah', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
     { videoId: 'oXzSTLHYQ3w', title: 'Smooth operator Isak', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },
     { videoId: '0JiK73BRZAo', title: 'Crazy corner finish from Jota', thumbnail: '/imgs/fifa/fifathumbnail.jpg', coverageText: 'GAME DAY 17' },

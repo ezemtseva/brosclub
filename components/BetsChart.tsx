@@ -64,9 +64,9 @@ export default function BetsChart({ entries }: BetsChartProps) {
     }, {})
 
     const maxGames = Math.max(...entries.map(entry => entry.games))
-    const lastFifteenGames = Math.max(1, maxGames - 35)
+    const lastFifteenGames = Math.max(1, maxGames - 38)
 
-    const chartData = Array.from({ length: 35 }, (_, i) => {
+    const chartData = Array.from({ length: 38 }, (_, i) => {
       const gameNumber = lastFifteenGames + i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
@@ -97,8 +97,8 @@ export default function BetsChart({ entries }: BetsChartProps) {
           />
           <YAxis 
             type="number"
-            domain={[0, 250]}
-            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]}
+            domain={[0, 300]}
+            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300]}
             interval={0}
             tick={<CustomYAxisTick />}
             width={40}

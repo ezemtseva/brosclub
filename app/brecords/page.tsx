@@ -158,6 +158,9 @@ const sections = [
       <>
         <UnderlinedPlayer name="Vanilla" /> won the first 7oker game, 29.03.2025 <strong>✯</strong>{" "}
       </>,
+      <>
+      <UnderlinedPlayer name="Panda" /> is the first who bet 6 and won all 6 tricks`` <strong>✯</strong>{" "}
+    </>,
     ],
   },
 ]

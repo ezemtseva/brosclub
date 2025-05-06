@@ -103,6 +103,7 @@ export default async function SevenOkerPage() {
   }))
 
   const images = [
+    { src: "/imgs/7oker/2_points.jpeg", alt: "7oker Season Highlight", caption: "Panda snatches victory in the final round!" },
     {
       src: "/imgs/7oker/first_official_game.jpeg",
       alt: "7oker Season Highlight",

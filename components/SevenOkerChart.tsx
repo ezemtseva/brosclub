@@ -70,7 +70,7 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
     )
 
     // Limit to 10 games for x-axis
-    const maxGames = entries.length > 0 ? Math.min(10, Math.max(...entries.map((entry) => entry.games))) : 0
+    const maxGames = entries.length > 0 ? Math.min(15, Math.max(...entries.map((entry) => entry.games))) : 0
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
       const gameNumber = i + 1

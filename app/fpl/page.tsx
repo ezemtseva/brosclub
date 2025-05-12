@@ -103,7 +103,7 @@ export default async function FPLPage() {
     )
 
     const images = [
-      { src: "/imgs/fpl/fpl36.png", alt: "New FPL Season Highlight", caption: "Team of the week 35 - Choco" }, 
+      { src: "/imgs/fpl/fpl36.png", alt: "New FPL Season Highlight", caption: "Team of the week 36 - Choco" }, 
       { src: "/imgs/fpl/fpl35.png", alt: "New FPL Season Highlight", caption: "Team of the week 35 - Vanilla" }, 
       { src: "/imgs/fpl/fpl34.png", alt: "New FPL Season Highlight", caption: "Team of the week 34 - Panda" }, 
       { src: "/imgs/fpl/fpl33.png", alt: "New FPL Season Highlight", caption: "Team of the week 33 - Vanilla" }, 

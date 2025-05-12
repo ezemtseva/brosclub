@@ -161,6 +161,9 @@ const sections = [
       <>
       <UnderlinedPlayer name="Panda" /> is the first who bet 6 and won all 6 tricks <strong>✯</strong>{" "}
     </>,
+    <>
+    The smallest gap between 1st and 2nd place in a game - 2 points, 2025 <strong>✯</strong>{" "}
+  </>,
     ],
   },
 ]

@@ -12,19 +12,19 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    achievements: ["x5 FIFA cups", "x3 FPL cups", "x3 BETS cups"],
+    achievements: ["x6 FIFA", "x3 FPL", "x3 BETS", "x1 GG"],
     bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["x2 FIFA cups", "x2 FPL cups", "x1 BETS cups"],
+    achievements: ["x2 FIFA", "x2 FPL", "x1 BETS"],
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["x7 HOLDEM cups", "x6 BETS cups", "x4 FPL cups"],
+    achievements: ["x8 HOLDEM", "x6 BETS", "x5 FPL"],
     bgColor: "bg-green-100",
   },
 ]
@@ -36,6 +36,7 @@ const playerColors = {
 }
 
 const historyData = [
+  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "", poker: "Panda", sevenOker: "", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -323,13 +324,13 @@ export default async function Home() {
                       </div>
                       <div className="flex flex-col items-center mt-auto">
                         <h2 className="text-title font-semibold mb-2">{member.name}</h2>
-                        <p className="text-sm text-gray-300 italic">Click to see achievements</p>
+                        <p className="text-sm text-gray-300 italic">Click to see cups</p>
                       </div>
                     </div>
                   }
                   backContent={
                     <>
-                      <h2 className="text-xl font-semibold mb-6">Achievements of {member.name}:</h2>
+                      <h2 className="text-xl font-semibold mb-6">Cups of {member.name}:</h2>
                       <ul className="list-disc pl-5 text-sm text-gray-600">
                         {member.achievements.map((achievement, i) => (
                           <li key={i} className="mb-2 text-base">

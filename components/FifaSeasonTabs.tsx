@@ -1116,7 +1116,7 @@ const pastSeasonsData = {
       {
         team: "Liverpool",
         logo: "/imgs/fifa/liv.png",
-        games:27,
+        games: 27,
         wins: 23,
         draws: 2,
         losses: 2,
@@ -1156,7 +1156,7 @@ const pastSeasonsData = {
         team: "Atletico Madrid",
         logo: "/imgs/fifa/atm.png",
         games: 27,
-        wins:17,
+        wins: 17,
         draws: 4,
         losses: 6,
         goalsScored: 87,
@@ -3413,7 +3413,7 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
       goalDifference: entry.goalDifference,
       points: entry.points,
       hoverColor: entry.color || getTeamColor(entry.team),
-      className: index === 0 ? "bg-amber-50" : undefined, 
+      className: index === 0 ? "bg-amber-50" : undefined,
     }))
   }
 

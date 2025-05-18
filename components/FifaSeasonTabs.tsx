@@ -559,14 +559,6 @@ const pastSeasonsData = {
         color: "#4fcb90", // Red
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2023/24 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
   "2022/23": {
     standings: [
@@ -1117,14 +1109,6 @@ const pastSeasonsData = {
         color: "#4fcb90", // Red
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2022/23 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
   "2021/22": {
     description: "Some data was lost. The standings table will be updated as soon as it's restored.",
@@ -1440,14 +1424,6 @@ const pastSeasonsData = {
         goalDifference: -32,
         points: 4,
         color: "#4fcb90", // Blue
-      },
-    ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2021/22 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
       },
     ],
   },
@@ -1844,14 +1820,6 @@ const pastSeasonsData = {
         color: "#4fcb90", // Red
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2020/21 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
   "2019/20": {
     standings: [
@@ -2166,14 +2134,6 @@ const pastSeasonsData = {
         goalDifference: -102,
         points: 5,
         color: "#4fcb90", // Red
-      },
-    ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2019/20 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
       },
     ],
   },
@@ -2649,14 +2609,6 @@ const pastSeasonsData = {
         color: "#4fcb90", // Red
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2017/18 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
   "2016/17": {
     standings: [
@@ -3051,14 +3003,6 @@ const pastSeasonsData = {
         color: "#4b98de", // Orange
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2016/17 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
   "2015/16": {
     standings: [
@@ -3375,14 +3319,6 @@ const pastSeasonsData = {
         color: "#ea7878", // Blue
       },
     ],
-    highlights: [
-      {
-        videoId: "dQw4w9WgXcQ",
-        title: "Season 2015/16 Highlights",
-        thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-        coverageText: "SEASON RECAP",
-      },
-    ],
   },
 }
 
@@ -3477,6 +3413,7 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
       goalDifference: entry.goalDifference,
       points: entry.points,
       hoverColor: entry.color || getTeamColor(entry.team),
+      className: index === 0 ? "bg-amber-50" : undefined, 
     }))
   }
 

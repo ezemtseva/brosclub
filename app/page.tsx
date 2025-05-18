@@ -24,7 +24,7 @@ const clubMembers = [
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["x8 HOLDEM", "x6 BETS", "x5 FPL"],
+    achievements: ["x8 HOLDEM", "x7 BETS", "x5 FPL"],
     bgColor: "bg-green-100",
   },
 ]
@@ -36,7 +36,7 @@ const playerColors = {
 }
 
 const historyData = [
-  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "", poker: "Panda", sevenOker: "", gg: "Vanilla" },
+  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },

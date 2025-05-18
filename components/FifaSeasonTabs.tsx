@@ -3436,7 +3436,6 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
       )
     } else {
       const pastSeasonData = getPastSeasonTableData(activeSeason)
-      const pastSeasonHighlights = pastSeasonsData[activeSeason as keyof typeof pastSeasonsData]?.highlights || []
       // Use optional chaining to safely access the description property
       const seasonData = pastSeasonsData[activeSeason as keyof typeof pastSeasonsData]
       const seasonDescription = seasonData && "description" in seasonData ? seasonData.description : undefined
@@ -3452,17 +3451,6 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
               <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
             )}
           </div>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
-              {pastSeasonHighlights.length > 0 ? (
-                <VideoCarousel videos={pastSeasonHighlights} />
-              ) : (
-                <p className="text-gray-500 italic py-4">No highlights available for {activeSeason} season.</p>
-              )}
-            </div>
-          </section>
         </>
       )
     }

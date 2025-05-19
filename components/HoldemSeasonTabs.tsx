@@ -37,6 +37,7 @@ type PieChartData = {
 type SeasonData = {
   standings?: StandingsData[]
   pieChartData?: PieChartData[]
+  highlights?: string[]
 }
 
 // Define type for past seasons data
@@ -273,6 +274,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#4b98de",
       },
     ],
+    highlights: ["Panda set the biggest percentage of wins in a season"],
   },
   "2017": {
     standings: [
@@ -354,6 +356,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#ea7878",
       },
     ],
+    highlights: ["The largest gap between 1st and 2nd place"],
   },
   "2016": {
     standings: [
@@ -516,6 +519,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#ea7878",
       },
     ],
+    highlights: ["The longest poker game lasted 1 hour and 41 minutes"],
   },
   "2014": {
     standings: [
@@ -596,6 +600,10 @@ const pastSeasonsData: PastSeasonsData = {
         value: 13,
         color: "#cccccc",
       },
+    ],
+    highlights: [
+      "Vanilla was the first player to get a six- and seven-card straight flush",
+      "Panda was the first and only player to get a royal flush (hearts)",
     ],
   },
   "2013": {
@@ -678,6 +686,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#4b98de",
       },
     ],
+    highlights: ["Choco was the first player to get a straight flush and four aces"],
   },
   "2012": {
     standings: [
@@ -759,6 +768,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#ea7878",
       },
     ],
+    highlights: ["Panda won the first club game", "The smallest gap between 1st and 2nd place"],
   },
 }
 
@@ -823,34 +833,28 @@ export default function HoldemSeasonTabs({
             </p>
           )}
 
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                  <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/3">
-                {seasonData.pieChartData ? (
-                  <PieChart data={seasonData.pieChartData} />
-                ) : (
-                  <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                    <p className="text-gray-600">Win distribution chart for {activeSeason} will be displayed here.</p>
+          {/* Only show Highlights section if there are highlights */}
+          {seasonData.highlights && seasonData.highlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <div className="flex flex-wrap gap-3 mb-8">
+                {seasonData.highlights.map((highlight, index) => (
+                  <div
+                    key={index}
+                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
+                  >
+                    {highlight}
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
-              <div className="bg-gray-100 p-8 rounded-lg text-center">
-                <p className="text-gray-600">Highlight images from the {activeSeason} season will be displayed here.</p>
-              </div>
-            </div>
-          </section>
+              {/* Pie chart is kept in code but hidden with CSS */}
+              {seasonData.pieChartData && (
+                <div className="hidden">
+                  <PieChart data={seasonData.pieChartData} />
+                </div>
+              )}
+            </section>
+          )}
         </>
       )
     } else {
@@ -869,26 +873,12 @@ export default function HoldemSeasonTabs({
           </div>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
             <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                  <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-                </div>
-              </div>
               <div className="w-full md:w-1/3">
                 <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
                   <p className="text-gray-600">Win distribution chart for {activeSeason} will be displayed here.</p>
                 </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
-              <div className="bg-gray-100 p-8 rounded-lg text-center">
-                <p className="text-gray-600">Highlight images from the {activeSeason} season will be displayed here.</p>
               </div>
             </div>
           </section>

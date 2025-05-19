@@ -136,7 +136,7 @@ const pastSeasonsData: PastSeasonsData = {
     ],
     highlights: [
       "Panda held first place for 38 consecutive rounds (whole season)",
-      "Pand won his 3rd cup in a row.. for the second time!",
+      "Panda won his 3rd cup in a row.. for the second time!",
     ],
   },
   "2021/22": {

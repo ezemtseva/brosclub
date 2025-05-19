@@ -139,7 +139,7 @@ export default async function FPLPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-title font-bold mb-4">FPL Cup</h1>
-        <p className="text-base text-gray-600 mb-8">VII season of the Fantasy Premier League.</p>
+        <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
 
         <FplSeasonTabs
           currentSeasonData={tableData}
@@ -154,7 +154,7 @@ export default async function FPLPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-title font-bold mb-4">FPL Cup</h1>
-        <p className="text-base text-gray-600 mb-8">VII season of the Fantasy Premier League.</p>
+        <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
         <h2 className="text-title font-bold mb-4">Standings</h2>
         <p className="text-red-500">Error loading FPL data. Please try again later.</p>
         {process.env.NODE_ENV === "development" && (

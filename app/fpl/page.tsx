@@ -138,8 +138,8 @@ export default async function FPLPage() {
 
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">FPL Cup</h1>
-        <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
+        <h1 className="text-title font-bold mb-4">Fantasy Premiere League Cup</h1>
+        <p className="text-base text-gray-600 mb-8">VIII season of the online game where bearos manage their own virtual team of real-life Premier League players.</p>
 
         <FplSeasonTabs
           currentSeasonData={tableData}
@@ -153,7 +153,7 @@ export default async function FPLPage() {
     console.error("Error in FPLPage:", error)
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">FPL Cup</h1>
+        <h1 className="text-title font-bold mb-4">Fantasy Premiere League Cup</h1>
         <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
         <h2 className="text-title font-bold mb-4">Standings</h2>
         <p className="text-red-500">Error loading FPL data. Please try again later.</p>

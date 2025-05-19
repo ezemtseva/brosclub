@@ -26,6 +26,7 @@ type StandingsData = {
 // Define type for season data
 type SeasonData = {
   standings: StandingsData[]
+  highlights?: string[]
 }
 
 // Define type for past seasons data
@@ -77,6 +78,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: "#ea7878",
       },
     ],
+    highlights: ["Panda scored the most points in a season"],
   },
   "2022/23": {
     standings: [
@@ -120,6 +122,10 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: "#4b98de",
       },
     ],
+    highlights: [
+      "Panda held first place for 25 consecutive rounds",
+      "Vanilla scored the most points in a round without boosts - 131",
+    ],
   },
   "2021/22": {
     standings: [
@@ -162,6 +168,10 @@ const pastSeasonsData: PastSeasonsData = {
         difference: "14",
         hoverColor: "#4b98de",
       },
+    ],
+    highlights: [
+      "Choco scored the most points in a round with a boost - 141",
+      "The smallest gap between 1st and 2nd place ever",
     ],
   },
   "2020/21": {
@@ -335,6 +345,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: "#4fcb90",
       },
     ],
+    highlights: ["The largest gap between 1st and 2nd place ever"],
   },
 }
 
@@ -385,19 +396,21 @@ export default function FplSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={seasonData.standings} />
 
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="bg-gray-100 p-8 rounded-lg text-center">
-              <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="bg-gray-100 p-8 rounded-lg text-center">
-              <p className="text-gray-600">Highlight images from the {activeSeason} season will be displayed here.</p>
-            </div>
-          </section>
+          {seasonData.highlights && seasonData.highlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <div className="flex flex-wrap gap-3">
+                {seasonData.highlights.map((highlight, index) => (
+                  <div
+                    key={index}
+                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
+                  >
+                    {highlight}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </>
       )
     } else {
@@ -409,25 +422,8 @@ export default function FplSeasonTabs({
 
           <div className="bg-gray-100 p-8 rounded-lg text-center">
             <h3 className="text-lg font-medium text-gray-700 mb-4">Season {activeSeason} Archive</h3>
-            <p className="text-gray-600">
-              This section will contain the standings, weekly progress chart, and highlights from the {activeSeason} FPL
-              season.
-            </p>
+            <p className="text-gray-600">This section will contain the standings from the {activeSeason} FPL season.</p>
           </div>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="bg-gray-100 p-8 rounded-lg text-center">
-              <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="bg-gray-100 p-8 rounded-lg text-center">
-              <p className="text-gray-600">Highlight images from the {activeSeason} season will be displayed here.</p>
-            </div>
-          </section>
         </>
       )
     }

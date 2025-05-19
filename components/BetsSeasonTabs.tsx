@@ -49,6 +49,7 @@ type PieChartData = {
 type SeasonData = {
   standings: StandingsData[]
   pieChartData?: PieChartData[]
+  highlights?: string[]
 }
 
 // Define type for past seasons data
@@ -104,6 +105,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Vanilla,
       },
     ],
+    highlights: ["Choco scored the most points in a season"],
   },
   "2022/23": {
     standings: [
@@ -131,6 +133,10 @@ const pastSeasonsData: PastSeasonsData = {
         difference: "15",
         hoverColor: playerColors.Chocolate,
       },
+    ],
+    highlights: [
+      "Panda held first place for 38 consecutive rounds (whole season)",
+      "Pand won his 3rd cup in a row.. for the second time!",
     ],
   },
   "2021/22": {
@@ -188,6 +194,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
+    highlights: ["Vanilla scored the most points in a round – 17/30"],
   },
   "2019/20": {
     standings: [
@@ -216,6 +223,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Panda,
       },
     ],
+    highlights: ["The smallest gap between 1st and 2nd place"],
   },
   "2017": {
     standings: [
@@ -272,6 +280,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
+    highlights: ["Vanilla set the record for most correctly predicted scores in a day – 4/5"],
   },
   "2015": {
     standings: [
@@ -300,6 +309,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
+    highlights: ["The largest gap between 1st and 2nd place"],
   },
   "2014": {
     standings: [
@@ -328,6 +338,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
+    highlights: ["Panda won his 3rd cup in a row"],
   },
   "2013": {
     standings: [
@@ -439,25 +450,21 @@ export default function BetsSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={seasonColumns} data={seasonData.standings} />
 
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                  <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/3">
-                {seasonData.pieChartData ? (
-                  <PieChart data={seasonData.pieChartData} />
-                ) : (
-                  <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                    <p className="text-gray-600">Win distribution chart for {activeSeason} will be displayed here.</p>
+          {seasonData.highlights && seasonData.highlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <div className="flex flex-wrap gap-3">
+                {seasonData.highlights.map((highlight, index) => (
+                  <div
+                    key={index}
+                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
+                  >
+                    {highlight}
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          </section>
+            </section>
+          )}
         </>
       )
     } else {
@@ -470,25 +477,9 @@ export default function BetsSeasonTabs({
           <div className="bg-gray-100 p-8 rounded-lg text-center">
             <h3 className="text-lg font-medium text-gray-700 mb-4">Season {activeSeason} Archive</h3>
             <p className="text-gray-600">
-              This section will contain the standings and charts from the {activeSeason} betting season.
+              This section will contain the standings from the {activeSeason} betting season.
             </p>
           </div>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                  <p className="text-gray-600">The weekly progress chart for {activeSeason} will be displayed here.</p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/3">
-                <div className="bg-gray-100 p-8 rounded-lg text-center h-full flex items-center justify-center">
-                  <p className="text-gray-600">Win distribution chart for {activeSeason} will be displayed here.</p>
-                </div>
-              </div>
-            </div>
-          </section>
         </>
       )
     }

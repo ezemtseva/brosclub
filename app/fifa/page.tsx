@@ -297,7 +297,7 @@ export default async function FIFAPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-title font-bold mb-4">EA FC 25 Cup</h1>
+      <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
       <p className="text-basic text-gray-600 mb-8">
         IX season of the online friendly matches features two stages: the Main and the Championship. During the Main
         stage, 30 teams compete in a single match against each opponent. Only the top 15 teams selected

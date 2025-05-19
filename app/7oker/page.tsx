@@ -119,8 +119,7 @@ export default async function SevenOkerPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        The first ever season of our local homemade game. 7oker is a strategic trick-taking card game with trick-betting
-        system, open and blind rounds, unique rules and special cards power.{" "}
+        The first ever season of our local homemade game.{" "}
         <Link
           href="https://bearos-poker.vercel.app/"
           className="text-blue-500 hover:underline"

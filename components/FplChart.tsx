@@ -108,8 +108,8 @@ export default function FplChart({ entries }: FplChartProps) {
           />
           <YAxis 
             type="number"
-            domain={[0, 2500]}
-            ticks={[0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500]}
+            domain={[0, 2511]}
+            ticks={[0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2511]}
             tick={<CustomYAxisTick />}
             width={40}
           />

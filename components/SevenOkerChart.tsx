@@ -88,12 +88,12 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
 
     // Set Y-axis domain based on data type
     if (dataKey === "points") {
-      setYAxisDomain([0, 35])
-      setYAxisTicks(Array.from({ length: 8 }, (_, i) => i * 5))
+      setYAxisDomain([0, 40])
+      setYAxisTicks(Array.from({ length: 9 }, (_, i) => i * 5))
     } else {
       // For gamepoints, use fixed scale from 0 to 1000 with steps of 100
-      setYAxisDomain([0, 3000])
-      setYAxisTicks(Array.from({ length: 13 }, (_, i) => i * 250))
+      setYAxisDomain([0, 4000])
+      setYAxisTicks(Array.from({ length: 17 }, (_, i) => i * 250))
     }
   }, [entries, dataKey])
 
@@ -102,7 +102,7 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="games" type="number" domain={[1, 25]} ticks={Array.from({ length: 25 }, (_, i) => i + 1)} />
+          <XAxis dataKey="games" type="number" domain={[1, 30]} ticks={Array.from({ length: 30 }, (_, i) => i + 1)} />
           <YAxis type="number" domain={yAxisDomain} ticks={yAxisTicks} interval={0} width={40} />
           <Tooltip content={<CustomTooltip />} />
           <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />

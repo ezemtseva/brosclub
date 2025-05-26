@@ -18,7 +18,7 @@ const clubMembers = [
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["x2 FIFA", "x2 FPL", "x1 BETS"],
+    achievements: ["x2 FIFA", "x2 BETS"],
     bgColor: "bg-blue-100",
   },
   {
@@ -216,7 +216,7 @@ export default async function Home() {
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
+          Champion: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -229,7 +229,7 @@ export default async function Home() {
     content:
       ggLeader && ggLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
+          Champion: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -242,7 +242,7 @@ export default async function Home() {
     content:
       pokerLeader && pokerLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
+          Champion: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -268,7 +268,7 @@ export default async function Home() {
     content:
       betsLeader && betsLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
+          Champion: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -281,7 +281,7 @@ export default async function Home() {
     content:
       fifaLeader && fifaLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
+          Champion: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
         </>
       ) : (
         "Will be started soon"

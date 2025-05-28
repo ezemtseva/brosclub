@@ -88,12 +88,12 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
 
     // Set Y-axis domain based on data type
     if (dataKey === "points") {
-      setYAxisDomain([0, 40])
-      setYAxisTicks(Array.from({ length: 9 }, (_, i) => i * 5))
+      setYAxisDomain([0, 50])
+      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 5))
     } else {
       // For gamepoints, use fixed scale from 0 to 1000 with steps of 100
-      setYAxisDomain([0, 4000])
-      setYAxisTicks(Array.from({ length: 17 }, (_, i) => i * 250))
+      setYAxisDomain([0, 5000])
+      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 500))
     }
   }, [entries, dataKey])
 

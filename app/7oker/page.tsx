@@ -103,7 +103,7 @@ export default async function SevenOkerPage() {
   }))
 
   const images = [
-    { src: "/imgs/7oker/game29.jpeg", alt: "7oker Season Highlight", caption: "What a comeback from Vanilla!" },
+    { src: "/imgs/7oker/game29.png", alt: "7oker Season Highlight", caption: "What a comeback from Vanilla!" },
     { src: "/imgs/7oker/game14.jpeg", alt: "7oker Season Highlight", caption: "Ottima battaglia tra Trallalelo Tralalala e Spioniro Golubiro" },
     { src: "/imgs/7oker/game13.jpeg", alt: "7oker Season Highlight", caption: "Jebeni golub odnosi pobedu" },
     { src: "/imgs/7oker/game12.jpeg", alt: "7oker Season Highlight", caption: "Last round win for Choco, with a little help from Panda" },

@@ -112,7 +112,7 @@ export default async function PokerPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Texas Holdem Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        X anniversary season of Texas Holdem poker is back after a long 4 year pause.
+        X anniversary season of Texas Holdem poker is back after a long 4 year pause
       </p>
 
       <HoldemSeasonTabs

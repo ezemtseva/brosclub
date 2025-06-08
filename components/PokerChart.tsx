@@ -80,8 +80,8 @@ export default function PokerChart({ entries }: PokerChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 45]} 
-            ticks={Array.from({ length: 45 }, (_, i) => i + 1)}
+            domain={[1, 44]} 
+            ticks={Array.from({ length: 23 }, (_, i) => i * 2)}
           />
           <YAxis 
             type="number"

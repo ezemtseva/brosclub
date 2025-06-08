@@ -102,7 +102,7 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="games" type="number" domain={[1, 40]} ticks={Array.from({ length: 40 }, (_, i) => i + 1)} />
+          <XAxis dataKey="games" type="number" domain={[1, 40]} ticks={Array.from({ length: 21 }, (_, i) => i * 2)} />
           <YAxis type="number" domain={yAxisDomain} ticks={yAxisTicks} interval={0} width={40} />
           <Tooltip content={<CustomTooltip />} />
           <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />

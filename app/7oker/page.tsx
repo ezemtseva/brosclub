@@ -103,6 +103,7 @@ export default async function SevenOkerPage() {
   }))
 
   const images = [
+    { src: "/imgs/7oker/game42.png", alt: "7oker Season Highlight", caption: "The ultimate setup for Andrei Bubin 2!" },
     { src: "/imgs/7oker/game37.png", alt: "7oker Season Highlight", caption: "Everyone could have won in the last round!" },
     { src: "/imgs/7oker/game29.png", alt: "7oker Season Highlight", caption: "What a comeback from Vanilla!" },
     { src: "/imgs/7oker/game14.jpeg", alt: "7oker Season Highlight", caption: "Ottima battaglia tra Trallalelo Tralalala e Spioniro Golubiro" },

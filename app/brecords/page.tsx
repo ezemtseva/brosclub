@@ -162,8 +162,17 @@ const sections = [
       <UnderlinedPlayer name="Panda" /> is the first who bet 6 and won all 6 tricks <strong>✯</strong>{" "}
     </>,
     <>
-    The smallest gap between 1st and 2nd place in a game - 2 points, 2025 <strong>✯</strong>{" "}
+    The smallest gap between 1st and 2nd place in a game - 1 points, 2024/25 <strong>✯</strong>{" "}
   </>,
+  <>
+  <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
+</>,
+  <>
+  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
+</>,
+<>
+  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of point per game - 294, 2024/25 <strong>✯</strong>{" "}
+</>,
     ],
   },
 ]

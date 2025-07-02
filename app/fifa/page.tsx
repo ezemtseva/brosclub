@@ -108,6 +108,18 @@ export default async function FIFAPage() {
 
   const highlights = [
     {
+      videoId: "6ncbObTMXSk",
+      title: "The canonball from Salah",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 20",
+    },
+    {
+      videoId: "CjjLHixprVM",
+      title: "Beautiful finish from Adeyemi",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 20",
+    },
+    {
       videoId: "39evDXu--Xc",
       title: "Royal build-up from Real Madrid",
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",

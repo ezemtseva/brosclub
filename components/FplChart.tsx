@@ -63,8 +63,8 @@ export default function FplChart({ entries }: FplChartProps) {
       return acc
     }, {})
 
-    const chartData = Array.from({ length: 38 }, (_, i) => {
-      const gameNumber = i + 1
+    const chartData = Array.from({ length: 39 }, (_, i) => {
+      const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(player => {
@@ -102,8 +102,8 @@ export default function FplChart({ entries }: FplChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 38]}
-            ticks={Array.from({ length: 38 }, (_, i) => i + 1)}
+            domain={[0, 38]}
+            ticks={Array.from({ length: 39 }, (_, i) => i)}
             tick={{ fontSize: 12 }}
           />
           <YAxis 

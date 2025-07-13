@@ -55,7 +55,7 @@ export default function PokerChart({ entries }: PokerChartProps) {
     const maxGames = Math.min(45, Math.max(...entries.map(entry => entry.games)))
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
-      const gameNumber = i + 1
+      const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(bearo => {
@@ -80,7 +80,7 @@ export default function PokerChart({ entries }: PokerChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 44]} 
+            domain={[0, 44]} 
             ticks={Array.from({ length: 23 }, (_, i) => i * 2)}
           />
           <YAxis 

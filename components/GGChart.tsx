@@ -52,10 +52,10 @@ export default function GGChart({ entries }: GGChartProps) {
       return acc
     }, {})
 
-    const maxGames = Math.min(35, Math.max(...entries.map(entry => entry.games)))
+    const maxGames = Math.min(40, Math.max(...entries.map(entry => entry.games)))
 
     const chartData = Array.from({ length: maxGames }, (_, i) => {
-      const gameNumber = i + 1
+      const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(player => {
@@ -80,8 +80,8 @@ export default function GGChart({ entries }: GGChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={[1, 35]} 
-            ticks={Array.from({ length: 35 }, (_, i) => i + 1)}
+            domain={[0, 40]} 
+            ticks={Array.from({ length: 21 }, (_, i) => i * 2)}
           />
           <YAxis 
             type="number"

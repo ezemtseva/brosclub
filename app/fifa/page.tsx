@@ -108,6 +108,30 @@ export default async function FIFAPage() {
 
   const highlights = [
     {
+      videoId: "7NS6-JdeK60",
+      title: "He's our number 20..",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "REST IN PEACE",
+    },
+    {
+      videoId: "caPxV7oCJxA",
+      title: "Amiak Karbromid at its finest",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 21",
+    },
+    {
+      videoId: "csD8h1kda6o",
+      title: "One touch shot from Mbappe",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 21",
+    },
+    {
+      videoId: "LTVrP3TvDyk",
+      title: "Choco - the king of free kicks",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 21",
+    },
+    {
       videoId: "6ncbObTMXSk",
       title: "The canonball from Salah",
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",

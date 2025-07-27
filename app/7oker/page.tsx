@@ -1,8 +1,6 @@
-import DataTable from "../../components/DataTable"
 import prisma from "../../lib/prisma"
-import ImageCarousel from "../../components/ImageCarousel"
 import Link from "next/link"
-import SevenOkerChartToggle from "../../components/SevenOkerChartToggle"
+import SevenOkerSeasonTabs from "../../components/SevenOkerSeasonTab"
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -34,40 +32,9 @@ type SevenOkerEntry = {
   createdAt?: Date
 }
 
-async function get7okerData() {
-  try {
-    // Use the exact model name from your schema.prisma file
-    const modelName = "sevenOkerEntry" // Change this to match your schema
-
-    // Check if the model exists using dynamic property access
-    if (!(prisma as any)[modelName]) {
-      console.error("Database model not found. Check your schema.prisma file.")
-      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
-    }
-
-    const entries = (await (prisma as any)[modelName].findMany({
-      orderBy: [{ week: "asc" }, { bearo: "asc" }],
-    })) as SevenOkerEntry[]
-
-    // If no entries exist yet, return empty arrays
-    if (entries.length === 0) {
-      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
-    }
-
-    const latestWeek = Math.max(...entries.map((entry) => entry.week))
-    const latestEntries = entries.filter((entry: SevenOkerEntry) => entry.week === latestWeek)
-
-    return { entries, latestEntries }
-  } catch (error) {
-    console.error("Error fetching 7oker data:", error)
-    return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
-  }
-}
-
-export default async function SevenOkerPage() {
-  const { entries, latestEntries } = await get7okerData()
-
-  const tableData = latestEntries
+// Helper function to process data for display
+function processSeasonData(latestEntries: SevenOkerEntry[]) {
+  return latestEntries
     .sort((a: SevenOkerEntry, b: SevenOkerEntry) => b.points - a.points)
     .map((entry: SevenOkerEntry, index: number, arr: SevenOkerEntry[]) => ({
       position: index + 1,
@@ -89,28 +56,122 @@ export default async function SevenOkerPage() {
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
+}
 
-  const pieChartData = latestEntries.map((entry: SevenOkerEntry) => ({
+// Helper function to create pie chart data
+function createPieChartData(latestEntries: SevenOkerEntry[]) {
+  return latestEntries.map((entry: SevenOkerEntry) => ({
     name: entry.bearo,
     value: entry.wins,
     color: playerColors[entry.bearo as keyof typeof playerColors],
   }))
+}
 
-  // Serialize the entries for the client component
-  const serializedEntries = entries.map((entry) => ({
+// Helper function to serialize entries for client components
+function serializeEntries(entries: SevenOkerEntry[]) {
+  return entries.map((entry) => ({
     ...entry,
     createdAt: entry.createdAt ? entry.createdAt.toISOString() : null,
   }))
+}
 
-  const images = [
+async function getCurrentSeasonData() {
+  try {
+    const modelName = "sevenOkerEntry"
+
+    if (!(prisma as any)[modelName]) {
+      console.error("Database model not found. Check your schema.prisma file.")
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
+
+    const entries = (await (prisma as any)[modelName].findMany({
+      orderBy: [{ week: "asc" }, { bearo: "asc" }],
+    })) as SevenOkerEntry[]
+
+    if (entries.length === 0) {
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
+
+    const latestWeek = Math.max(...entries.map((entry) => entry.week))
+    const latestEntries = entries.filter((entry: SevenOkerEntry) => entry.week === latestWeek)
+
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching current season 7oker data:", error)
+    return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+  }
+}
+
+async function getHistoricalSeasonData() {
+  try {
+    // Use dynamic access to the model
+    const entries = (await (prisma as any).sevenOkerEntry2024.findMany({
+      orderBy: [{ week: "asc" }, { bearo: "asc" }],
+    })) as SevenOkerEntry[]
+
+    if (entries.length === 0) {
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
+
+    const latestWeek = Math.max(...entries.map((entry) => entry.week))
+    const latestEntries = entries.filter((entry: SevenOkerEntry) => entry.week === latestWeek)
+
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching historical season 7oker data:", error)
+    return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+  }
+}
+
+export default async function SevenOkerPage() {
+  // Fetch current season data (2025/26)
+  const { entries: currentEntries, latestEntries: currentLatestEntries } = await getCurrentSeasonData()
+
+  // Fetch historical season data (2024/25)
+  const { entries: historicalEntries, latestEntries: historicalLatestEntries } = await getHistoricalSeasonData()
+
+  // Process current season data
+  const currentSeasonData = processSeasonData(currentLatestEntries)
+  const currentSeasonPieData = createPieChartData(currentLatestEntries)
+  const currentSeasonChartData = serializeEntries(currentEntries)
+
+  // Process historical season data
+  const historicalSeasonData = processSeasonData(historicalLatestEntries)
+  const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
+  const historicalSeasonChartData = serializeEntries(historicalEntries)
+
+  // Current season highlights (update as new highlights happen)
+  const currentSeasonHighlights = [
+    { src: "/imgs/7oker/thumbnail.png", alt: "New season highlight", caption: "New season will be started in August!" },
+    // Add more current season images as they happen
+  ]
+
+  // Historical season highlights (2024/25)
+  const historicalSeasonHighlights = [
     { src: "/imgs/7oker/game51.png", alt: "7oker Season Highlight", caption: "Close call win by Choco!" },
     { src: "/imgs/7oker/game42.png", alt: "7oker Season Highlight", caption: "The ultimate setup for Andrei Bubin 2!" },
-    { src: "/imgs/7oker/game37.png", alt: "7oker Season Highlight", caption: "Everyone could have won in the last round!" },
+    {
+      src: "/imgs/7oker/game37.png",
+      alt: "7oker Season Highlight",
+      caption: "Everyone could have won in the last round!",
+    },
     { src: "/imgs/7oker/game29.png", alt: "7oker Season Highlight", caption: "What a comeback from Vanilla!" },
-    { src: "/imgs/7oker/game14.jpeg", alt: "7oker Season Highlight", caption: "Ottima battaglia tra Trallalelo Tralalala e Spioniro Golubiro" },
+    {
+      src: "/imgs/7oker/game14.jpeg",
+      alt: "7oker Season Highlight",
+      caption: "Ottima battaglia tra Trallalelo Tralalala e Spioniro Golubiro",
+    },
     { src: "/imgs/7oker/game13.jpeg", alt: "7oker Season Highlight", caption: "Jebeni golub odnosi pobedu" },
-    { src: "/imgs/7oker/game12.jpeg", alt: "7oker Season Highlight", caption: "Last round win for Choco, with a little help from Panda" },
-    { src: "/imgs/7oker/game9.jpeg", alt: "7oker Season Highlight", caption: "Panda snatches victory in the final round!" },
+    {
+      src: "/imgs/7oker/game12.jpeg",
+      alt: "7oker Season Highlight",
+      caption: "Last round win for Choco, with a little help from Panda",
+    },
+    {
+      src: "/imgs/7oker/game9.jpeg",
+      alt: "7oker Season Highlight",
+      caption: "Panda snatches victory in the final round!",
+    },
     {
       src: "/imgs/7oker/first_official_game.jpeg",
       alt: "7oker Season Highlight",
@@ -134,20 +195,18 @@ export default async function SevenOkerPage() {
         </Link>
         !
       </p>
-      <h2 className="text-title font-bold mb-6">Standings</h2>
-      <DataTable columns={columns} data={tableData} />
 
-      <section className="mt-12">
-        <SevenOkerChartToggle entries={serializedEntries} pieChartData={pieChartData} />
-      </section>
-
-      <section className="mt-12">
-        <h2 className="text-title font-bold mb-6">Highlights</h2>
-        <div className="px-12">
-          <ImageCarousel images={images} />
-        </div>
-      </section>
+      <SevenOkerSeasonTabs
+        currentSeasonData={currentSeasonData}
+        currentSeasonChartData={currentSeasonChartData}
+        currentSeasonPieData={currentSeasonPieData}
+        currentSeasonHighlights={currentSeasonHighlights}
+        historicalSeasonData={historicalSeasonData}
+        historicalSeasonChartData={historicalSeasonChartData}
+        historicalSeasonPieData={historicalSeasonPieData}
+        historicalSeasonHighlights={historicalSeasonHighlights}
+        columns={columns}
+      />
     </div>
   )
 }
-

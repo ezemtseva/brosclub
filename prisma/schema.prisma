@@ -82,6 +82,19 @@ model SevenOkerEntry {
   @@unique([week, bearo])
 }
 
+model SevenOkerEntry2024 {
+  id         Int      @id @default(autoincrement())
+  week       Int
+  bearo      String
+  games      Int
+  wins       Int
+  points     Int
+  gamepoints Int?
+  createdAt  DateTime @default(now())
+
+  @@map("sevenOkerEntry2024")
+}
+
 model FifaEntry {
   id            Int      @id @default(autoincrement())
   team          String   @unique

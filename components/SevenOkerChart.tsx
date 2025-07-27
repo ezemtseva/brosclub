@@ -70,7 +70,7 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
     )
 
     // Limit to 10 games for x-axis
-    const maxGames = entries.length > 0 ? Math.min(58, Math.max(...entries.map((entry) => entry.games))) : 0
+    const maxGames = entries.length > 0 ? Math.min(70, Math.max(...entries.map((entry) => entry.games))) : 0
 
     const chartData = Array.from({ length: maxGames + 1}, (_, i) => {
       const gameNumber = i
@@ -88,12 +88,12 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
 
     // Set Y-axis domain based on data type
     if (dataKey === "points") {
-      setYAxisDomain([0, 90])
-      setYAxisTicks(Array.from({ length: 10 }, (_, i) => i * 10))
+      setYAxisDomain([0, 100])
+      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 10))
     } else {
       // For gamepoints, use fixed scale from 0 to 1000 with steps of 100
-      setYAxisDomain([0, 9000])
-      setYAxisTicks(Array.from({ length: 10 }, (_, i) => i * 1000))
+      setYAxisDomain([0, 10000])
+      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 1000))
     }
   }, [entries, dataKey])
 
@@ -102,8 +102,8 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="games" type="number" domain={[0, 58]} ticks={Array.from({ length: 30 }, (_, i) => i * 2)} />
-          <YAxis type="number" domain={yAxisDomain} ticks={yAxisTicks} interval={0} width={45} />
+          <XAxis dataKey="games" type="number" domain={[0, 70]} ticks={Array.from({ length: 15 }, (_, i) => i * 5)} />
+          <YAxis type="number" domain={yAxisDomain} ticks={yAxisTicks} interval={0} width={50} />
           <Tooltip content={<CustomTooltip />} />
           <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />
           <Line type="monotone" dataKey="Choco" stroke="#4b98de" activeDot={{ r: 8 }} connectNulls />

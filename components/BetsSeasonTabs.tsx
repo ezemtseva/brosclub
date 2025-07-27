@@ -9,8 +9,9 @@ import dynamic from "next/dynamic"
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
-// Define the seasons array with all the required seasons
+// Define the seasons array with all the required seasons - added 2025/26 as first tab
 const seasons = [
+  "2025/26",
   "2024/25",
   "2023/24",
   "2022/23",
@@ -399,6 +400,9 @@ type BetsSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
+  historicalSeasonData: any[]
+  historicalSeasonChartData: any[]
+  historicalSeasonPieData: any[]
   columns: any[]
 }
 
@@ -406,14 +410,17 @@ export default function BetsSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
+  historicalSeasonData,
+  historicalSeasonChartData,
+  historicalSeasonPieData,
   columns,
 }: BetsSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2024/25")
+  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2024/25") {
-      // For the current season, use the live data
+    if (activeSeason === "2025/26") {
+      // For the current season (2025/26), use the live data from betsEntry
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
@@ -432,8 +439,28 @@ export default function BetsSeasonTabs({
           </section>
         </>
       )
+    } else if (activeSeason === "2024/25") {
+      // For the 2024/25 season, use the historical data from betsEntry2024
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={historicalSeasonData} />
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <BetsChart entries={historicalSeasonChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <PieChart data={historicalSeasonPieData} />
+              </div>
+            </div>
+          </section>
+        </>
+      )
     } else if (pastSeasonsData[activeSeason]) {
-      // For seasons with data, use the provided static data
+      // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
 
       // Create modified columns for past seasons without wins and winPercentage

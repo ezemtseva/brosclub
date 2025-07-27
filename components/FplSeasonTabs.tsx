@@ -9,8 +9,18 @@ import dynamicImport from "next/dynamic"
 
 const FplChart = dynamicImport(() => import("./FplChart"), { ssr: false })
 
-// Define the seasons array with all the required seasons
-const seasons = ["2024/25", "2023/24", "2022/23", "2021/22", "2020/21", "2019/20", "2018/19", "2017/18"] as const
+// Define the seasons array with all the required seasons - added 2025/26 as first tab
+const seasons = [
+  "2025/26",
+  "2024/25",
+  "2023/24",
+  "2022/23",
+  "2021/22",
+  "2020/21",
+  "2019/20",
+  "2018/19",
+  "2017/18",
+] as const
 type Season = (typeof seasons)[number]
 
 // Define types for the standings data
@@ -78,7 +88,7 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: "#ea7878",
       },
     ],
-    highlights: ["Panda scored the most points in a season"],
+    highlights: ["Panda set the new record - the most points in a season!"],
   },
   "2022/23": {
     standings: [
@@ -353,6 +363,9 @@ type FplSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonHighlights: any[]
+  historicalSeasonData: any[]
+  historicalSeasonChartData: any[]
+  historicalSeasonHighlights: any[]
   columns: any[]
 }
 
@@ -360,14 +373,17 @@ export default function FplSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonHighlights,
+  historicalSeasonData,
+  historicalSeasonChartData,
+  historicalSeasonHighlights,
   columns,
 }: FplSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2024/25")
+  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2024/25") {
-      // For the current season, use the live data
+    if (activeSeason === "2025/26") {
+      // For the current season (2025/26), use the live data from fplEntry
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
@@ -388,8 +404,30 @@ export default function FplSeasonTabs({
           </section>
         </>
       )
+    } else if (activeSeason === "2024/25") {
+      // For the 2024/25 season, use the historical data from fplEntry2024
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={historicalSeasonData} />
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+            <div className="w-full">
+              <FplChart entries={historicalSeasonChartData} />
+            </div>
+          </section>
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <div className="px-12">
+              <ImageCarousel images={historicalSeasonHighlights} />
+            </div>
+          </section>
+        </>
+      )
     } else if (pastSeasonsData[activeSeason]) {
-      // For seasons with data, use the provided static data
+      // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
       return (
         <>

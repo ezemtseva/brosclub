@@ -17,6 +17,23 @@ type TableDataItem = {
   hoverColor: string
 }
 
+// Add these type definitions after the existing TableDataItem type
+type FplEntry = {
+  id?: number
+  week: number
+  player: string
+  games: number
+  points: number
+  createdAt?: Date
+}
+
+type PlayerData = {
+  name: string
+  teamId: string
+  color: string
+  entries: FplEntry[]
+}
+
 const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
@@ -31,21 +48,80 @@ const players = [
   { name: "Panda", teamId: "5663", color: "#4fcb90" },
 ]
 
-async function getFplDataFromDb() {
+// Helper function to process FPL data for display
+function processFplData(playersData: PlayerData[]): TableDataItem[] {
+  return playersData
+    .map((player) => {
+      const lastEntry = player.entries[player.entries.length - 1]
+      return {
+        player: player.name,
+        games: lastEntry.games,
+        points: lastEntry.points,
+        color: player.color,
+      }
+    })
+    .sort((a, b) => b.points - a.points)
+    .map((entry, index, sortedData) => ({
+      position: index + 1,
+      player: (
+        <span className="relative">
+          {entry.player}
+          <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: entry.color }} />
+        </span>
+      ),
+      games: entry.games,
+      points: entry.points,
+      difference: index === 0 ? "-" : (sortedData[index - 1].points - entry.points).toString(),
+      hoverColor: entry.color,
+    }))
+}
+
+// Helper function to create chart data
+function createChartData(playersData: PlayerData[]) {
+  return playersData.flatMap((player) =>
+    player.entries.map((entry: FplEntry) => ({
+      player: player.name,
+      week: entry.week,
+      games: entry.games,
+      points: entry.points,
+    })),
+  )
+}
+
+async function getCurrentSeasonData(): Promise<PlayerData[]> {
   try {
     const fplEntries = await prisma.fplEntry.findMany({
       orderBy: [{ player: "asc" }, { week: "asc" }],
     })
 
-    const playerData = players.map((player) => ({
+    const playerData: PlayerData[] = players.map((player) => ({
       ...player,
       entries: fplEntries.filter((entry) => entry.player === player.name),
     }))
 
     return playerData
   } catch (error) {
-    console.error("Error fetching FPL data from database:", error)
+    console.error("Error fetching current FPL data from database:", error)
     throw error
+  }
+}
+
+async function getHistoricalSeasonData(): Promise<PlayerData[]> {
+  try {
+    // Use dynamic access to the model
+    const fplEntries = await (prisma as any).fplEntry2024.findMany({
+      orderBy: [{ player: "asc" }, { week: "asc" }],
+    })
+
+    const playerData: PlayerData[] = players.map((player) => ({
+      ...player,
+      entries: fplEntries.filter((entry: any) => entry.player === player.name),
+    }))
+
+    return playerData
+  } catch (error) {
+    console.error("Error fetching historical FPL data from database:", error)
+    return players.map((player) => ({ ...player, entries: [] }))
   }
 }
 
@@ -56,49 +132,32 @@ export default async function FPLPage() {
     await updateFplData()
     console.log("FPL data update completed")
 
-    // Fetch updated data from the database
-    console.log("Fetching updated data from database...")
-    const playersData = await getFplDataFromDb()
-    console.log("Database data fetched:", playersData)
+    // Fetch current season data (2025/26)
+    console.log("Fetching current season data from database...")
+    const currentPlayersData = await getCurrentSeasonData()
+    console.log("Current season data fetched:", currentPlayersData)
 
-    const tableData: TableDataItem[] = playersData
-      .map((player) => {
-        const lastEntry = player.entries[player.entries.length - 1]
-        return {
-          player: player.name,
-          games: lastEntry.games,
-          points: lastEntry.points,
-          color: player.color,
-        }
-      })
-      .sort((a, b) => b.points - a.points)
-      .map((entry, index, sortedData) => ({
-        position: index + 1,
-        player: (
-          <span className="relative">
-            {entry.player}
-            <span
-              className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: entry.color }}
-            />
-          </span>
-        ),
-        games: entry.games,
-        points: entry.points,
-        difference: index === 0 ? "-" : (sortedData[index - 1].points - entry.points).toString(),
-        hoverColor: entry.color,
-      }))
+    // Fetch historical season data (2024/25)
+    console.log("Fetching historical season data from database...")
+    const historicalPlayersData = await getHistoricalSeasonData()
+    console.log("Historical season data fetched:", historicalPlayersData)
 
-    const chartData = playersData.flatMap((player) =>
-      player.entries.map((entry) => ({
-        player: player.name,
-        week: entry.week,
-        games: entry.games,
-        points: entry.points,
-      })),
-    )
+    // Process current season data
+    const currentSeasonData = processFplData(currentPlayersData)
+    const currentSeasonChartData = createChartData(currentPlayersData)
 
-    const images = [
+    // Process historical season data
+    const historicalSeasonData = processFplData(historicalPlayersData)
+    const historicalSeasonChartData = createChartData(historicalPlayersData)
+
+    // Current season highlights (update as new highlights happen)
+    const currentSeasonHighlights = [
+      { src: "/imgs/fpl/thumbnail.png", alt: "New FPL Season Highlight", caption: "New season will be started in August!" },
+      // Add more current season images as they happen
+    ]
+
+    // Historical season highlights (2024/25)
+    const historicalSeasonHighlights = [
       { src: "/imgs/fpl/fpl38.png", alt: "New FPL Season Highlight", caption: "Team of the week 38 - Panda" },
       { src: "/imgs/fpl/fpl37.png", alt: "New FPL Season Highlight", caption: "Team of the week 37 - Panda" },
       { src: "/imgs/fpl/fpl36.png", alt: "New FPL Season Highlight", caption: "Team of the week 36 - Choco" },
@@ -140,13 +199,18 @@ export default async function FPLPage() {
 
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">Fantasy Premiere League Cup</h1>
-        <p className="text-base text-gray-600 mb-8">VIII season of the online game where bearos manage their own virtual team of real-life Premier League players.</p>
+        <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
+        <p className="text-base text-gray-600 mb-8">
+          IX season of the online game where bearos manage their own virtual team of real-life Premier League players.
+        </p>
 
         <FplSeasonTabs
-          currentSeasonData={tableData}
-          currentSeasonChartData={chartData}
-          currentSeasonHighlights={images}
+          currentSeasonData={currentSeasonData}
+          currentSeasonChartData={currentSeasonChartData}
+          currentSeasonHighlights={currentSeasonHighlights}
+          historicalSeasonData={historicalSeasonData}
+          historicalSeasonChartData={historicalSeasonChartData}
+          historicalSeasonHighlights={historicalSeasonHighlights}
           columns={columns}
         />
       </div>
@@ -155,7 +219,7 @@ export default async function FPLPage() {
     console.error("Error in FPLPage:", error)
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-title font-bold mb-4">Fantasy Premiere League Cup</h1>
+        <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
         <h2 className="text-title font-bold mb-4">Standings</h2>
         <p className="text-red-500">Error loading FPL data. Please try again later.</p>

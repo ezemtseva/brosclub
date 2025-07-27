@@ -20,6 +20,16 @@ model FplEntry {
   @@unique([week, player])
 }
 
+model FplEntry2024 {
+  id     Int    @id @default(autoincrement())
+  week   Int
+  player String
+  games  Int
+  points Int
+
+  @@map("fplEntry2024")
+}
+
 model GgEntry {
   id        Int      @id @default(autoincrement())
   week      Int
@@ -55,6 +65,17 @@ model BetsEntry {
   createdAt DateTime @default(now())
 
   @@unique([week, player])
+}
+
+model BetsEntry2024 {
+  id     Int    @id @default(autoincrement())
+  week   Int
+  player String
+  games  Int
+  wins   Int
+  points Int
+
+  @@map("betsEntry2024")
 }
 
 model PokerEntry {

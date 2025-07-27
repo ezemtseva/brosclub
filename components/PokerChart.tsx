@@ -54,7 +54,7 @@ export default function PokerChart({ entries }: PokerChartProps) {
 
     const maxGames = Math.min(45, Math.max(...entries.map(entry => entry.games)))
 
-    const chartData = Array.from({ length: maxGames }, (_, i) => {
+    const chartData = Array.from({ length: maxGames + 1}, (_, i) => {
       const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 

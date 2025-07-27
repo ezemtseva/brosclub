@@ -119,7 +119,7 @@ async function getLatestPokerLeader() {
 async function getLatest7okerLeader() {
   try {
     // Use dynamic property access to avoid TypeScript errors
-    const modelName = "sevenOkerEntry"
+    const modelName = "sevenOkerEntry2024"
 
     const latestWeek = await (prisma as any)[modelName].findFirst({
       orderBy: { week: "desc" },
@@ -229,7 +229,7 @@ export default async function Home() {
     content:
       ggLeader && ggLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
+          Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -242,7 +242,7 @@ export default async function Home() {
     content:
       pokerLeader && pokerLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
+          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -268,7 +268,7 @@ export default async function Home() {
     content:
       betsLeader && betsLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
+          Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -281,7 +281,7 @@ export default async function Home() {
     content:
       fifaLeader && fifaLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
+          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -358,7 +358,7 @@ export default async function Home() {
                 <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
                 <p className="text-gray-600 mb-4">{summary.content}</p>
                 <Link href={summary.link} className="text-blue-500 hover:underline">
-                  View full standings
+                  Full standings
                 </Link>
               </div>
             ))}

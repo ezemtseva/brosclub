@@ -117,7 +117,7 @@ export default async function FIFAPage() {
       videoId: "caPxV7oCJxA",
       title: "Amiak Karbromid at its finest",
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-      coverageText: "GAME DAY 21",
+      coverageText: "CLUBS",
     },
     {
       videoId: "csD8h1kda6o",

@@ -10,8 +10,8 @@ import dynamic from "next/dynamic"
 const PokerChart = dynamic(() => import("./PokerChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
-// Define the seasons array with all the required seasons
-const seasons = ["2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"] as const
+// Define the seasons array with all the required seasons - added 2025/26 as first tab
+const seasons = ["2025/26", "2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"] as const
 type Season = (typeof seasons)[number]
 
 // Define types for the standings data
@@ -777,6 +777,10 @@ type HoldemSeasonTabsProps = {
   currentSeasonChartData: any[]
   currentSeasonPieData: PieChartData[]
   currentSeasonHighlights: any[]
+  historicalSeasonData: StandingsData[]
+  historicalSeasonChartData: any[]
+  historicalSeasonPieData: PieChartData[]
+  historicalSeasonHighlights: any[]
   columns: any[]
 }
 
@@ -785,14 +789,18 @@ export default function HoldemSeasonTabs({
   currentSeasonChartData,
   currentSeasonPieData,
   currentSeasonHighlights,
+  historicalSeasonData,
+  historicalSeasonChartData,
+  historicalSeasonPieData,
+  historicalSeasonHighlights,
   columns,
 }: HoldemSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2024/25")
+  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2024/25") {
-      // For the current season, use the live data
+    if (activeSeason === "2025/26") {
+      // For the current season (2025/26), use the live data from pokerEntry
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
@@ -818,8 +826,35 @@ export default function HoldemSeasonTabs({
           </section>
         </>
       )
+    } else if (activeSeason === "2024/25") {
+      // For the 2024/25 season, use the historical data from pokerEntry2024
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={historicalSeasonData} />
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <PokerChart entries={historicalSeasonChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <PieChart data={historicalSeasonPieData} />
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <div className="px-12">
+              <ImageCarousel images={historicalSeasonHighlights} />
+            </div>
+          </section>
+        </>
+      )
     } else if (pastSeasonsData[activeSeason]) {
-      // For seasons with data, use the provided static data
+      // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
 
       return (

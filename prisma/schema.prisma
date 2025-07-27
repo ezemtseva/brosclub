@@ -69,6 +69,17 @@ model PokerEntry {
   @@unique([week, bearo])
 }
 
+model PokerEntry2024 {
+  id     Int    @id @default(autoincrement())
+  week   Int
+  bearo  String
+  games  Int
+  wins   Int
+  points Int
+
+  @@map("pokerEntry2024")
+}
+
 model SevenOkerEntry {
   id        Int      @id @default(autoincrement())
   week      Int

@@ -21,23 +21,11 @@ const playerColors = {
   Panda: "#4fcb90",
 }
 
-async function getPokerData() {
-  const entries = await prisma.pokerEntry.findMany({
-    orderBy: [{ week: "asc" }, { bearo: "asc" }],
-  })
-
-  const latestWeek = Math.max(...entries.map((entry) => entry.week))
-  const latestEntries = entries.filter((entry) => entry.week === latestWeek)
-
-  return { entries, latestEntries }
-}
-
-export default async function PokerPage() {
-  const { entries, latestEntries } = await getPokerData()
-
-  const tableData = latestEntries
-    .sort((a, b) => b.points - a.points)
-    .map((entry, index, arr) => ({
+// Helper function to process data for display
+function processSeasonData(latestEntries: any[]) {
+  return latestEntries
+    .sort((a: any, b: any) => b.points - a.points)
+    .map((entry: any, index: number, arr: any[]) => ({
       position: index + 1,
       bearo: (
         <span className="relative">
@@ -55,14 +43,68 @@ export default async function PokerPage() {
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
       hoverColor: playerColors[entry.bearo as keyof typeof playerColors],
     }))
+}
 
-  const pieChartData = latestEntries.map((entry) => ({
+// Helper function to create pie chart data
+function createPieChartData(latestEntries: any[]) {
+  return latestEntries.map((entry: any) => ({
     name: entry.bearo,
     value: entry.wins,
     color: playerColors[entry.bearo as keyof typeof playerColors],
   }))
+}
 
-  const images = [
+async function getCurrentSeasonData() {
+  const entries = await prisma.pokerEntry.findMany({
+    orderBy: [{ week: "asc" }, { bearo: "asc" }],
+  })
+
+  const latestWeek = entries.length > 0 ? Math.max(...entries.map((entry: any) => entry.week)) : 0
+  const latestEntries = entries.filter((entry: any) => entry.week === latestWeek)
+
+  return { entries, latestEntries }
+}
+
+async function getHistoricalSeasonData() {
+  try {
+    // Use dynamic access to the model
+    const entries = await (prisma as any).pokerEntry2024.findMany({
+      orderBy: [{ week: "asc" }, { bearo: "asc" }],
+    })
+
+    const latestWeek = entries.length > 0 ? Math.max(...entries.map((entry: any) => entry.week)) : 0
+    const latestEntries = entries.filter((entry: any) => entry.week === latestWeek)
+
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching historical poker data:", error)
+    return { entries: [], latestEntries: [] }
+  }
+}
+
+export default async function PokerPage() {
+  // Fetch current season data (2025/26)
+  const { entries: currentEntries, latestEntries: currentLatestEntries } = await getCurrentSeasonData()
+
+  // Fetch historical season data (2024/25)
+  const { entries: historicalEntries, latestEntries: historicalLatestEntries } = await getHistoricalSeasonData()
+
+  // Process current season data
+  const currentSeasonData = processSeasonData(currentLatestEntries)
+  const currentSeasonPieData = createPieChartData(currentLatestEntries)
+
+  // Process historical season data
+  const historicalSeasonData = processSeasonData(historicalLatestEntries)
+  const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
+
+  // Current season highlights (update as new highlights happen)
+  const currentSeasonHighlights = [
+    { src: "/imgs/poker/thumbnail.jpg", alt: "New season highlight", caption: "New season will be started in August!" },
+    // Add more current season images as they happen
+  ]
+
+  // Historical season highlights (2024/25)
+  const historicalSeasonHighlights = [
     {
       src: "/imgs/poker/poker16.jpg",
       alt: "Poker Season Highlight - Full House",
@@ -112,14 +154,18 @@ export default async function PokerPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Texas Holdem Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        X anniversary season of Texas Holdem poker is back after a long 4 year pause
+        X anniversary season of Texas Holdem poker is back after a long 4 year pause.
       </p>
 
       <HoldemSeasonTabs
-        currentSeasonData={tableData}
-        currentSeasonChartData={entries}
-        currentSeasonPieData={pieChartData}
-        currentSeasonHighlights={images}
+        currentSeasonData={currentSeasonData}
+        currentSeasonChartData={currentEntries}
+        currentSeasonPieData={currentSeasonPieData}
+        currentSeasonHighlights={currentSeasonHighlights}
+        historicalSeasonData={historicalSeasonData}
+        historicalSeasonChartData={historicalEntries}
+        historicalSeasonPieData={historicalSeasonPieData}
+        historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
       />
     </div>

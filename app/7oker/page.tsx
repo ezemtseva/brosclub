@@ -148,6 +148,7 @@ export default async function SevenOkerPage() {
 
   // Historical season highlights (2024/25)
   const historicalSeasonHighlights = [
+    { src: "/imgs/7oker/game61.png", alt: "7oker Season Highlight", caption: "Был туз крестовый на руке.." },
     { src: "/imgs/7oker/game51.png", alt: "7oker Season Highlight", caption: "Close call win by Choco!" },
     { src: "/imgs/7oker/game42.png", alt: "7oker Season Highlight", caption: "The ultimate setup for Andrei Bubin 2!" },
     {

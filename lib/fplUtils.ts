@@ -18,9 +18,9 @@ async function fetchFplData(teamId: string) {
 
 export async function updateFplData() {
   const players = [
-    { name: 'Vanilla', teamId: '1546526' },
-    { name: 'Choco', teamId: '3214199' },
-    { name: 'Panda', teamId: '5663' },
+    { name: 'Vanilla', teamId: '1234646' },
+    { name: 'Choco', teamId: '2606275' },
+    { name: 'Panda', teamId: '7592' },
   ]
 
   for (const player of players) {

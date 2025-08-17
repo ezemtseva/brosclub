@@ -216,7 +216,7 @@ export default async function Home() {
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
+          Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -348,7 +348,7 @@ export default async function Home() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-title font-bold mb-6">XIV Season 2024/25</h2>
+          <h2 className="text-title font-bold mb-6">XV Season 2025/26 (transition)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {summaries.map((summary, index) => (
               <div

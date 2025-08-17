@@ -152,7 +152,7 @@ export default async function FPLPage() {
 
     // Current season highlights (update as new highlights happen)
     const currentSeasonHighlights = [
-      { src: "/imgs/fpl/thumbnail.png", alt: "New FPL Season Highlight", caption: "New season will be started in August!" },
+      { src: "/imgs/fpl/thumbnail.png", alt: "New FPL Season Highlight", caption: "Welcome to the new season!" },
       // Add more current season images as they happen
     ]
 

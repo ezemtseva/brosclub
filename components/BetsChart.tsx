@@ -66,8 +66,8 @@ export default function BetsChart({ entries }: BetsChartProps) {
     const maxGames = Math.max(...entries.map(entry => entry.games))
     const lastFifteenGames = Math.max(0, maxGames - 38)
 
-    const chartData = Array.from({ length: 20 }, (_, i) => {
-      const gameNumber = i * 2
+    const chartData = Array.from({ length: maxGames + 1 }, (_, i) => {
+      const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
       Object.keys(playerData).forEach(player => {
@@ -92,8 +92,8 @@ export default function BetsChart({ entries }: BetsChartProps) {
           <XAxis 
             dataKey="games" 
             type="number" 
-            domain={['dataMin', 'dataMax']}
-            ticks={chartData.map(d => d.games)}
+            domain={[0, 38]}
+            ticks={Array.from({ length: 20 }, (_, i) => i * 2)} 
           />
           <YAxis 
             type="number"

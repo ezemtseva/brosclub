@@ -132,8 +132,8 @@ export default async function GGPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">GeoGuessr Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        The GeoGuessr tournament includes five rounds for every game: move, no move and panorama (frozen). The player
-        that hits 5K gets additional points.
+        II season of the GeoGuessr. The tournament includes five rounds for every game: move, no move and panorama. The player
+        that hits 5K gets an additional point.
       </p>
 
       <GGSeasonTabs

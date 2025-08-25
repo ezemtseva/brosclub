@@ -152,7 +152,7 @@ export default async function FPLPage() {
 
     // Current season highlights (update as new highlights happen)
     const currentSeasonHighlights = [
-      { src: "/imgs/fpl/thumbnail.png", alt: "New FPL Season Highlight", caption: "Welcome to the new season!" },
+      { src: "/imgs/fpl/fpl2526-1.png", alt: "New FPL Season Highlight", caption: "Team of the week 1 - Panda" },
       // Add more current season images as they happen
     ]
 
@@ -201,7 +201,7 @@ export default async function FPLPage() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">
-          IX season of the online game where bearos manage their own virtual team of real-life Premier League players.
+          X anniversary season of the online game where bearos manage their own virtual team of real-life Premier League players.
         </p>
 
         <FplSeasonTabs

@@ -25,30 +25,25 @@ const sections = [
     records: [
       "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes, 23-24.09.2017",
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a season – 70.7%, 2020
+        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a season – 73.3%, 2024/25 <strong>✯</strong>
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a team in a season (Newcastle, Marseille) –
         89.29%, 2023/24
       </>,
+      "The smallest gap between 1st and 2nd place is 1 point, 2015/16 and 2023/24",
+      "The largest gap is 10 points, 2020/21",
       <>
-        <UnderlinedPlayer name="Panda" /> holds the lowest win rate for a team in a season (Sevilla) – 0.0%, 2023/24
-      </>,
-      "The smallest gap between 1st and 2nd place was 1 point, 2015/16 and 2023/24",
-      "The largest gap was 10 points, 2020/21",
-      <>
-        <UnderlinedPlayer name="Choco" /> was the fastest to score 100 goals in a tournament – 23 rounds (Chelsea), 2020
+        <UnderlinedPlayer name="Vanilla" /> is the fastest to score 100 goals by a team (Liverpool) – 20 games, 2024/25 <strong>✯</strong>
       </>,
       <>
-        <UnderlinedPlayer name="Choco" /> was the first to score a goal with a goalkeeper (Atletico Madrid), 2017
+        <UnderlinedPlayer name="Choco" /> is the first to score a goal with a goalkeeper (Atletico Madrid), 2017
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> was the first to score a goal from their own half (into an empty net, no
-        lags), 2017 for Napoli
+        <UnderlinedPlayer name="Vanilla" /> is the first to score a goal from their own half (empty net) - Napoli, 2017
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> was the first to score an Olympic goal (directly from a corner) against an
-        opponent (Lille), 2021/22
+        <UnderlinedPlayer name="Vanilla" /> is the first to score an Olympic goal (directly from a corner) - Lille, 2021/22
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the longest unbeaten streak for a team (Barcelona) – 26 matches,
@@ -112,12 +107,12 @@ const sections = [
         910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong>{" "}
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 9, 2024/25 <strong>✯</strong>{" "}
-      </>,
-      <>
         <UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25{" "}
         <strong>✯</strong>{" "}
       </>,
+      <>
+      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 11, 2024/25 <strong>✯</strong>{" "}
+    </>,
     ],
   },
   {
@@ -127,7 +122,7 @@ const sections = [
         <UnderlinedPlayer name="Panda" /> won the first club game, 06.09.2012
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> was the first to win 100 games in the club: it took him only 263 games,
+        <UnderlinedPlayer name="Panda" /> is the first to win 100 games - it took him only 263 games,
         09.06.2017
       </>,
       "The longest poker game lasted 1 hour and 41 minutes, 2015",
@@ -138,16 +133,16 @@ const sections = [
         <strong>✯</strong>{" "}
       </>,
       <>
-        <UnderlinedPlayer name="Choco" /> was the first player to get a straight flush and four aces
+        <UnderlinedPlayer name="Choco" /> is the first player to get a straight flush and four aces
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> was the first player to get a six- and seven-card straight flush
+        <UnderlinedPlayer name="Vanilla" /> is the first player to get a six- and seven-card straight flush
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> was the first and only player to get a royal flush (hearts)
+        <UnderlinedPlayer name="Panda" /> is the first and only player to get a royal flush (hearts)
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> was the first and only player to get second royal flush (again hearts), 2025{" "}
+        <UnderlinedPlayer name="Panda" /> is the first and only player to get second royal flush (again hearts), 2025{" "}
         <strong>✯</strong>{" "}
       </>,
     ],
@@ -171,7 +166,7 @@ const sections = [
   <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
 </>,
 <>
-  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of point per game - 294, 2024/25 <strong>✯</strong>{" "}
+  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points per game - 294, 2024/25 <strong>✯</strong>{" "}
 </>,
     ],
   },
@@ -182,7 +177,7 @@ export default function BrecordsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Brecords</h1>
       <p className="text-basic text-gray-600 mb-8">
-        <strong>Eternal:</strong> the longest bros call lasted 12 hours and 32 minutes on February 22, 2016.
+        <strong>Eternal record:</strong> the longest bros call lasted 12 hours and 32 minutes on February 22, 2016.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {sections.map((section, index) => (

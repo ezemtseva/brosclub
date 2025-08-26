@@ -274,7 +274,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#4b98de",
       },
     ],
-    highlights: ["Panda set the biggest percentage of wins in a season"],
+    highlights: ["Panda set the biggest win rate in a season"],
   },
   "2017": {
     standings: [
@@ -602,8 +602,8 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
     highlights: [
-      "Vanilla was the first player to get a six- and seven-card straight flush",
-      "Panda was the first and only player to get a royal flush (hearts)",
+      "Vanilla is the first player to get a six- and seven-card straight flush",
+      "Panda is the first and only player to get a royal flush (hearts)",
     ],
   },
   "2013": {
@@ -686,7 +686,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: "#4b98de",
       },
     ],
-    highlights: ["Choco was the first player to get a straight flush and four aces"],
+    highlights: ["Choco is the first player to get a straight flush and four aces"],
   },
   "2012": {
     standings: [

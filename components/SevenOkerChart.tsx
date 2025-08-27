@@ -92,8 +92,8 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
       setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 10))
     } else {
       // For gamepoints, use fixed scale from 0 to 1000 with steps of 100
-      setYAxisDomain([0, 10000])
-      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 1000))
+      setYAxisDomain([0, 11000])
+      setYAxisTicks(Array.from({ length: 12 }, (_, i) => i * 1000))
     }
   }, [entries, dataKey])
 

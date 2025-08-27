@@ -104,7 +104,7 @@ export default async function GGPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/gg/thumbnail.png", alt: "New season highlight", caption: "New season will be started in August!" },
+    { src: "/imgs/gg/thumbnail.png", alt: "New season highlight", caption: "New season will be started in September!" },
     // Add more current season images as they happen
   ]
 

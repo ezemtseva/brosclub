@@ -25,14 +25,15 @@ const sections = [
     records: [
       "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes, 23-24.09.2017",
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a season – 73.3%, 2024/25 <strong>✯</strong>
+        Liverpool of <UnderlinedPlayer name="Vanilla"/> has won the cup 3 times – 2024/25, 2021/22, 2020/21 <strong>✯</strong>
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a team in a season (Newcastle, Marseille) –
-        89.29%, 2023/24
+        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate in a season – 73.08%, 2024/25 <strong>✯</strong>
       </>,
-      "The smallest gap between 1st and 2nd place is 1 point, 2015/16 and 2023/24",
-      "The largest gap is 10 points, 2020/21",
+      <>
+        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a team in a season (Liverpool) –
+        95.65%, 2024/25 <strong>✯</strong>
+      </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> is the fastest to score 100 goals by a team (Liverpool) – 20 games, 2024/25 <strong>✯</strong>
       </>,
@@ -46,7 +47,7 @@ const sections = [
         <UnderlinedPlayer name="Vanilla" /> is the first to score an Olympic goal (directly from a corner) - Lille, 2021/22
       </>,
       <>
-      <UnderlinedPlayer name="Vanilla" /> holds the longest winning streak for a team Liverpool) – 22 matches,
+      <UnderlinedPlayer name="Vanilla" /> holds the longest winning streak for a team (Liverpool) – 22 matches,
       2024/25 <strong>✯</strong>
     </>,
       <>
@@ -70,8 +71,6 @@ const sections = [
       <>
         <UnderlinedPlayer name="Vanilla" /> scored the most points in a round without boosts – 131, 2022/23
       </>,
-      "The smallest gap between 1st and 2nd place was 23 points, 2021/22",
-      "The largest gap was 256 points, 2017/18",
     ],
   },
   {
@@ -85,14 +84,12 @@ const sections = [
         <strong>✯</strong>{" "}
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> and <UnderlinedPlayer name="Vanilla" /> won the betting cup three times in a
-        row – 2012-14, 2020-23, and 2015-18
+        <UnderlinedPlayer name="Panda" /> and <UnderlinedPlayer name="Vanilla" /> have won the cup 3 times in a
+        row – 2012-14, 2020-23 and 2015-18
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> scored the most points in a round – 17/30 (56.67%), 2021
       </>,
-      "The smallest gap between 1st and 2nd place was 4 points, 2019",
-      "The largest gap was 68 points, 2015",
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the record for most correctly predicted scores in a day – 4/5 matches,
         2016
@@ -130,8 +127,6 @@ const sections = [
         09.06.2017
       </>,
       "The longest poker game lasted 1 hour and 41 minutes, 2015",
-      "The smallest gap between 1st and 2nd place was 1 point, 2012",
-      "The largest gap was 16 points, 2017",
       <>
         <UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 5 games, 10th season, 2025{" "}
         <strong>✯</strong>{" "}

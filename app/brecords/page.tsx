@@ -46,6 +46,10 @@ const sections = [
         <UnderlinedPlayer name="Vanilla" /> is the first to score an Olympic goal (directly from a corner) - Lille, 2021/22
       </>,
       <>
+      <UnderlinedPlayer name="Vanilla" /> holds the longest winning streak for a team Liverpool) – 22 matches,
+      2024/25 <strong>✯</strong>
+    </>,
+      <>
         <UnderlinedPlayer name="Vanilla" /> holds the longest unbeaten streak for a team (Barcelona) – 26 matches,
         2023/24
       </>,

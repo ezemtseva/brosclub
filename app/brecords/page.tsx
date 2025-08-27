@@ -38,7 +38,7 @@ const sections = [
         <UnderlinedPlayer name="Vanilla" /> is the fastest to score 100 goals by a team (Liverpool) – 20 games, 2024/25 <strong>✯</strong>
       </>,
       <>
-        <UnderlinedPlayer name="Choco" /> is the first to score a goal with a goalkeeper (Atletico Madrid), 2017
+        <UnderlinedPlayer name="Choco" /> is the first to score a goal by a goalkeeper (Atletico Madrid), 2017
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> is the first to score a goal from their own half (empty net) - Napoli, 2017
@@ -60,7 +60,7 @@ const sections = [
     title: "FPL",
     records: [
       <>
-        <UnderlinedPlayer name="Panda" /> holds the record for the most points in a season – 2,511, 2023/24{" "}
+        <UnderlinedPlayer name="Panda" /> holds the record for the most points in a season – 2.511, 2023/24{" "}
       </>,
       <>
         <UnderlinedPlayer name="Panda" /> held first place for 25 consecutive rounds, 2022/23 <strong>✯</strong>{" "}
@@ -69,7 +69,7 @@ const sections = [
         <UnderlinedPlayer name="Choco" /> scored the most points in a round with a boost – 141, 2021/22
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> scored the most points in a round without boosts – 131, 2022/23
+        <UnderlinedPlayer name="Vanilla" /> scored the most points in a round without any boost – 131, 2022/23
       </>,
     ],
   },
@@ -150,15 +150,12 @@ const sections = [
     title: "7oker",
     records: [
       <>
-        <UnderlinedPlayer name="Vanilla" /> won the first 7oker game, 29.03.2025 <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 <strong>✯</strong>{" "}
       </>,
       <>
       <UnderlinedPlayer name="Panda" /> is the first who bet 6 and won all 6 tricks <strong>✯</strong>{" "}
     </>,
     <>
-    The smallest gap between 1st and 2nd place in a game - 1 points, 2024/25 <strong>✯</strong>{" "}
-  </>,
-  <>
   <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
 </>,
   <>

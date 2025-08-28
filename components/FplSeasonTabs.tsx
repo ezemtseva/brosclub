@@ -65,7 +65,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 2,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -122,7 +122,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 3,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -169,7 +169,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 3,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -216,7 +216,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 3,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -246,7 +246,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 2,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -302,7 +302,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 3,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),
@@ -332,7 +332,7 @@ const pastSeasonsData: PastSeasonsData = {
         position: 2,
         player: (
           <span className="relative">
-            Chocolate
+            Choco
             <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
           </span>
         ),

@@ -9,7 +9,7 @@ import dynamic from "next/dynamic"
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
-// Define the seasons array with all the required seasons - added 2025/26 as first tab
+// Define the seasons array with all the required seasons - added 2025/26 as first tabs
 const seasons = [
   "2025/26",
   "2024/25",
@@ -83,7 +83,7 @@ const pastSeasonsData: PastSeasonsData = {
     standings: [
       {
         position: 1,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: 38,
         points: 299,
         difference: "-",
@@ -128,7 +128,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: 38,
         points: 234,
         difference: "15",
@@ -160,7 +160,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: 38,
         points: 240,
         difference: "21",
@@ -188,7 +188,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: 38,
         points: 244,
         difference: "9",
@@ -201,7 +201,7 @@ const pastSeasonsData: PastSeasonsData = {
     standings: [
       {
         position: 1,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: 38,
         points: 269,
         difference: "-",
@@ -246,7 +246,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: "?",
         points: 389,
         difference: "64",
@@ -274,7 +274,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: "?",
         points: 443,
         difference: "59",
@@ -303,7 +303,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: "?",
         points: 490,
         difference: "2",
@@ -332,7 +332,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: "?",
         points: 535,
         difference: "57",
@@ -361,7 +361,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         games: "?",
         points: 538,
         difference: "41",
@@ -387,7 +387,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         position: 3,
-        player: createPlayerElement("Chocolate"),
+        player: createPlayerElement("Choco"),
         points: 194,
         difference: "12",
         hoverColor: playerColors.Chocolate,

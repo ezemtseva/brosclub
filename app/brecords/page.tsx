@@ -120,7 +120,7 @@ const sections = [
     title: "Texas Holdem",
     records: [
       <>
-        <UnderlinedPlayer name="Panda" /> won the first club game, 06.09.2012
+        <UnderlinedPlayer name="Panda" /> won the first game, 06.09.2012
       </>,
       <>
         <UnderlinedPlayer name="Panda" /> is the first to win 100 games - it took him only 263 games,
@@ -153,7 +153,7 @@ const sections = [
         <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 <strong>✯</strong>{" "}
       </>,
       <>
-      <UnderlinedPlayer name="Panda" /> is the first who bet 6 and won all 6 tricks <strong>✯</strong>{" "}
+      <UnderlinedPlayer name="Panda" /> won the first season, it took him only 71 games to get 100 points <strong>✯</strong>{" "}
     </>,
     <>
   <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
@@ -162,7 +162,7 @@ const sections = [
   <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
 </>,
 <>
-  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points per game - 294, 2024/25 <strong>✯</strong>{" "}
+  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 <strong>✯</strong>{" "}
 </>,
     ],
   },

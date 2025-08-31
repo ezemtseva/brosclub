@@ -12,19 +12,19 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    achievements: ["x6 FIFA", "x3 FPL", "x3 BETS", "x1 GG"],
+    achievements: ["🏅 FIFA - 6", "🏅 FPL - 3", "🏅 BETS - 3", "🏅 GG - 1"],
     bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["x2 FIFA", "x2 BETS"],
+    achievements: ["🏅 FIFA - 2", "🏅 BETS - 2"],
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["x8 HOLDEM", "x7 BETS", "x5 FPL"],
+    achievements: ["🏅 HOLDEM - 8", "🏅 BETS - 7", "🏅 FPL - 5", "🏅 7OKER - 1"],
     bgColor: "bg-green-100",
   },
 ]
@@ -36,7 +36,7 @@ const playerColors = {
 }
 
 const historyData = [
-  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "", gg: "Vanilla" },
+  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -119,7 +119,7 @@ async function getLatestPokerLeader() {
 async function getLatest7okerLeader() {
   try {
     // Use dynamic property access to avoid TypeScript errors
-    const modelName = "sevenOkerEntry2024"
+    const modelName = "sevenOkerEntry"
 
     const latestWeek = await (prisma as any)[modelName].findFirst({
       orderBy: { week: "desc" },
@@ -331,7 +331,7 @@ export default async function Home() {
                   backContent={
                     <>
                       <h2 className="text-xl font-semibold mb-6">Cups of {member.name}:</h2>
-                      <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <ul className="list-none pl-0 text-sm text-gray-600">
                         {member.achievements.map((achievement, i) => (
                           <li key={i} className="mb-2 text-base">
                             {achievement}
@@ -348,7 +348,7 @@ export default async function Home() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-title font-bold mb-6">XV Season 2025/26 (transition)</h2>
+          <h2 className="text-title font-bold mb-6">XV Season 2025/26</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {summaries.map((summary, index) => (
               <div

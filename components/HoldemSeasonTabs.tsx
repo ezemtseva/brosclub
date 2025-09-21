@@ -799,7 +799,7 @@ export default function HoldemSeasonTabs({
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2025/26") {
+    if (activeSeason === "2020") {
       // For the current season (2025/26), use the live data from pokerEntry
       return (
         <>

@@ -110,7 +110,8 @@ export default async function GGPage() {
 
   // Historical season highlights (2024/25)
   const historicalSeasonHighlights = [
-    { src: "/imgs/gg/5k11.jpg", alt: "Third 5K of the season", caption: "One more 5k for Vanilla - Qatar" },
+    { src: "/imgs/gg/5k12.png", alt: "Third 5K of the season", caption: "5k for Vanilla - Budapest" },
+    { src: "/imgs/gg/5k11.jpg", alt: "Third 5K of the season", caption: "5k for Vanilla - Qatar" },
     { src: "/imgs/gg/5k10.jpg", alt: "Third 5K of the season", caption: "10th 5k in the season for Vanilla - Malta" },
     {
       src: "/imgs/gg/5k9.jpg",

@@ -36,6 +36,7 @@ const playerColors = {
 }
 
 const historyData = [
+  { year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -289,7 +290,7 @@ export default async function Home() {
     link: "/fifa",
   }
 
-  const summaries = [fifaSummary, fplSummary, betsSummary, holdemSummary, sevenOkerSummary, ggSummary]
+  const summaries = [fifaSummary, fplSummary, betsSummary, sevenOkerSummary, ggSummary] // holdemSummary to get back the card
 
   const currentMonth = new Date().getMonth() + 1 // getMonth() returns 0-11
 

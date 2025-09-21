@@ -7,9 +7,9 @@ const mainNavItems = [
   { href: "/fifa", label: "FIFA" },
   { href: "/fpl", label: "FPL" },
   { href: "/bets", label: "BETS" },
-  { href: "/poker", label: "HOLDEM" },
   { href: "/7oker", label: "7OKER" },
   { href: "/gg", label: "GG" },
+  { href: "/poker", label: "HOLDEM" },
 ]
 
 export default function NavBar() {

@@ -25,10 +25,10 @@ const sections = [
     records: [
       "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes, 23-24.09.2017",
       <>
-        Liverpool of <UnderlinedPlayer name="Vanilla"/> has won the cup 3 times – 2024/25, 2021/22, 2020/21 <strong>✯</strong>
+        Liverpool of <UnderlinedPlayer name="Vanilla"/> has won the cup 3 times – 2020/21, 2021/22, 2024/25 <strong>✯</strong>
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate in a season – 73.08%, 2024/25 <strong>✯</strong>
+        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate in a season – 73.21%, 2024/25 <strong>✯</strong>
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a team in a season (Liverpool) –

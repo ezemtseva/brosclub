@@ -99,7 +99,7 @@ export default async function PokerPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/poker/thumbnail.jpg", alt: "New season highlight", caption: "New season will be started in September!" },
+    { src: "/imgs/poker/thumbnail.jpg", alt: "New season highlight", caption: "New season is currently suspended!" },
     // Add more current season images as they happen
   ]
 
@@ -154,7 +154,7 @@ export default async function PokerPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Texas Holdem Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        XI season of Texas Holdem poker. Currently in Poker Now.
+        XI season of Texas Holdem poker is currently suspended.
       </p>
 
       <HoldemSeasonTabs

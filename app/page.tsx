@@ -36,7 +36,7 @@ const playerColors = {
 }
 
 const historyData = [
-  { year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
+  //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },

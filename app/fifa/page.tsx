@@ -220,10 +220,10 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
-      videoId: "new-video-id",
-      title: "New season begins!",
-      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-      coverageText: "SEASON START",
+      videoId: "yMJbOuHDdPU",
+      title: "Cucho Mala!",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 1",
     },
     // Add more current season videos as they happen
   ]

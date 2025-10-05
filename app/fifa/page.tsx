@@ -15,7 +15,8 @@ const columns = [
   { header: "P", accessor: "points" },
 ]
 
-const teamColors = {
+// Team colors for 2024/25 season (historical - DO NOT CHANGE)
+const teamColors2024 = {
   red: [
     "Liverpool",
     "Bayern Munich",
@@ -54,15 +55,62 @@ const teamColors = {
   ],
 }
 
-const getTeamColor = (team: string) => {
-  if (teamColors.red.includes(team)) return "#ea7878"
-  if (teamColors.blue.includes(team)) return "#4b98de"
-  if (teamColors.green.includes(team)) return "#4fcb90"
+// Team colors for 2025/26 season (NEW)
+const teamColors2025 = {
+  red: [
+    "Liverpool",
+    "Real Betis",
+    "AS Roma",
+    "RB Leipzig",
+    "Arsenal",
+    "Atletico Madrid",
+    "Borussia Dortmund",
+    "Marseille",
+    "Sporting CP",
+    "Eintracht Frankfurt",
+  ],
+  blue: [
+    "Villarreal",
+    "Chelsea",
+    "SS Lazio",
+    "PSG",
+    "Barcelona",
+    "Inter",
+    "Milan",
+    "Manchester United",
+    "Galatasaray",
+    "Wolfsburg",
+  ],
+  green: [
+    "Juventus",
+    "Tottenham",
+    "Newcastle",
+    "Napoli",
+    "Athletic Bilbao",
+    "Aston Villa",
+    "Real Madrid",
+    "Bayern Munich",
+    "Manchester City",
+    "Nottingham Forrest",
+  ],
+}
+
+const getTeamColor2024 = (team: string) => {
+  if (teamColors2024.red.includes(team)) return "#ea7878"
+  if (teamColors2024.blue.includes(team)) return "#4b98de"
+  if (teamColors2024.green.includes(team)) return "#4fcb90"
   return "transparent"
 }
 
-async function getFifaData() {
-  const entries = await prisma.fifaEntry.findMany()
+const getTeamColor2025 = (team: string) => {
+  if (teamColors2025.red.includes(team)) return "#ea7878"
+  if (teamColors2025.blue.includes(team)) return "#4b98de"
+  if (teamColors2025.green.includes(team)) return "#4fcb90"
+  return "transparent"
+}
+
+// Helper function to process FIFA data for 2025/26 season
+function processFifaData2025(entries: any[]) {
   return entries
     .map((entry) => ({
       ...entry,
@@ -70,43 +118,118 @@ async function getFifaData() {
       points: entry.wins * 3 + entry.draws,
     }))
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+    .map((entry, index) => ({
+      position: index + 1,
+      team: (
+        <div className="flex items-center space-x-2">
+          <Image
+            src={entry.logo || "/placeholder.svg"}
+            alt={entry.team}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+          <span className="relative">
+            {entry.team}
+            <span
+              className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
+              style={{ backgroundColor: getTeamColor2025(entry.team) }}
+            />
+          </span>
+        </div>
+      ),
+      games: entry.games,
+      wins: entry.wins,
+      draws: entry.draws,
+      losses: entry.losses,
+      goalsScored: entry.goalsScored,
+      goalsConceded: entry.goalsConceded,
+      goalDifference: entry.goalDifference,
+      points: entry.points,
+      hoverColor: getTeamColor2025(entry.team),
+      className: index === 0 ? "bg-amber-50" : undefined,
+    }))
+}
+
+// Helper function to process FIFA data for 2024/25 season
+function processFifaData2024(entries: any[]) {
+  return entries
+    .map((entry) => ({
+      ...entry,
+      goalDifference: entry.goalsScored - entry.goalsConceded,
+      points: entry.wins * 3 + entry.draws,
+    }))
+    .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+    .map((entry, index) => ({
+      position: index + 1,
+      team: (
+        <div className="flex items-center space-x-2">
+          <Image
+            src={entry.logo || "/placeholder.svg"}
+            alt={entry.team}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+          <span className="relative">
+            {entry.team}
+            <span
+              className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
+              style={{ backgroundColor: getTeamColor2024(entry.team) }}
+            />
+          </span>
+        </div>
+      ),
+      games: entry.games,
+      wins: entry.wins,
+      draws: entry.draws,
+      losses: entry.losses,
+      goalsScored: entry.goalsScored,
+      goalsConceded: entry.goalsConceded,
+      goalDifference: entry.goalDifference,
+      points: entry.points,
+      hoverColor: getTeamColor2024(entry.team),
+      className: index === 0 ? "bg-amber-50" : undefined,
+    }))
+}
+
+async function getCurrentSeasonData() {
+  const entries = await prisma.fifaEntry.findMany()
+  return entries
+}
+
+async function getHistoricalSeasonData() {
+  try {
+    const entries = await (prisma as any).fifaEntry2024.findMany()
+    return entries
+  } catch (error) {
+    console.error("Error fetching historical FIFA data:", error)
+    return []
+  }
 }
 
 export default async function FIFAPage() {
-  const fifaData = await getFifaData()
+  // Fetch current season data (2025/26)
+  const currentEntries = await getCurrentSeasonData()
+  const currentSeasonData = processFifaData2025(currentEntries)
 
-  const data = fifaData.map((entry, index) => ({
-    position: index + 1,
-    team: (
-      <div className="flex items-center space-x-2">
-        <Image
-          src={entry.logo || "/placeholder.svg"}
-          alt={entry.team}
-          width={24}
-          height={24}
-          className="rounded-full"
-        />
-        <span className="relative">
-          {entry.team}
-          <span
-            className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-            style={{ backgroundColor: getTeamColor(entry.team) }}
-          />
-        </span>
-      </div>
-    ),
-    games: entry.games,
-    wins: entry.wins,
-    draws: entry.draws,
-    losses: entry.losses,
-    goalsScored: entry.goalsScored,
-    goalsConceded: entry.goalsConceded,
-    goalDifference: entry.goalDifference,
-    points: entry.points,
-    hoverColor: getTeamColor(entry.team),
-  }))
+  // Fetch historical season data (2024/25)
+  const historicalEntries = await getHistoricalSeasonData()
+  const historicalSeasonData = processFifaData2024(historicalEntries)
 
-  const highlights = [
+  // Current season highlights (2025/26) - update as new highlights happen
+  const currentSeasonHighlights = [
+    {
+      videoId: "new-video-id",
+      title: "New season begins!",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "SEASON START",
+    },
+    // Add more current season videos as they happen
+  ]
+
+  // Historical season highlights (2024/25)
+  const historicalSeasonHighlights = [
     {
       videoId: "7NS6-JdeK60",
       title: "He's our number 20..",
@@ -334,12 +457,15 @@ export default async function FIFAPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
-      <p className="text-basic text-gray-600 mb-8">
-        IX season of the online friendly matches features two stages: the Main and the Championship.
-      </p>
+      <p className="text-basic text-gray-600 mb-8">X anniversary season of the online friendly matches.</p>
 
-      {/* Season tabs */}
-      <FifaSeasonTabs currentSeasonData={data} currentSeasonHighlights={highlights} columns={columns} />
+      <FifaSeasonTabs
+        currentSeasonData={currentSeasonData}
+        currentSeasonHighlights={currentSeasonHighlights}
+        historicalSeasonData={historicalSeasonData}
+        historicalSeasonHighlights={historicalSeasonHighlights}
+        columns={columns}
+      />
     </div>
   )
 }

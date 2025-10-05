@@ -5,11 +5,48 @@ import Image from "next/image"
 import DataTable from "./DataTable"
 import VideoCarousel from "./VideoCarousel"
 
-// Update the seasons array to include 2015/16
-const seasons = ["2024/25", "2023/24", "2022/23", "2021/22", "2020/21", "2019/20", "2017/18", "2016/17", "2015/16"]
+// Define the seasons array with all the required seasons
+const seasons = [
+  "2025/26",
+  "2024/25",
+  "2023/24",
+  "2022/23",
+  "2021/22",
+  "2020/21",
+  "2019/20",
+  "2017/18",
+  "2016/17",
+  "2015/16",
+] as const
+type Season = (typeof seasons)[number]
 
-// Static data for past seasons
-const pastSeasonsData = {
+// Define types for season data
+type TeamStanding = {
+  team: string
+  logo: string
+  games: number
+  wins: number
+  draws: number
+  losses: number
+  goalsScored: number
+  goalsConceded: number
+  goalDifference: number
+  points: number
+  color: string
+}
+
+type SeasonData = {
+  standings: TeamStanding[]
+  highlights?: string[]
+  description?: string
+}
+
+type PastSeasonsData = {
+  [K in Exclude<Season, "2025/26" | "2024/25">]: SeasonData
+}
+
+// Static data for past seasons (2023/24 and earlier)
+const pastSeasonsData: PastSeasonsData = {
   "2023/24": {
     standings: [
       {
@@ -23,7 +60,7 @@ const pastSeasonsData = {
         goalsConceded: 41,
         goalDifference: 69,
         points: 76,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Marseille",
@@ -36,7 +73,7 @@ const pastSeasonsData = {
         goalsConceded: 40,
         goalDifference: 61,
         points: 75,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Barcelona",
@@ -49,7 +86,7 @@ const pastSeasonsData = {
         goalsConceded: 30,
         goalDifference: 90,
         points: 73,
-        color: "#ea7878", // Purple
+        color: "#ea7878",
       },
       {
         team: "Manchester City",
@@ -62,7 +99,7 @@ const pastSeasonsData = {
         goalsConceded: 38,
         goalDifference: 62,
         points: 69,
-        color: "#ea7878", // Dark Blue
+        color: "#ea7878",
       },
       {
         team: "Real Sosiedad",
@@ -75,7 +112,7 @@ const pastSeasonsData = {
         goalsConceded: 40,
         goalDifference: 58,
         points: 69,
-        color: "#ea7878", // Yellow
+        color: "#ea7878",
       },
       {
         team: "SL Benfica",
@@ -88,7 +125,7 @@ const pastSeasonsData = {
         goalsConceded: 59,
         goalDifference: 48,
         points: 66,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "Fiorentina",
@@ -101,7 +138,7 @@ const pastSeasonsData = {
         goalsConceded: 50,
         goalDifference: 45,
         points: 66,
-        color: "#ea7878", // Purple
+        color: "#ea7878",
       },
       {
         team: "Bayer Leverkusen",
@@ -114,7 +151,7 @@ const pastSeasonsData = {
         goalsConceded: 64,
         goalDifference: 43,
         points: 63,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Atletico Madrid",
@@ -127,7 +164,7 @@ const pastSeasonsData = {
         goalsConceded: 43,
         goalDifference: 52,
         points: 62,
-        color: "#ea7878", // Dark Orange
+        color: "#ea7878",
       },
       {
         team: "Real Madrid",
@@ -140,7 +177,7 @@ const pastSeasonsData = {
         goalsConceded: 57,
         goalDifference: 47,
         points: 62,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "RB Leipzig",
@@ -153,7 +190,7 @@ const pastSeasonsData = {
         goalsConceded: 47,
         goalDifference: 50,
         points: 61,
-        color: "#ea7878", // Green
+        color: "#ea7878",
       },
       {
         team: "Liverpool",
@@ -166,7 +203,7 @@ const pastSeasonsData = {
         goalsConceded: 45,
         goalDifference: 37,
         points: 58,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Feyenord",
@@ -179,7 +216,7 @@ const pastSeasonsData = {
         goalsConceded: 66,
         goalDifference: 18,
         points: 52,
-        color: "#ea7878", // Teal
+        color: "#ea7878",
       },
       {
         team: "AS Monaco",
@@ -192,7 +229,7 @@ const pastSeasonsData = {
         goalsConceded: 72,
         goalDifference: 17,
         points: 47,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "Bayern Munich",
@@ -205,7 +242,7 @@ const pastSeasonsData = {
         goalsConceded: 49,
         goalDifference: 35,
         points: 45,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Boca Juniors",
@@ -218,7 +255,7 @@ const pastSeasonsData = {
         goalsConceded: 57,
         goalDifference: 6,
         points: 40,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Inter",
@@ -231,7 +268,7 @@ const pastSeasonsData = {
         goalsConceded: 62,
         goalDifference: 7,
         points: 40,
-        color: "#4b98de", // Dark Blue
+        color: "#4b98de",
       },
       {
         team: "AS Roma",
@@ -244,7 +281,7 @@ const pastSeasonsData = {
         goalsConceded: 64,
         goalDifference: 19,
         points: 39,
-        color: "#4b98de", // Dark Orange
+        color: "#4b98de",
       },
       {
         team: "Napoli",
@@ -257,7 +294,7 @@ const pastSeasonsData = {
         goalsConceded: 73,
         goalDifference: 9,
         points: 38,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Brentford",
@@ -270,7 +307,7 @@ const pastSeasonsData = {
         goalsConceded: 72,
         goalDifference: -13,
         points: 36,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Chelsea",
@@ -283,7 +320,7 @@ const pastSeasonsData = {
         goalsConceded: 68,
         goalDifference: 0,
         points: 35,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Al Nassr",
@@ -296,7 +333,7 @@ const pastSeasonsData = {
         goalsConceded: 78,
         goalDifference: 9,
         points: 34,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "SS Lazio",
@@ -309,7 +346,7 @@ const pastSeasonsData = {
         goalsConceded: 55,
         goalDifference: 7,
         points: 34,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Athletic Bilbao",
@@ -322,7 +359,7 @@ const pastSeasonsData = {
         goalsConceded: 78,
         goalDifference: -18,
         points: 27,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "River PLate",
@@ -335,7 +372,7 @@ const pastSeasonsData = {
         goalsConceded: 83,
         goalDifference: -21,
         points: 27,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Juventus",
@@ -348,7 +385,7 @@ const pastSeasonsData = {
         goalsConceded: 74,
         goalDifference: -26,
         points: 26,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Brighton",
@@ -361,7 +398,7 @@ const pastSeasonsData = {
         goalsConceded: 87,
         goalDifference: -31,
         points: 25,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Milan",
@@ -374,7 +411,7 @@ const pastSeasonsData = {
         goalsConceded: 101,
         goalDifference: -43,
         points: 24,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Porto",
@@ -387,7 +424,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: -21,
         points: 22,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "PSG",
@@ -400,7 +437,7 @@ const pastSeasonsData = {
         goalsConceded: 96,
         goalDifference: -26,
         points: 22,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Aston Villa",
@@ -413,7 +450,7 @@ const pastSeasonsData = {
         goalsConceded: 82,
         goalDifference: -33,
         points: 19,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "Tottenham",
@@ -426,7 +463,7 @@ const pastSeasonsData = {
         goalsConceded: 95,
         goalDifference: -47,
         points: 17,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Al Ahli",
@@ -439,7 +476,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: -52,
         points: 17,
-        color: "#4fcb90", // Green
+        color: "#4fcb90",
       },
       {
         team: "Borussia Dortmund",
@@ -452,7 +489,7 @@ const pastSeasonsData = {
         goalsConceded: 88,
         goalDifference: -36,
         points: 16,
-        color: "#4fcb90", // Yellow
+        color: "#4fcb90",
       },
       {
         team: "West Ham",
@@ -465,7 +502,7 @@ const pastSeasonsData = {
         goalsConceded: 83,
         goalDifference: -27,
         points: 15,
-        color: "#4b98de", // Purple
+        color: "#4b98de",
       },
       {
         team: "Arsenal",
@@ -478,7 +515,7 @@ const pastSeasonsData = {
         goalsConceded: 105,
         goalDifference: -45,
         points: 13,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Manchester United",
@@ -491,7 +528,7 @@ const pastSeasonsData = {
         goalsConceded: 88,
         goalDifference: -45,
         points: 13,
-        color: "#4fcb90", // Dark Red
+        color: "#4fcb90",
       },
       {
         team: "Al Hilal",
@@ -504,7 +541,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: -62,
         points: 10,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Real Betis",
@@ -517,7 +554,7 @@ const pastSeasonsData = {
         goalsConceded: 107,
         goalDifference: -66,
         points: 10,
-        color: "#4fcb90", // Green
+        color: "#4fcb90",
       },
       {
         team: "Galatasaray",
@@ -530,7 +567,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: -59,
         points: 9,
-        color: "#4fcb90", // Orange
+        color: "#4fcb90",
       },
       {
         team: "Atalanta",
@@ -543,7 +580,7 @@ const pastSeasonsData = {
         goalsConceded: 96,
         goalDifference: -64,
         points: 7,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Sevilla",
@@ -556,8 +593,13 @@ const pastSeasonsData = {
         goalsConceded: 84,
         goalDifference: -54,
         points: 4,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
+    ],
+    highlights: [
+      "Vanilla holds the highest win rate for a team in a season (Newcastle, Marseille) – 89.29%",
+      "Vanilla holds the longest unbeaten streak for a team (Barcelona) – 26 matches",
+      "The smallest gap between 1st and 2nd place",
     ],
   },
   "2022/23": {
@@ -573,7 +615,7 @@ const pastSeasonsData = {
         goalsConceded: 57,
         goalDifference: 107,
         points: 105,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Liverpool",
@@ -586,7 +628,7 @@ const pastSeasonsData = {
         goalsConceded: 60,
         goalDifference: 69,
         points: 100,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Bayer Leverkusen",
@@ -599,7 +641,7 @@ const pastSeasonsData = {
         goalsConceded: 66,
         goalDifference: 63,
         points: 100,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Inter",
@@ -612,7 +654,7 @@ const pastSeasonsData = {
         goalsConceded: 70,
         goalDifference: 63,
         points: 98,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "AFC Richmond",
@@ -625,7 +667,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: 46,
         points: 98,
-        color: "#ea7878", // Yellow
+        color: "#ea7878",
       },
       {
         team: "Atletico Madrid",
@@ -638,7 +680,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 57,
         points: 97,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Chelsea",
@@ -651,7 +693,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 52,
         points: 94,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Arsenal",
@@ -664,7 +706,7 @@ const pastSeasonsData = {
         goalsConceded: 68,
         goalDifference: 48,
         points: 94,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Manchester City",
@@ -677,7 +719,7 @@ const pastSeasonsData = {
         goalsConceded: 67,
         goalDifference: 64,
         points: 92,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "A.S. Roma",
@@ -690,7 +732,7 @@ const pastSeasonsData = {
         goalsConceded: 86,
         goalDifference: 25,
         points: 86,
-        color: "#ea7878", // Dark Orange
+        color: "#ea7878",
       },
       {
         team: "Tottenham",
@@ -703,7 +745,7 @@ const pastSeasonsData = {
         goalsConceded: 91,
         goalDifference: 39,
         points: 80,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Eintracht Frankfurt",
@@ -716,7 +758,7 @@ const pastSeasonsData = {
         goalsConceded: 98,
         goalDifference: 25,
         points: 79,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "RB Leipzig",
@@ -729,7 +771,7 @@ const pastSeasonsData = {
         goalsConceded: 104,
         goalDifference: 32,
         points: 76,
-        color: "#4b98de", // Green
+        color: "#4b98de",
       },
       {
         team: "Manchester United",
@@ -742,7 +784,7 @@ const pastSeasonsData = {
         goalsConceded: 94,
         goalDifference: 22,
         points: 74,
-        color: "#4b98de", // Dark Red
+        color: "#4b98de",
       },
       {
         team: "Newcastle",
@@ -755,7 +797,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: 5,
         points: 62,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "PSV",
@@ -768,7 +810,7 @@ const pastSeasonsData = {
         goalsConceded: 115,
         goalDifference: 11,
         points: 55,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Porto",
@@ -781,7 +823,7 @@ const pastSeasonsData = {
         goalsConceded: 53,
         goalDifference: 22,
         points: 53,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Villarreal",
@@ -794,7 +836,7 @@ const pastSeasonsData = {
         goalsConceded: 63,
         goalDifference: 22,
         points: 52,
-        color: "#ea7878", // Yellow
+        color: "#ea7878",
       },
       {
         team: "Atalanta",
@@ -807,7 +849,7 @@ const pastSeasonsData = {
         goalsConceded: 65,
         goalDifference: 20,
         points: 50,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Dinamo Zagreb",
@@ -820,7 +862,7 @@ const pastSeasonsData = {
         goalsConceded: 58,
         goalDifference: 21,
         points: 48,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Rangers",
@@ -833,7 +875,7 @@ const pastSeasonsData = {
         goalsConceded: 63,
         goalDifference: 7,
         points: 47,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Ajax",
@@ -846,7 +888,7 @@ const pastSeasonsData = {
         goalsConceded: 49,
         goalDifference: 15,
         points: 45,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Real Madrid",
@@ -859,7 +901,7 @@ const pastSeasonsData = {
         goalsConceded: 139,
         goalDifference: -43,
         points: 43,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "PSG",
@@ -872,7 +914,7 @@ const pastSeasonsData = {
         goalsConceded: 128,
         goalDifference: -24,
         points: 42,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "West Ham",
@@ -885,7 +927,7 @@ const pastSeasonsData = {
         goalsConceded: 66,
         goalDifference: 12,
         points: 40,
-        color: "#4b98de", // Purple
+        color: "#4b98de",
       },
       {
         team: "AS Monaco",
@@ -898,7 +940,7 @@ const pastSeasonsData = {
         goalsConceded: 67,
         goalDifference: 9,
         points: 39,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Sporting CP",
@@ -911,7 +953,7 @@ const pastSeasonsData = {
         goalsConceded: 59,
         goalDifference: 6,
         points: 39,
-        color: "#4b98de", // Green
+        color: "#4b98de",
       },
       {
         team: "Milan",
@@ -924,7 +966,7 @@ const pastSeasonsData = {
         goalsConceded: 117,
         goalDifference: -26,
         points: 35,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Lille OSC",
@@ -937,7 +979,7 @@ const pastSeasonsData = {
         goalsConceded: 78,
         goalDifference: -17,
         points: 34,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "S.L. Benfica",
@@ -950,7 +992,7 @@ const pastSeasonsData = {
         goalsConceded: 137,
         goalDifference: -68,
         points: 34,
-        color: "#4fcb90", // Orange
+        color: "#4fcb90",
       },
       {
         team: "Napoli",
@@ -963,7 +1005,7 @@ const pastSeasonsData = {
         goalsConceded: 154,
         goalDifference: -71,
         points: 32,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "RB Salzburg",
@@ -976,7 +1018,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: -4,
         points: 29,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Barcelona",
@@ -989,7 +1031,7 @@ const pastSeasonsData = {
         goalsConceded: 133,
         goalDifference: -70,
         points: 29,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "Adana Demirspor",
@@ -1002,7 +1044,7 @@ const pastSeasonsData = {
         goalsConceded: 86,
         goalDifference: -18,
         points: 26,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Borussia Dortmund",
@@ -1015,7 +1057,7 @@ const pastSeasonsData = {
         goalsConceded: 151,
         goalDifference: -63,
         points: 26,
-        color: "#4fcb90", // Yellow
+        color: "#4fcb90",
       },
       {
         team: "Juventus",
@@ -1028,7 +1070,7 @@ const pastSeasonsData = {
         goalsConceded: 139,
         goalDifference: -66,
         points: 24,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Wolverhampton",
@@ -1041,7 +1083,7 @@ const pastSeasonsData = {
         goalsConceded: 107,
         goalDifference: -55,
         points: 17,
-        color: "#4fcb90", // Orange
+        color: "#4fcb90",
       },
       {
         team: "S.S. Lazio",
@@ -1054,7 +1096,7 @@ const pastSeasonsData = {
         goalsConceded: 91,
         goalDifference: -68,
         points: 13,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Leicester",
@@ -1067,7 +1109,7 @@ const pastSeasonsData = {
         goalsConceded: 114,
         goalDifference: -60,
         points: 12,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Athletic Bilbao",
@@ -1080,7 +1122,7 @@ const pastSeasonsData = {
         goalsConceded: 103,
         goalDifference: -71,
         points: 11,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Sevilla",
@@ -1093,7 +1135,7 @@ const pastSeasonsData = {
         goalsConceded: 95,
         goalDifference: -66,
         points: 6,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Nottingham Forest",
@@ -1106,7 +1148,7 @@ const pastSeasonsData = {
         goalsConceded: 106,
         goalDifference: -72,
         points: 5,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
     ],
   },
@@ -1124,7 +1166,7 @@ const pastSeasonsData = {
         goalsConceded: 37,
         goalDifference: 48,
         points: 71,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Tottenham",
@@ -1137,7 +1179,7 @@ const pastSeasonsData = {
         goalsConceded: 45,
         goalDifference: 68,
         points: 65,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Manchester United",
@@ -1150,7 +1192,7 @@ const pastSeasonsData = {
         goalsConceded: 70,
         goalDifference: 24,
         points: 55,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Atletico Madrid",
@@ -1163,7 +1205,7 @@ const pastSeasonsData = {
         goalsConceded: 57,
         goalDifference: 30,
         points: 55,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "RB Leipzig",
@@ -1176,7 +1218,7 @@ const pastSeasonsData = {
         goalsConceded: 19,
         goalDifference: 13,
         points: 27,
-        color: "#ea7878", // Green
+        color: "#ea7878",
       },
       {
         team: "Sevilla",
@@ -1189,7 +1231,7 @@ const pastSeasonsData = {
         goalsConceded: 26,
         goalDifference: 9,
         points: 29,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Everton",
@@ -1202,7 +1244,7 @@ const pastSeasonsData = {
         goalsConceded: 35,
         goalDifference: 2,
         points: 25,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Chelsea",
@@ -1215,7 +1257,7 @@ const pastSeasonsData = {
         goalsConceded: 33,
         goalDifference: 11,
         points: 25,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Real Madrid",
@@ -1228,7 +1270,7 @@ const pastSeasonsData = {
         goalsConceded: 27,
         goalDifference: 5,
         points: 24,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Napoli",
@@ -1241,7 +1283,7 @@ const pastSeasonsData = {
         goalsConceded: 35,
         goalDifference: 0,
         points: 20,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "AS Monaco",
@@ -1254,7 +1296,7 @@ const pastSeasonsData = {
         goalsConceded: 44,
         goalDifference: -3,
         points: 24,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Inter",
@@ -1267,7 +1309,7 @@ const pastSeasonsData = {
         goalsConceded: 33,
         goalDifference: 1,
         points: 22,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Lille",
@@ -1280,7 +1322,7 @@ const pastSeasonsData = {
         goalsConceded: 36,
         goalDifference: -4,
         points: 19,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "PSG",
@@ -1293,7 +1335,7 @@ const pastSeasonsData = {
         goalsConceded: 44,
         goalDifference: -5,
         points: 23,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Barcelona",
@@ -1306,7 +1348,7 @@ const pastSeasonsData = {
         goalsConceded: 42,
         goalDifference: -4,
         points: 21,
-        color: "#4b98de", // Purple
+        color: "#4b98de",
       },
       {
         team: "Borussia Dortmund",
@@ -1319,7 +1361,7 @@ const pastSeasonsData = {
         goalsConceded: 45,
         goalDifference: -10,
         points: 18,
-        color: "#4b98de", // Yellow
+        color: "#4b98de",
       },
       {
         team: "Juventus",
@@ -1332,7 +1374,7 @@ const pastSeasonsData = {
         goalsConceded: 37,
         goalDifference: -6,
         points: 15,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Atalanta",
@@ -1345,7 +1387,7 @@ const pastSeasonsData = {
         goalsConceded: 44,
         goalDifference: -14,
         points: 15,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Bayern Munich",
@@ -1358,7 +1400,7 @@ const pastSeasonsData = {
         goalsConceded: 58,
         goalDifference: -29,
         points: 12,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Arsenal",
@@ -1371,7 +1413,7 @@ const pastSeasonsData = {
         goalsConceded: 46,
         goalDifference: -15,
         points: 11,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Leicester",
@@ -1384,7 +1426,7 @@ const pastSeasonsData = {
         goalsConceded: 52,
         goalDifference: -24,
         points: 9,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Real Sociedad",
@@ -1397,7 +1439,7 @@ const pastSeasonsData = {
         goalsConceded: 50,
         goalDifference: -23,
         points: 7,
-        color: "#4fcb90", // Yellow
+        color: "#4fcb90",
       },
       {
         team: "AC Milan",
@@ -1410,7 +1452,7 @@ const pastSeasonsData = {
         goalsConceded: 48,
         goalDifference: -23,
         points: 5,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Manchester City",
@@ -1423,7 +1465,7 @@ const pastSeasonsData = {
         goalsConceded: 52,
         goalDifference: -32,
         points: 4,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
     ],
   },
@@ -1440,7 +1482,7 @@ const pastSeasonsData = {
         goalsConceded: 50,
         goalDifference: 111,
         points: 102,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Real Madrid",
@@ -1453,7 +1495,7 @@ const pastSeasonsData = {
         goalsConceded: 76,
         goalDifference: 70,
         points: 92,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "RB Leipzig",
@@ -1466,7 +1508,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 61,
         points: 89,
-        color: "#ea7878", // Green
+        color: "#ea7878",
       },
       {
         team: "Lazio",
@@ -1479,7 +1521,7 @@ const pastSeasonsData = {
         goalsConceded: 88,
         goalDifference: 55,
         points: 88,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Borussia Dortmund",
@@ -1492,7 +1534,7 @@ const pastSeasonsData = {
         goalsConceded: 85,
         goalDifference: 57,
         points: 87,
-        color: "#ea7878", // Yellow
+        color: "#ea7878",
       },
       {
         team: "Arsenal",
@@ -1505,7 +1547,7 @@ const pastSeasonsData = {
         goalsConceded: 87,
         goalDifference: 59,
         points: 82,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Manchester City",
@@ -1518,7 +1560,7 @@ const pastSeasonsData = {
         goalsConceded: 88,
         goalDifference: 57,
         points: 81,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Tottenham",
@@ -1531,7 +1573,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: 45,
         points: 77,
-        color: "#ea7878", // Navy Blue
+        color: "#ea7878",
       },
       {
         team: "Sevillia",
@@ -1544,7 +1586,7 @@ const pastSeasonsData = {
         goalsConceded: 87,
         goalDifference: 29,
         points: 75,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "AC Milan",
@@ -1557,7 +1599,7 @@ const pastSeasonsData = {
         goalsConceded: 97,
         goalDifference: 44,
         points: 74,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Chelsea",
@@ -1570,7 +1612,7 @@ const pastSeasonsData = {
         goalsConceded: 93,
         goalDifference: 64,
         points: 73,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Olympique Lyon",
@@ -1583,7 +1625,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: 36,
         points: 73,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Atalanta",
@@ -1596,7 +1638,7 @@ const pastSeasonsData = {
         goalsConceded: 101,
         goalDifference: 34,
         points: 73,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Atletico Madrid",
@@ -1609,7 +1651,7 @@ const pastSeasonsData = {
         goalsConceded: 100,
         goalDifference: 47,
         points: 69,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Everton",
@@ -1622,7 +1664,7 @@ const pastSeasonsData = {
         goalsConceded: 120,
         goalDifference: 11,
         points: 61,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Real Sociedad",
@@ -1635,7 +1677,7 @@ const pastSeasonsData = {
         goalsConceded: 122,
         goalDifference: 16,
         points: 59,
-        color: "#4b98de", // Yellow
+        color: "#4b98de",
       },
       {
         team: "Manchester United",
@@ -1648,7 +1690,7 @@ const pastSeasonsData = {
         goalsConceded: 106,
         goalDifference: 6,
         points: 59,
-        color: "#4b98de", // Dark Red
+        color: "#4b98de",
       },
       {
         team: "Wolverhampton",
@@ -1661,7 +1703,7 @@ const pastSeasonsData = {
         goalsConceded: 135,
         goalDifference: -12,
         points: 52,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Napoli",
@@ -1674,7 +1716,7 @@ const pastSeasonsData = {
         goalsConceded: 130,
         goalDifference: -4,
         points: 51,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Juventus",
@@ -1687,7 +1729,7 @@ const pastSeasonsData = {
         goalsConceded: 140,
         goalDifference: -43,
         points: 48,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Leicester",
@@ -1700,7 +1742,7 @@ const pastSeasonsData = {
         goalsConceded: 118,
         goalDifference: 1,
         points: 45,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Bayern Munich",
@@ -1713,7 +1755,7 @@ const pastSeasonsData = {
         goalsConceded: 145,
         goalDifference: -42,
         points: 40,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Barcelona",
@@ -1726,7 +1768,7 @@ const pastSeasonsData = {
         goalsConceded: 155,
         goalDifference: -49,
         points: 32,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "PSG",
@@ -1739,7 +1781,7 @@ const pastSeasonsData = {
         goalsConceded: 182,
         goalDifference: -76,
         points: 32,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Atletic Bilbao",
@@ -1752,7 +1794,7 @@ const pastSeasonsData = {
         goalsConceded: 145,
         goalDifference: -69,
         points: 24,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Porto",
@@ -1765,7 +1807,7 @@ const pastSeasonsData = {
         goalsConceded: 162,
         goalDifference: -88,
         points: 24,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Inter",
@@ -1778,7 +1820,7 @@ const pastSeasonsData = {
         goalsConceded: 179,
         goalDifference: -99,
         points: 22,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Benfica",
@@ -1791,7 +1833,7 @@ const pastSeasonsData = {
         goalsConceded: 177,
         goalDifference: -108,
         points: 14,
-        color: "#4fcb90", // Orange
+        color: "#4fcb90",
       },
       {
         team: "Ajax",
@@ -1804,7 +1846,7 @@ const pastSeasonsData = {
         goalsConceded: 168,
         goalDifference: -111,
         points: 11,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Bayer Leverkusen",
@@ -1817,8 +1859,13 @@ const pastSeasonsData = {
         goalsConceded: 165,
         goalDifference: -102,
         points: 8,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
+    ],
+    highlights: [
+      "Vanilla holds the highest win rate for a season – 70.7%",
+      "Choco was the fastest to score 100 goals in a tournament – 23 rounds (Chelsea)",
+      "The largest gap between 1st and 2nd place",
     ],
   },
   "2019/20": {
@@ -1834,7 +1881,7 @@ const pastSeasonsData = {
         goalsConceded: 50,
         goalDifference: 86,
         points: 84,
-        color: "#ea7878", // Yellow
+        color: "#ea7878",
       },
       {
         team: "Ajax",
@@ -1847,7 +1894,7 @@ const pastSeasonsData = {
         goalsConceded: 56,
         goalDifference: 66,
         points: 77,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Liverpool",
@@ -1860,7 +1907,7 @@ const pastSeasonsData = {
         goalsConceded: 46,
         goalDifference: 86,
         points: 75,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Inter",
@@ -1873,7 +1920,7 @@ const pastSeasonsData = {
         goalsConceded: 69,
         goalDifference: 57,
         points: 72,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Bayern Munich",
@@ -1886,7 +1933,7 @@ const pastSeasonsData = {
         goalsConceded: 58,
         goalDifference: 50,
         points: 69,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "PSG",
@@ -1899,7 +1946,7 @@ const pastSeasonsData = {
         goalsConceded: 72,
         goalDifference: 46,
         points: 69,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Napoli",
@@ -1912,7 +1959,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 47,
         points: 68,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Olympique Lyon",
@@ -1925,7 +1972,7 @@ const pastSeasonsData = {
         goalsConceded: 69,
         goalDifference: 43,
         points: 66,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Porto",
@@ -1938,7 +1985,7 @@ const pastSeasonsData = {
         goalsConceded: 78,
         goalDifference: 40,
         points: 62,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "RB Leipzig",
@@ -1951,7 +1998,7 @@ const pastSeasonsData = {
         goalsConceded: 70,
         goalDifference: 44,
         points: 61,
-        color: "#4b98de", // Green
+        color: "#4b98de",
       },
       {
         team: "Tottenham",
@@ -1964,7 +2011,7 @@ const pastSeasonsData = {
         goalsConceded: 75,
         goalDifference: 50,
         points: 59,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Manchester United",
@@ -1977,7 +2024,7 @@ const pastSeasonsData = {
         goalsConceded: 75,
         goalDifference: 36,
         points: 59,
-        color: "#4b98de", // Dark Red
+        color: "#4b98de",
       },
       {
         team: "Valencia",
@@ -1990,7 +2037,7 @@ const pastSeasonsData = {
         goalsConceded: 79,
         goalDifference: 28,
         points: 56,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Monaco",
@@ -2003,7 +2050,7 @@ const pastSeasonsData = {
         goalsConceded: 74,
         goalDifference: 34,
         points: 55,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Chelsea",
@@ -2016,7 +2063,7 @@ const pastSeasonsData = {
         goalsConceded: 79,
         goalDifference: 23,
         points: 52,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Leicester City",
@@ -2029,7 +2076,7 @@ const pastSeasonsData = {
         goalsConceded: 85,
         goalDifference: -5,
         points: 42,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Barcelona",
@@ -2042,7 +2089,7 @@ const pastSeasonsData = {
         goalsConceded: 125,
         goalDifference: -70,
         points: 22,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "Juventus",
@@ -2055,7 +2102,7 @@ const pastSeasonsData = {
         goalsConceded: 140,
         goalDifference: -83,
         points: 12,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Manchester City",
@@ -2068,7 +2115,7 @@ const pastSeasonsData = {
         goalsConceded: 144,
         goalDifference: -88,
         points: 11,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Atletico Madrid",
@@ -2081,7 +2128,7 @@ const pastSeasonsData = {
         goalsConceded: 143,
         goalDifference: -94,
         points: 8,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Bayer Leverkusen",
@@ -2094,7 +2141,7 @@ const pastSeasonsData = {
         goalsConceded: 153,
         goalDifference: -96,
         points: 8,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Real Madrid",
@@ -2107,7 +2154,7 @@ const pastSeasonsData = {
         goalsConceded: 154,
         goalDifference: -103,
         points: 8,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Everton",
@@ -2120,7 +2167,7 @@ const pastSeasonsData = {
         goalsConceded: 138,
         goalDifference: -95,
         points: 5,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Arsenal",
@@ -2133,9 +2180,10 @@ const pastSeasonsData = {
         goalsConceded: 146,
         goalDifference: -102,
         points: 5,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
     ],
+    highlights: ["Vanilla was the first to score an Olympic goal (directly from a corner) against an opponent (Lille)"],
   },
   "2017/18": {
     description: "This season was not completed due to a suspension. No winner was determined.",
@@ -2151,7 +2199,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: 27,
         points: 80,
-        color: "#4fcb90", // Dark Red
+        color: "#4fcb90",
       },
       {
         team: "Bayern Munich",
@@ -2164,7 +2212,7 @@ const pastSeasonsData = {
         goalsConceded: 71,
         goalDifference: 42,
         points: 77,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Juventus",
@@ -2177,7 +2225,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: 18,
         points: 76,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Real Madrid",
@@ -2190,7 +2238,7 @@ const pastSeasonsData = {
         goalsConceded: 80,
         goalDifference: 35,
         points: 75,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Monaco",
@@ -2203,7 +2251,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: 18,
         points: 74,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Everton",
@@ -2216,7 +2264,7 @@ const pastSeasonsData = {
         goalsConceded: 84,
         goalDifference: 21,
         points: 71,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Barcelona",
@@ -2229,7 +2277,7 @@ const pastSeasonsData = {
         goalsConceded: 80,
         goalDifference: 25,
         points: 70,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "Borussia Dortmund",
@@ -2242,7 +2290,7 @@ const pastSeasonsData = {
         goalsConceded: 117,
         goalDifference: 9,
         points: 69,
-        color: "#4fcb90", // Yellow
+        color: "#4fcb90",
       },
       {
         team: "Roma",
@@ -2255,7 +2303,7 @@ const pastSeasonsData = {
         goalsConceded: 97,
         goalDifference: -2,
         points: 65,
-        color: "#4fcb90", // Dark Orange
+        color: "#4fcb90",
       },
       {
         team: "Chelsea",
@@ -2268,7 +2316,7 @@ const pastSeasonsData = {
         goalsConceded: 82,
         goalDifference: 19,
         points: 64,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Tottenham",
@@ -2281,7 +2329,7 @@ const pastSeasonsData = {
         goalsConceded: 80,
         goalDifference: 27,
         points: 64,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Arsenal",
@@ -2294,7 +2342,7 @@ const pastSeasonsData = {
         goalsConceded: 75,
         goalDifference: 22,
         points: 62,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Manchester City",
@@ -2307,7 +2355,7 @@ const pastSeasonsData = {
         goalsConceded: 78,
         goalDifference: 16,
         points: 61,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Milan",
@@ -2320,7 +2368,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: 6,
         points: 61,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Inter",
@@ -2333,7 +2381,7 @@ const pastSeasonsData = {
         goalsConceded: 99,
         goalDifference: -7,
         points: 60,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Lazio",
@@ -2346,7 +2394,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: 9,
         points: 59,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Zenit",
@@ -2359,7 +2407,7 @@ const pastSeasonsData = {
         goalsConceded: 101,
         goalDifference: 3,
         points: 59,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Spartak Moscow",
@@ -2372,7 +2420,7 @@ const pastSeasonsData = {
         goalsConceded: 87,
         goalDifference: -3,
         points: 56,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Liverpool",
@@ -2385,7 +2433,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: 1,
         points: 56,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Stoke City",
@@ -2398,7 +2446,7 @@ const pastSeasonsData = {
         goalsConceded: 107,
         goalDifference: -10,
         points: 56,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Benfica",
@@ -2411,7 +2459,7 @@ const pastSeasonsData = {
         goalsConceded: 87,
         goalDifference: 5,
         points: 55,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "Napoli",
@@ -2424,7 +2472,7 @@ const pastSeasonsData = {
         goalsConceded: 97,
         goalDifference: -10,
         points: 55,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Borussia Monhengladbah",
@@ -2437,7 +2485,7 @@ const pastSeasonsData = {
         goalsConceded: 98,
         goalDifference: -14,
         points: 53,
-        color: "#ea7878", // Green
+        color: "#ea7878",
       },
       {
         team: "Valencia",
@@ -2450,7 +2498,7 @@ const pastSeasonsData = {
         goalsConceded: 98,
         goalDifference: -3,
         points: 53,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Leicester City",
@@ -2463,7 +2511,7 @@ const pastSeasonsData = {
         goalsConceded: 113,
         goalDifference: -12,
         points: 53,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Atletico Madrid",
@@ -2476,7 +2524,7 @@ const pastSeasonsData = {
         goalsConceded: 88,
         goalDifference: 3,
         points: 52,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Bayer Leverkusen",
@@ -2489,7 +2537,7 @@ const pastSeasonsData = {
         goalsConceded: 125,
         goalDifference: -17,
         points: 51,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Olympique Lyon",
@@ -2502,7 +2550,7 @@ const pastSeasonsData = {
         goalsConceded: 97,
         goalDifference: -5,
         points: 50,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Ajax",
@@ -2515,7 +2563,7 @@ const pastSeasonsData = {
         goalsConceded: 105,
         goalDifference: -31,
         points: 46,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Crystal Palace",
@@ -2528,7 +2576,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: -17,
         points: 45,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "PSV",
@@ -2541,7 +2589,7 @@ const pastSeasonsData = {
         goalsConceded: 93,
         goalDifference: -22,
         points: 42,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Atlectic Bilbao",
@@ -2554,7 +2602,7 @@ const pastSeasonsData = {
         goalsConceded: 111,
         goalDifference: -37,
         points: 41,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "PSG",
@@ -2567,7 +2615,7 @@ const pastSeasonsData = {
         goalsConceded: 102,
         goalDifference: -15,
         points: 41,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "OGC Nice",
@@ -2580,7 +2628,7 @@ const pastSeasonsData = {
         goalsConceded: 115,
         goalDifference: -41,
         points: 35,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Marseille",
@@ -2593,7 +2641,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: -27,
         points: 33,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Sevillia",
@@ -2606,8 +2654,13 @@ const pastSeasonsData = {
         goalsConceded: 107,
         goalDifference: -33,
         points: 31,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
+    ],
+    highlights: [
+      "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes",
+      "Choco was the first to score a goal with a goalkeeper (Atletico Madrid)",
+      "Vanilla was the first to score a goal (into an empty net) from its own half (Napoli)",
     ],
   },
   "2016/17": {
@@ -2623,7 +2676,7 @@ const pastSeasonsData = {
         goalsConceded: 61,
         goalDifference: 39,
         points: 82,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Barcelona",
@@ -2636,7 +2689,7 @@ const pastSeasonsData = {
         goalsConceded: 67,
         goalDifference: 37,
         points: 76,
-        color: "#4b98de", // Purple
+        color: "#4b98de",
       },
       {
         team: "Borussia Dortmund",
@@ -2649,7 +2702,7 @@ const pastSeasonsData = {
         goalsConceded: 73,
         goalDifference: 29,
         points: 75,
-        color: "#4fcb90", // Yellow
+        color: "#4fcb90",
       },
       {
         team: "Real Madrid",
@@ -2662,7 +2715,7 @@ const pastSeasonsData = {
         goalsConceded: 92,
         goalDifference: 29,
         points: 74,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Chelsea",
@@ -2675,7 +2728,7 @@ const pastSeasonsData = {
         goalsConceded: 67,
         goalDifference: 38,
         points: 71,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Arsenal",
@@ -2688,7 +2741,7 @@ const pastSeasonsData = {
         goalsConceded: 83,
         goalDifference: 23,
         points: 65,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Lazio",
@@ -2701,7 +2754,7 @@ const pastSeasonsData = {
         goalsConceded: 93,
         goalDifference: -5,
         points: 65,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Manchester United",
@@ -2714,7 +2767,7 @@ const pastSeasonsData = {
         goalsConceded: 84,
         goalDifference: 14,
         points: 64,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Milan",
@@ -2727,7 +2780,7 @@ const pastSeasonsData = {
         goalsConceded: 86,
         goalDifference: 7,
         points: 60,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Bayer Leverkusen",
@@ -2740,7 +2793,7 @@ const pastSeasonsData = {
         goalsConceded: 98,
         goalDifference: 0,
         points: 60,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Inter",
@@ -2753,7 +2806,7 @@ const pastSeasonsData = {
         goalsConceded: 80,
         goalDifference: 12,
         points: 60,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Atletico Madrid",
@@ -2766,7 +2819,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: 5,
         points: 59,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Tottenham",
@@ -2779,7 +2832,7 @@ const pastSeasonsData = {
         goalsConceded: 84,
         goalDifference: 7,
         points: 56,
-        color: "#4b98de", // Navy Blue
+        color: "#4b98de",
       },
       {
         team: "Everton",
@@ -2792,7 +2845,7 @@ const pastSeasonsData = {
         goalsConceded: 102,
         goalDifference: -14,
         points: 55,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Zenit",
@@ -2805,7 +2858,7 @@ const pastSeasonsData = {
         goalsConceded: 96,
         goalDifference: -15,
         points: 55,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Benfica",
@@ -2818,7 +2871,7 @@ const pastSeasonsData = {
         goalsConceded: 89,
         goalDifference: 3,
         points: 55,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Roma",
@@ -2831,7 +2884,7 @@ const pastSeasonsData = {
         goalsConceded: 96,
         goalDifference: -2,
         points: 54,
-        color: "#4fcb90", // Dark Orange
+        color: "#4fcb90",
       },
       {
         team: "Athletic Bilbao",
@@ -2844,7 +2897,7 @@ const pastSeasonsData = {
         goalsConceded: 84,
         goalDifference: 10,
         points: 53,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Fenerbahçe",
@@ -2857,7 +2910,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: -10,
         points: 50,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "CSKA",
@@ -2870,7 +2923,7 @@ const pastSeasonsData = {
         goalsConceded: 103,
         goalDifference: -10,
         points: 50,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Juventus",
@@ -2883,7 +2936,7 @@ const pastSeasonsData = {
         goalsConceded: 95,
         goalDifference: -38,
         points: 50,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Manchester City",
@@ -2896,7 +2949,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 6,
         points: 50,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Porto",
@@ -2909,7 +2962,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: -12,
         points: 49,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "PSG",
@@ -2922,7 +2975,7 @@ const pastSeasonsData = {
         goalsConceded: 98,
         goalDifference: 1,
         points: 48,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Napoli",
@@ -2935,7 +2988,7 @@ const pastSeasonsData = {
         goalsConceded: 93,
         goalDifference: 0,
         points: 47,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Valencia",
@@ -2948,7 +3001,7 @@ const pastSeasonsData = {
         goalsConceded: 102,
         goalDifference: -19,
         points: 45,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "Galatasaray",
@@ -2961,7 +3014,7 @@ const pastSeasonsData = {
         goalsConceded: 113,
         goalDifference: -27,
         points: 42,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Liverpool",
@@ -2974,7 +3027,7 @@ const pastSeasonsData = {
         goalsConceded: 103,
         goalDifference: -21,
         points: 41,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Sevillia",
@@ -2987,7 +3040,7 @@ const pastSeasonsData = {
         goalsConceded: 105,
         goalDifference: -42,
         points: 37,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Shakhtar",
@@ -3000,7 +3053,7 @@ const pastSeasonsData = {
         goalsConceded: 116,
         goalDifference: -45,
         points: 35,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
     ],
   },
@@ -3017,7 +3070,7 @@ const pastSeasonsData = {
         goalsConceded: 70,
         goalDifference: 18,
         points: 59,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Manchester City",
@@ -3030,7 +3083,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: 13,
         points: 58,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Liverpool",
@@ -3043,7 +3096,7 @@ const pastSeasonsData = {
         goalsConceded: 67,
         goalDifference: 20,
         points: 56,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "Juventus",
@@ -3056,7 +3109,7 @@ const pastSeasonsData = {
         goalsConceded: 68,
         goalDifference: 11,
         points: 56,
-        color: "#4fcb90", // Navy Blue
+        color: "#4fcb90",
       },
       {
         team: "Shakhtar",
@@ -3069,7 +3122,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: 4,
         points: 53,
-        color: "#4b98de", // Orange
+        color: "#4b98de",
       },
       {
         team: "Napoli",
@@ -3082,7 +3135,7 @@ const pastSeasonsData = {
         goalsConceded: 61,
         goalDifference: 5,
         points: 53,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Inter",
@@ -3095,7 +3148,7 @@ const pastSeasonsData = {
         goalsConceded: 54,
         goalDifference: 20,
         points: 52,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Bayern Munich",
@@ -3108,7 +3161,7 @@ const pastSeasonsData = {
         goalsConceded: 37,
         goalDifference: 20,
         points: 52,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Atletico Madrid",
@@ -3121,7 +3174,7 @@ const pastSeasonsData = {
         goalsConceded: 72,
         goalDifference: 4,
         points: 52,
-        color: "#4fcb90", // Red
+        color: "#4fcb90",
       },
       {
         team: "Everton",
@@ -3134,7 +3187,7 @@ const pastSeasonsData = {
         goalsConceded: 69,
         goalDifference: -1,
         points: 51,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Porto",
@@ -3147,7 +3200,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: 5,
         points: 45,
-        color: "#4fcb90", // Blue
+        color: "#4fcb90",
       },
       {
         team: "Borussia Dortmund",
@@ -3160,7 +3213,7 @@ const pastSeasonsData = {
         goalsConceded: 61,
         goalDifference: 14,
         points: 44,
-        color: "#4b98de", // Yellow
+        color: "#4b98de",
       },
       {
         team: "Roma",
@@ -3173,7 +3226,7 @@ const pastSeasonsData = {
         goalsConceded: 64,
         goalDifference: 1,
         points: 41,
-        color: "#ea7878", // Dark Orange
+        color: "#ea7878",
       },
       {
         team: "Barcelona",
@@ -3186,7 +3239,7 @@ const pastSeasonsData = {
         goalsConceded: 101,
         goalDifference: -10,
         points: 41,
-        color: "#4fcb90", // Purple
+        color: "#4fcb90",
       },
       {
         team: "Manchester United",
@@ -3199,7 +3252,7 @@ const pastSeasonsData = {
         goalsConceded: 73,
         goalDifference: 7,
         points: 39,
-        color: "#ea7878", // Dark Red
+        color: "#ea7878",
       },
       {
         team: "CSKA",
@@ -3212,7 +3265,7 @@ const pastSeasonsData = {
         goalsConceded: 73,
         goalDifference: -7,
         points: 39,
-        color: "#4b98de", // Red
+        color: "#4b98de",
       },
       {
         team: "Valencia",
@@ -3225,7 +3278,7 @@ const pastSeasonsData = {
         goalsConceded: 73,
         goalDifference: -10,
         points: 39,
-        color: "#ea7878", // Orange
+        color: "#ea7878",
       },
       {
         team: "Real Madrid",
@@ -3238,7 +3291,7 @@ const pastSeasonsData = {
         goalsConceded: 81,
         goalDifference: -2,
         points: 38,
-        color: "#ea7878", // Navy Blue
+        color: "#ea7878",
       },
       {
         team: "Arsenal",
@@ -3251,7 +3304,7 @@ const pastSeasonsData = {
         goalsConceded: 77,
         goalDifference: -7,
         points: 38,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Wolfsburg",
@@ -3264,7 +3317,7 @@ const pastSeasonsData = {
         goalsConceded: 61,
         goalDifference: -8,
         points: 36,
-        color: "#4b98de", // Green
+        color: "#4b98de",
       },
       {
         team: "Milan",
@@ -3277,7 +3330,7 @@ const pastSeasonsData = {
         goalsConceded: 90,
         goalDifference: -23,
         points: 36,
-        color: "#ea7878", // Red
+        color: "#ea7878",
       },
       {
         team: "Zenit",
@@ -3290,7 +3343,7 @@ const pastSeasonsData = {
         goalsConceded: 83,
         goalDifference: -21,
         points: 34,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
       {
         team: "Chelsea",
@@ -3303,7 +3356,7 @@ const pastSeasonsData = {
         goalsConceded: 69,
         goalDifference: -12,
         points: 33,
-        color: "#4b98de", // Blue
+        color: "#4b98de",
       },
       {
         team: "Schalke 04",
@@ -3316,9 +3369,10 @@ const pastSeasonsData = {
         goalsConceded: 85,
         goalDifference: -41,
         points: 18,
-        color: "#ea7878", // Blue
+        color: "#ea7878",
       },
     ],
+    highlights: ["The smallest gap between 1st and 2nd place"],
   },
 }
 
@@ -3372,14 +3426,22 @@ const getTeamColor = (team: string) => {
 type FifaSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonHighlights: any[]
+  historicalSeasonData: any[]
+  historicalSeasonHighlights: any[]
   columns: any[]
 }
 
-export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlights, columns }: FifaSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState(seasons[0])
+export default function FifaSeasonTabs({
+  currentSeasonData,
+  currentSeasonHighlights,
+  historicalSeasonData,
+  historicalSeasonHighlights,
+  columns,
+}: FifaSeasonTabsProps) {
+  const [activeSeason, setActiveSeason] = useState<Season>(seasons[0])
 
   // Process past season data for display
-  const getPastSeasonTableData = (season: string) => {
+  const getPastSeasonTableData = (season: Season) => {
     if (!pastSeasonsData[season as keyof typeof pastSeasonsData]) {
       return []
     }
@@ -3419,7 +3481,8 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2024/25") {
+    if (activeSeason === "2025/26") {
+      // For the current season (2025/26), use the live data from fifaEntry
       return (
         <>
           <div className="fifa-standings-table">
@@ -3434,11 +3497,28 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
           </section>
         </>
       )
+    } else if (activeSeason === "2024/25") {
+      // For the 2024/25 season, use the historical data from fifaEntry2024
+      return (
+        <>
+          <div className="fifa-standings-table">
+            <DataTable columns={columns} data={historicalSeasonData} />
+          </div>
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <div className="px-12">
+              <VideoCarousel videos={historicalSeasonHighlights} />
+            </div>
+          </section>
+        </>
+      )
     } else {
+      // For past seasons (2023/24 and earlier), use static data
       const pastSeasonData = getPastSeasonTableData(activeSeason)
-      // Use optional chaining to safely access the description property
       const seasonData = pastSeasonsData[activeSeason as keyof typeof pastSeasonsData]
       const seasonDescription = seasonData && "description" in seasonData ? seasonData.description : undefined
+      const seasonHighlights = seasonData && "highlights" in seasonData ? seasonData.highlights : undefined
 
       return (
         <>
@@ -3451,6 +3531,22 @@ export default function FifaSeasonTabs({ currentSeasonData, currentSeasonHighlig
               <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
             )}
           </div>
+
+          {seasonHighlights && seasonHighlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <div className="flex flex-wrap gap-3">
+                {seasonHighlights.map((highlight, index) => (
+                  <div
+                    key={index}
+                    className="inline-block bg-amber-50 text-amber-800 px-4 py-2 rounded-full text-sm font-medium border border-amber-100"
+                  >
+                    {highlight}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </>
       )
     }

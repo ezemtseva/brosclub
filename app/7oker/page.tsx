@@ -142,7 +142,7 @@ export default async function SevenOkerPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/7oker/thumbnail.png", alt: "New season highlight", caption: "New season will be started in September!" },
+    { src: "/imgs/7oker/2526game1.png", alt: "New season highlight", caption: "Classic last round win for Panda!" },
     // Add more current season images as they happen
   ]
 

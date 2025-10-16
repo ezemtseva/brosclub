@@ -1,7 +1,7 @@
 export const teamColors = {
-    red: ['Liverpool', 'Bayern Munich', 'Inter', 'Bayer Leverkusen', 'Newcastle', 'AS Roma', 'Galatasaray', 'Sporting CP', 'SS Lazio', 'AS Monaco'],
-    blue: ['Chelsea', 'Manchester City', 'Barcelona', 'Tottenham', 'Milan', 'Aston Villa', 'Athletic Bilbao', 'Manchester United', 'Benfica', 'Olympique Lyonnais'],
-    green: ['Juventus', 'Real Madrid', 'Arsenal', 'Borussia Dortmund', 'PSG', 'Atletico Madrid', 'Napoli', 'RB Leipzig', 'Fenerbahçe', 'Al Hilal']
+    red: ['Liverpool', 'Real Betis', 'AS Roma', 'RB Leipzig', 'Arsenal', 'Atletico Madrid', 'Borussia Dortmund', 'Marseille', 'Sporting CP', 'Bayer Leverkusen'],
+    blue: ['Villarreal', 'Chelsea', 'SS Lazio', 'PSG', 'Barcelona', 'Inter', 'Milan', 'Manchester United', 'Galatasaray', 'Wolfsburg'],
+    green: ['Juventus', 'Tottenham', 'Newcastle', 'Napoli', 'Athletic Bilbao', 'Aston Villa', 'Real Madrid', 'Bayern Munich', 'Manchester City', 'Nottingham Forrest']
   }
   
   export const getTeamColor = (team: string) => {

@@ -67,7 +67,7 @@ const teamColors2025 = {
     "Borussia Dortmund",
     "Marseille",
     "Sporting CP",
-    "Eintracht Frankfurt",
+    "Bayer Leverkusen",
   ],
   blue: [
     "Villarreal",

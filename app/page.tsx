@@ -166,7 +166,7 @@ async function getLatestBetsLeader() {
 async function getLatestFifaLeader() {
   try {
     const leader = await prisma.fifaEntry.findFirst({
-      orderBy: [{ wins: "desc" }, { goalsScored: "desc" }, { goalsConceded: "asc" }],
+      orderBy: [{ wins: "desc" }, { draws: "desc"}, { games: "asc"}, { goalsScored: "desc" }, { goalsConceded: "asc" }],
       select: {
         team: true,
         wins: true,

@@ -225,6 +225,18 @@ export default async function FIFAPage() {
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 1",
     },
+    {
+      videoId: "KnGlx-oMB4Y",
+      title: "A rocket from Hojbjerg!",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 1",
+    },
+    {
+      videoId: "yMJbOuHDdPU",
+      title: "And a return from Singo!",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 1",
+    },
     // Add more current season videos as they happen
   ]
 

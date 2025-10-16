@@ -226,13 +226,13 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 1",
     },
     {
-      videoId: "KnGlx-oMB4Y",
+      videoId: "-M71Et4iObU",
       title: "A rocket from Hojbjerg!",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 1",
     },
     {
-      videoId: "yMJbOuHDdPU",
+      videoId: "KnGlx-oMB4Y",
       title: "And a return from Singo!",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 1",

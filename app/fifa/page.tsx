@@ -220,6 +220,18 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
+      videoId: "Tc5to_xuEp0",
+      title: "One touch from Dybala",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 2",
+    },
+    {
+      videoId: "i3CyZ4H8k14",
+      title: "De Bruyne last minute equalizer",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 2",
+    },
+    {
       videoId: "yMJbOuHDdPU",
       title: "Cucho Mala!",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

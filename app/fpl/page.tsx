@@ -211,7 +211,7 @@ export default async function FPLPage() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">
-          X anniversary season of the online game where bearos manage their own virtual team of real-life Premier League players.
+          X anniversary season of no-names turning our teams into a shit joke.
         </p>
 
         <FplSeasonTabs

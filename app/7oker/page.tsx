@@ -185,16 +185,16 @@ export default async function SevenOkerPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        II season of our local homemade game. The first to reach 100 points wins.{" "}
+        II season of loosing solid games in the last round. {" "}
         <Link
           href="https://bearos-poker.vercel.app/"
           className="text-blue-500 hover:underline"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Go to play
+          You should try it
         </Link>
-        !
+        .
       </p>
 
       <SevenOkerSeasonTabs

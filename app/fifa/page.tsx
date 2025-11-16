@@ -487,7 +487,7 @@ export default async function FIFAPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
-      <p className="text-basic text-gray-600 mb-8">X anniversary season of the online friendly matches.</p>
+      <p className="text-basic text-gray-600 mb-8">X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually.</p>
 
       <FifaSeasonTabs
         currentSeasonData={currentSeasonData}

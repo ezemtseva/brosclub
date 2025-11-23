@@ -105,9 +105,9 @@ export default function SevenOkerChart({ entries, dataKey = "points" }: SevenOke
           <XAxis dataKey="games" type="number" domain={[0, 75]} ticks={Array.from({ length: 16 }, (_, i) => i * 5)} />
           <YAxis type="number" domain={yAxisDomain} ticks={yAxisTicks} interval={0} width={50} />
           <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Choco" stroke="#4b98de" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" activeDot={{ r: 8 }} connectNulls />
+          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Choco" stroke="#4b98de" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -91,9 +91,9 @@ export default function PokerChart({ entries }: PokerChartProps) {
             width={40}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Choco" stroke="#4b98de" activeDot={{ r: 8 }} connectNulls />
-          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" activeDot={{ r: 8 }} connectNulls />
+          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Choco" stroke="#4b98de" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -221,7 +221,7 @@ export default async function FIFAPage() {
   const currentSeasonHighlights = [
     {
       videoId: "91wyYRDJS38",
-      title: "Brandt",
+      title: "Julian Brandt",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 6",
     },
@@ -251,13 +251,13 @@ export default async function FIFAPage() {
     },
     {
       videoId: "Tc5to_xuEp0",
-      title: "One touch from Dybala",
+      title: "Paulo Dybala",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 2",
     },
     {
       videoId: "i3CyZ4H8k14",
-      title: "De Bruyne last minute equalizer",
+      title: "Kevin De Bruyne",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 2",
     },
@@ -269,13 +269,13 @@ export default async function FIFAPage() {
     },
     {
       videoId: "-M71Et4iObU",
-      title: "A rocket from Hojbjerg!",
+      title: "Pierre-Emile  Højbjerg!",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 1",
     },
     {
       videoId: "KnGlx-oMB4Y",
-      title: "And a return from Singo!",
+      title: "Wilfried Singo",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 1",
     },

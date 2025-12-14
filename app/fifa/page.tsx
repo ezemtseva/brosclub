@@ -220,8 +220,32 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
+      videoId: "91wyYRDJS38",
+      title: "Brandt",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 6",
+    },
+    {
+      videoId: "5RT6rg4cUuo",
+      title: "Viktor Gyökeres",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 5",
+    },
+    {
+      videoId: "f1E3HbJxfws",
+      title: "Julian Alvarez",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 4",
+    },
+    {
+      videoId: "uSmtmNA8s50",
+      title: "Pedro Neto",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 4",
+    },
+    {
       videoId: "CrNcXFZkemY",
-      title: "Goal of the year",
+      title: "Goal of the year - Phil Foden",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 3",
     },

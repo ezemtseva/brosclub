@@ -104,7 +104,9 @@ export default async function GGPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/gg/thumbnail.png", alt: "New season highlight", caption: "No yet higlights - boring games.." },
+    { src: "/imgs/gg/gg2026-3.jpg", alt: "New season highlight", caption: "Здравствуй, мой Магадан!" },
+    { src: "/imgs/gg/gg2026-2.jpg", alt: "New season highlight", caption: "🙌" },
+    { src: "/imgs/gg/gg2026-1.jpg", alt: "New season highlight", caption: "🙏" },
     // Add more current season images as they happen
   ]
 

@@ -220,6 +220,36 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
+      videoId: "UAgJ0XgmnMc",
+      title: "Larsson",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 8",
+    },
+    {
+      videoId: "dN4RbubOEjY",
+      title: "Amoura (Vavro)",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 8",
+    },
+    {
+      videoId: "yn8Z2-jYEx0",
+      title: "Suarez",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 7",
+    },
+    {
+      videoId: "gg-2faNZ2ZA",
+      title: "Torreira",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 7",
+    },
+    {
+      videoId: "X4cc-WT-X84",
+      title: "Dele-Bashiru",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 7",
+    },
+    {
       videoId: "91wyYRDJS38",
       title: "Julian Brandt",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

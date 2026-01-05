@@ -103,7 +103,7 @@ export default async function BetsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        XIV season of boring betting on top football leagues. Currently only English Premier League matches.
+        XIII season of boring betting on top football leagues. Currently only English Premier League matches.
       </p>
 
       <BetsSeasonTabs

@@ -59,7 +59,7 @@ const teamColors2024 = {
 const teamColors2025 = {
   red: [
     "Liverpool",
-    "Real Betis",
+    "Eintracht Frankfurt",
     "AS Roma",
     "RB Leipzig",
     "Arsenal",
@@ -278,12 +278,6 @@ export default async function FIFAPage() {
       title: "Goal of the year - Phil Foden",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 3",
-    },
-    {
-      videoId: "Tc5to_xuEp0",
-      title: "Paulo Dybala",
-      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
-      coverageText: "GAME DAY 2",
     },
     {
       videoId: "i3CyZ4H8k14",

@@ -63,7 +63,7 @@ const sections = [
         <UnderlinedPlayer name="Panda" /> holds the record for the most points in a season – 2.511, 2023/24{" "}
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> held first place for 25 consecutive rounds, 2022/23 <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Panda" /> held first place for 25 consecutive rounds, 2022/23
       </>,
       <>
         <UnderlinedPlayer name="Choco" /> scored the most points in a round with a boost – 141, 2021/22
@@ -80,8 +80,7 @@ const sections = [
         <UnderlinedPlayer name="Choco" /> scored the most points in a season – 299, 2023/24
       </>,
       <>
-        <UnderlinedPlayer name="Panda" /> held first place for 38 consecutive rounds (whole season), 2022/23{" "}
-        <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Panda" /> held first place for 38 consecutive rounds (whole season), 2022/23
       </>,
       <>
         <UnderlinedPlayer name="Panda" /> and <UnderlinedPlayer name="Vanilla" /> have won the cup 3 times in a
@@ -94,6 +93,10 @@ const sections = [
         <UnderlinedPlayer name="Vanilla" /> holds the record for most correctly predicted scores in a day – 4/5 matches,
         2016
       </>,
+      <>
+      <UnderlinedPlayer name="Vanilla" /> guessed 0 match results in an EPL game week - what an idiot.., 2025/26{" "}
+      <strong>✯</strong>{" "}
+    </>,
     ],
   },
   {

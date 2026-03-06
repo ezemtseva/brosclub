@@ -220,6 +220,48 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
+      videoId: "Scr4UX7dwA4",
+      title: "Doan",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 11",
+    },
+    {
+      videoId: "jat3zbRe9CE",
+      title: "Saka",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 11",
+    },
+    {
+      videoId: "pIeumr4KXLw",
+      title: "Griezman",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 10",
+    },
+    {
+      videoId: "eHGkZN8Z1EY",
+      title: "Musiala",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 10",
+    },
+    {
+      videoId: "FFd09SG2TgU",
+      title: "Griezman",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 10",
+    },
+    {
+      videoId: "tWDeWiw7sqU",
+      title: "Van Dijk",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 10",
+    },
+    {
+      videoId: "rQAj5luT-Lk",
+      title: "Williams",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 10",
+    },
+    {
       videoId: "XrtTPAG0Kgs",
       title: "Vanilović",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

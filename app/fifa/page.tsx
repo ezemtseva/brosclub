@@ -220,6 +220,12 @@ export default async function FIFAPage() {
   // Current season highlights (2025/26) - update as new highlights happen
   const currentSeasonHighlights = [
     {
+      videoId: "CrNcXFZkemY",
+      title: "✯ Goal of the season - Phil Foden",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 3",
+    },
+    {
       videoId: "Scr4UX7dwA4",
       title: "Doan",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
@@ -346,12 +352,6 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 4",
     },
     {
-      videoId: "CrNcXFZkemY",
-      title: "Goal of the year - Phil Foden",
-      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
-      coverageText: "GAME DAY 3",
-    },
-    {
       videoId: "i3CyZ4H8k14",
       title: "Kevin De Bruyne",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
@@ -381,16 +381,16 @@ export default async function FIFAPage() {
   // Historical season highlights (2024/25)
   const historicalSeasonHighlights = [
     {
+      videoId: "0JiK73BRZAo",
+      title: "✯ Goal of the season - Jota",
+      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
+      coverageText: "GAME DAY 17",
+    },
+    {
       videoId: "7NS6-JdeK60",
       title: "He's our number 20..",
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",
       coverageText: "REST IN PEACE",
-    },
-    {
-      videoId: "caPxV7oCJxA",
-      title: "Amiak Karbromid at its finest",
-      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-      coverageText: "CLUBS",
     },
     {
       videoId: "csD8h1kda6o",
@@ -443,12 +443,6 @@ export default async function FIFAPage() {
     {
       videoId: "oXzSTLHYQ3w",
       title: "Smooth operator Isak",
-      thumbnail: "/imgs/fifa/fifathumbnail.jpg",
-      coverageText: "GAME DAY 17",
-    },
-    {
-      videoId: "0JiK73BRZAo",
-      title: "Crazy corner finish from Jota",
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",
       coverageText: "GAME DAY 17",
     },

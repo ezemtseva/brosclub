@@ -11,8 +11,10 @@ const PokerChart = dynamic(() => import("./PokerChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
 // Define the seasons array with all the required seasons - added 2025/26 as first tab
-const seasons = ["2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"] as const //Update to return 25-26
+const seasons = ["XXXX/XX", "2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"] as const //Update to return 25-26
 type Season = (typeof seasons)[number]
+
+const visibleSeasons = seasons.filter((season) => season !== "XXXX/XX")
 
 // Define types for the standings data
 type StandingsData = {
@@ -799,7 +801,7 @@ export default function HoldemSeasonTabs({
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2025/26") {
+    if (activeSeason === "XXXX/XX") {
       // For the current season (2025/26), use the live data from pokerEntry
       return (
         <>
@@ -928,7 +930,7 @@ export default function HoldemSeasonTabs({
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto">
-            {seasons.map((season) => (
+            {visibleSeasons.map((season) => (
               <button
                 key={season}
                 onClick={() => setActiveSeason(season)}

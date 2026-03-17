@@ -152,6 +152,7 @@ export default async function FPLPage() {
 
     // Current season highlights (update as new highlights happen)
     const currentSeasonHighlights = [
+      { src: "/imgs/fpl/fpl2526-30.png", alt: "New FPL Season Highlight", caption: "Team of the week 30 - Choco" },
       { src: "/imgs/fpl/fpl2526-29.png", alt: "New FPL Season Highlight", caption: "Team of the week 29 - Vanilla" },
       { src: "/imgs/fpl/fpl2526-28.png", alt: "New FPL Season Highlight", caption: "Team of the week 28 - Choco" },
       { src: "/imgs/fpl/fpl2526-27.png", alt: "New FPL Season Highlight", caption: "✯ Teams of the week 27 - Choco & Panda" },

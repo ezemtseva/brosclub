@@ -226,6 +226,42 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 3",
     },
     {
+      videoId: "d-I7dNafuh0",
+      title: "Musiala",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
+      videoId: "6XZblisC22U",
+      title: "Nkunku",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
+      videoId: "OApK73E9VZ4",
+      title: "El Shaarawy",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
+      videoId: "u_HfQ_F-XI8",
+      title: "Kolo Muani",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
+      videoId: "2mF2EU3_3bs",
+      title: "Livramento",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
+      videoId: "krlFFYu-378",
+      title: "Woltemade",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 12",
+    },
+    {
       videoId: "Scr4UX7dwA4",
       title: "Doan",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

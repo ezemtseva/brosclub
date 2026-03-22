@@ -21,7 +21,7 @@ export async function register() {
     })
 
     const result = await resend.emails.send({
-      from: 'Bearos Club <onboarding@resend.dev>',
+      from: 'Bearos Club <noreply@sundaybrosclub.com>',
       to: recipients,
       subject: '🐻 Bearos Club has been updated',
       html: `
@@ -29,7 +29,7 @@ export async function register() {
           <h2 style="margin: 0 0 8px;">Bearos Club updated 🐻</h2>
           <p style="color: #666; margin: 0 0 24px; font-size: 14px;">${deployedAt} (Moscow time)</p>
           <p style="margin: 0 0 24px;">Fresh data is live. Check the latest standings:</p>
-          <a href="https://bearos.club" style="display: inline-block; background: #1a1a1a; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;">
+          <a href="https://sundaybrosclub.com" style="display: inline-block; background: #1a1a1a; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;">
             Open Bearos Club →
           </a>
         </div>

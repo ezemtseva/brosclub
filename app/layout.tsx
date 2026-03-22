@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: 'Bearos Club',
   description: 'Here is always Sunday',
+  icons: {
+    icon: '/imgs/logo.png',
+  },
 }
 
 export default function RootLayout({

@@ -75,9 +75,28 @@
   }
 }
 
+/* History table styles */
+.history-table {
+  max-height: 265px;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.history-table::-webkit-scrollbar {
+  display: none;
+}
+
+.history-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f3f4f6; /* bg-gray-100 */
+  z-index: 1;
+}
+
 /* FIFA standings table styles */
 .fifa-standings-table {
-  max-height: 750px; /* Increased from 600px to show approximately 15 rows */
+  max-height: 500px; /* Show approximately 10 rows */
   overflow-y: auto;
 }
 

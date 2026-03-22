@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 
 const mainNavItems = [
@@ -33,7 +34,8 @@ export default function NavBar() {
       <div className="container mx-auto flex items-center">
         {/* Left - Logo */}
         <div className="flex-none">
-          <Link href="/" className="text-xl font-bold">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+            <Image src="/imgs/logo.png" alt="Bearos Club logo" width={36} height={36} className="rounded-full" />
             Bearos Club
           </Link>
         </div>

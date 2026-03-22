@@ -3595,7 +3595,7 @@ export default function FifaSeasonTabs({
             onClick={() => setDialogOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
-            <span className="text-base leading-none">+</span> Add Match
+            <span className="text-base leading-none">+</span> Add Game
           </button>
         )}
       </div>

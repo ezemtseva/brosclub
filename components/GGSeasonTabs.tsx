@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamic from "next/dynamic"
+import AddGGGameDialog from "./AddGGGameDialog"
 
 const GGChart = dynamic(() => import("./GGChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -43,6 +45,15 @@ export default function GGSeasonTabs({
   columns,
 }: GGSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const router = useRouter()
+
+  const handleGameSuccess = () => {
+    router.refresh()
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
 
   // Render content based on active tab
   const renderContent = () => {
@@ -50,7 +61,15 @@ export default function GGSeasonTabs({
       // For the current season, use the live data from ggEntry
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-title font-bold">Standings</h2>
+            <button
+              onClick={() => setDialogOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <span className="text-base leading-none">+</span> Add Game
+            </button>
+          </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
@@ -125,6 +144,19 @@ export default function GGSeasonTabs({
           </nav>
         </div>
       </div>
+
+      {dialogOpen && (
+        <AddGGGameDialog
+          onSuccess={handleGameSuccess}
+          onClose={() => setDialogOpen(false)}
+        />
+      )}
+
+      {showToast && (
+        <div className="fixed top-16 right-4 z-50 bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+          Game added ✓
+        </div>
+      )}
 
       {/* Render content based on active tab */}
       {renderContent()}

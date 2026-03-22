@@ -3,8 +3,10 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import DataTable from "./DataTable"
 import dynamic from "next/dynamic"
+import AddGameDialog from "./AddGameDialog"
 
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -416,6 +418,15 @@ export default function BetsSeasonTabs({
   columns,
 }: BetsSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const router = useRouter()
+
+  const handleGameSuccess = () => {
+    router.refresh()
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
 
   // Render content based on active tab
   const renderContent = () => {
@@ -423,7 +434,15 @@ export default function BetsSeasonTabs({
       // For the current season (2025/26), use the live data from betsEntry
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-title font-bold">Standings</h2>
+            <button
+              onClick={() => setDialogOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <span className="text-base leading-none">+</span> Add Game
+            </button>
+          </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
@@ -534,6 +553,20 @@ export default function BetsSeasonTabs({
           </nav>
         </div>
       </div>
+
+      {dialogOpen && (
+        <AddGameDialog
+          apiEndpoint="/api/bets-game"
+          onSuccess={handleGameSuccess}
+          onClose={() => setDialogOpen(false)}
+        />
+      )}
+
+      {showToast && (
+        <div className="fixed top-16 right-4 z-50 bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+          Game added ✓
+        </div>
+      )}
 
       {/* Render content based on active tab */}
       {renderContent()}

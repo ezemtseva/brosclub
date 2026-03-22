@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Add any necessary Next.js config options here
+  experimental: {
+    instrumentationHook: true,
+  },
 }
 
 export default nextConfig

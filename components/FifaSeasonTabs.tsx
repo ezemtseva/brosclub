@@ -3444,7 +3444,14 @@ export default function FifaSeasonTabs({
 }: FifaSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>(seasons[0])
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [showToast, setShowToast] = useState(false)
   const router = useRouter()
+
+  const handleMatchSuccess = () => {
+    router.refresh()
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
 
   // Process past season data for display
   const getPastSeasonTableData = (season: Season) => {
@@ -3596,9 +3603,15 @@ export default function FifaSeasonTabs({
       {dialogOpen && (
         <AddMatchDialog
           teams={teamNames}
-          onSuccess={() => router.refresh()}
+          onSuccess={handleMatchSuccess}
           onClose={() => setDialogOpen(false)}
         />
+      )}
+
+      {showToast && (
+        <div className="fixed top-16 right-4 z-50 bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+          Match added ✓
+        </div>
       )}
 
       {/* Render content based on active tab */}

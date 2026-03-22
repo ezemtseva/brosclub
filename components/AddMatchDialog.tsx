@@ -11,22 +11,36 @@ interface AddMatchDialogProps {
 export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDialogProps) {
   const [teamA, setTeamA] = useState("")
   const [teamB, setTeamB] = useState("")
-  const [scoreA, setScoreA] = useState("")
-  const [scoreB, setScoreB] = useState("")
+  const [scoreA, setScoreA] = useState("0")
+  const [scoreB, setScoreB] = useState("0")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState("")
 
   const isValid =
     teamA &&
     teamB &&
     teamA !== teamB &&
-    scoreA !== "" &&
-    scoreB !== "" &&
     !isNaN(Number(scoreA)) &&
     !isNaN(Number(scoreB)) &&
     Number(scoreA) >= 0 &&
     Number(scoreB) >= 0
+
+  const aScore = Number(scoreA)
+  const bScore = Number(scoreB)
+  const selectAClass = !teamA && !teamB
+    ? "border-gray-200"
+    : aScore > bScore
+    ? "border-green-300 bg-green-50"
+    : aScore < bScore
+    ? "border-red-300 bg-red-50"
+    : "border-gray-300 bg-gray-50"
+  const selectBClass = !teamA && !teamB
+    ? "border-gray-200"
+    : bScore > aScore
+    ? "border-green-300 bg-green-50"
+    : bScore < aScore
+    ? "border-red-300 bg-red-50"
+    : "border-gray-300 bg-gray-50"
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -47,11 +61,8 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
     setIsSubmitting(false)
 
     if (res.ok) {
-      setIsSuccess(true)
-      setTimeout(() => {
-        onSuccess()
-        onClose()
-      }, 1200)
+      onSuccess()
+      onClose()
     } else {
       const data = await res.json()
       setError(data.error || "Something went wrong")
@@ -76,7 +87,7 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
         <div className="flex items-center gap-3 mb-6">
           {/* Team A */}
           <select
-            className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className={`flex-1 min-w-0 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors ${selectAClass}`}
             value={teamA}
             onChange={(e) => setTeamA(e.target.value)}
           >
@@ -90,10 +101,13 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
           <input
             type="number"
             min="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300"
-            placeholder="0"
+            max="99"
+            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreA}
-            onChange={(e) => setScoreA(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value.slice(0, 2)
+              setScoreA(val)
+            }}
           />
 
           <span className="text-gray-400 font-bold shrink-0">:</span>
@@ -102,15 +116,18 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
           <input
             type="number"
             min="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300"
-            placeholder="0"
+            max="99"
+            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreB}
-            onChange={(e) => setScoreB(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value.slice(0, 2)
+              setScoreB(val)
+            }}
           />
 
           {/* Team B */}
           <select
-            className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className={`flex-1 min-w-0 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors ${selectBClass}`}
             value={teamB}
             onChange={(e) => setTeamB(e.target.value)}
           >
@@ -121,22 +138,7 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
           </select>
         </div>
 
-        {/* Result preview */}
-        {isValid && (
-          <p className="text-sm text-gray-500 mb-4 text-center">
-            {Number(scoreA) > Number(scoreB)
-              ? `${teamA} wins`
-              : Number(scoreB) > Number(scoreA)
-              ? `${teamB} wins`
-              : "Draw"}
-          </p>
-        )}
-
         {error && <p className="text-sm text-red-500 mb-4 text-center">{error}</p>}
-
-        {isSuccess && (
-          <p className="text-sm text-green-600 mb-4 text-center font-medium">Match added ✓</p>
-        )}
 
         {/* Actions */}
         <div className="flex gap-3 justify-end">
@@ -148,7 +150,7 @@ export default function AddMatchDialog({ teams, onSuccess, onClose }: AddMatchDi
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isValid || isSubmitting || isSuccess}
+            disabled={!isValid || isSubmitting}
             className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg disabled:opacity-40 hover:bg-gray-700 transition-colors"
           >
             {isSubmitting ? "Saving..." : "Confirm"}

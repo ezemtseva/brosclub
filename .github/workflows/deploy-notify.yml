@@ -1,0 +1,41 @@
+name: Notify on Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Vercel deployment to be ready
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          COMMIT_SHA="${{ github.sha }}"
+          echo "Waiting for deployment of commit $COMMIT_SHA..."
+
+          for i in {1..30}; do
+            RESPONSE=$(curl -s "https://api.vercel.com/v6/deployments?limit=10" \
+              -H "Authorization: Bearer $VERCEL_TOKEN")
+
+            STATE=$(echo "$RESPONSE" | jq -r --arg sha "$COMMIT_SHA" \
+              '.deployments[] | select(.meta.githubCommitSha == $sha) | .state' | head -1)
+
+            echo "Attempt $i/30: state=$STATE"
+
+            if [ "$STATE" = "READY" ]; then
+              echo "Deployment ready!"
+              break
+            elif [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+              echo "Deployment failed or was canceled. Skipping notification."
+              exit 0
+            fi
+
+            sleep 15
+          done
+
+      - name: Send deploy notification
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST https://www.sundaybrosclub.com/api/deploy-notify

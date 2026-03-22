@@ -2,11 +2,13 @@ import Image from "next/image"
 import Link from "next/link"
 import prisma from "../lib/prisma"
 import { getTeamColor } from "../lib/teamColors"
-import dynamic from "next/dynamic"
+import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
 import FlippableCard from "../components/FlippableCard"
 
-const Snowfall = dynamic(() => import("../components/Snowfall"), { ssr: false })
+export const dynamic = 'force-dynamic'
+
+const Snowfall = dynamicImport(() => import("../components/Snowfall"), { ssr: false })
 
 const clubMembers = [
   {

@@ -1,5 +1,7 @@
 import Image from "next/image"
 import prisma from "../../lib/prisma"
+
+export const dynamic = 'force-dynamic'
 import FifaSeasonTabs from "../../components/FifaSeasonTabs"
 
 const columns = [

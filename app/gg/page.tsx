@@ -1,9 +1,11 @@
 import prisma from "../../lib/prisma"
-import dynamic from "next/dynamic"
+import dynamicImport from "next/dynamic"
 import GGSeasonTabs from "../../components/GGSeasonTabs"
 
-const GGChart = dynamic(() => import("../../components/GGChart"), { ssr: false })
-const PieChart = dynamic(() => import("../../components/PieChart"), { ssr: false })
+export const dynamic = 'force-dynamic'
+
+const GGChart = dynamicImport(() => import("../../components/GGChart"), { ssr: false })
+const PieChart = dynamicImport(() => import("../../components/PieChart"), { ssr: false })
 
 const columns = [
   { header: "#", accessor: "position" },

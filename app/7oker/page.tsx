@@ -2,6 +2,8 @@ import prisma from "../../lib/prisma"
 import Link from "next/link"
 import SevenOkerSeasonTabs from "../../components/SevenOkerSeasonTab"
 
+export const dynamic = 'force-dynamic'
+
 const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "bearo" },

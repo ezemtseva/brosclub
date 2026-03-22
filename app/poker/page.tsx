@@ -1,9 +1,11 @@
 import prisma from "../../lib/prisma"
-import dynamic from "next/dynamic"
+import dynamicImport from "next/dynamic"
 import HoldemSeasonTabs from "../../components/HoldemSeasonTabs"
 
-const PokerChart = dynamic(() => import("../../components/PokerChart"), { ssr: false })
-const PieChart = dynamic(() => import("../../components/PieChart"), { ssr: false })
+export const dynamic = 'force-dynamic'
+
+const PokerChart = dynamicImport(() => import("../../components/PokerChart"), { ssr: false })
+const PieChart = dynamicImport(() => import("../../components/PieChart"), { ssr: false })
 
 const columns = [
   { header: "#", accessor: "position" },

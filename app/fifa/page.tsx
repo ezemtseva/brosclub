@@ -213,6 +213,7 @@ async function getHistoricalSeasonData() {
 export default async function FIFAPage() {
   // Fetch current season data (2025/26)
   const currentEntries = await getCurrentSeasonData()
+  const teamNames = currentEntries.map((e) => e.team).sort()
   const currentSeasonData = processFifaData2025(currentEntries)
 
   // Fetch historical season data (2024/25)
@@ -647,6 +648,7 @@ export default async function FIFAPage() {
         historicalSeasonData={historicalSeasonData}
         historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
+        teamNames={teamNames}
       />
     </div>
   )

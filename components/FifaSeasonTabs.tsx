@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import DataTable from "./DataTable"
 import VideoCarousel from "./VideoCarousel"
+import AddMatchDialog from "./AddMatchDialog"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -3429,6 +3431,7 @@ type FifaSeasonTabsProps = {
   historicalSeasonData: any[]
   historicalSeasonHighlights: any[]
   columns: any[]
+  teamNames: string[]
 }
 
 export default function FifaSeasonTabs({
@@ -3437,8 +3440,11 @@ export default function FifaSeasonTabs({
   historicalSeasonData,
   historicalSeasonHighlights,
   columns,
+  teamNames,
 }: FifaSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>(seasons[0])
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const router = useRouter()
 
   // Process past season data for display
   const getPastSeasonTableData = (season: Season) => {
@@ -3575,7 +3581,25 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      <h2 className="text-title font-bold mb-6">Standings</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-title font-bold">Standings</h2>
+        {activeSeason === "2025/26" && (
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <span className="text-base leading-none">+</span> Add Match
+          </button>
+        )}
+      </div>
+
+      {dialogOpen && (
+        <AddMatchDialog
+          teams={teamNames}
+          onSuccess={() => router.refresh()}
+          onClose={() => setDialogOpen(false)}
+        />
+      )}
 
       {/* Render content based on active tab */}
       {renderContent()}

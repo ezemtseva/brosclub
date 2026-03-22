@@ -20,7 +20,7 @@ export async function register() {
       timeZone: 'Europe/Moscow',
     })
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'Bearos Club <onboarding@resend.dev>',
       to: recipients,
       subject: '🐻 Bearos Club has been updated',
@@ -35,5 +35,11 @@ export async function register() {
         </div>
       `,
     })
+
+    if (result.error) {
+      console.error('[Bearos] Deploy notification failed:', result.error)
+    } else {
+      console.log('[Bearos] Deploy notification sent:', result.data?.id)
+    }
   }
 }

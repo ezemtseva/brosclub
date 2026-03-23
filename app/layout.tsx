@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import NavBar from './NavBar'
@@ -13,6 +12,11 @@ export const metadata = {
   },
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -22,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} text-base`}>
         <NavBar />
-        <main className="container mx-auto mt-1 p-4">
+        <main className="container mx-auto mt-1 px-3 py-4 md:px-6">
           {children}
         </main>
       </body>

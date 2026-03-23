@@ -173,7 +173,7 @@ const sections = [
 
 export default function BrecordsPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
       <h1 className="text-title font-bold mb-4">Brecords</h1>
       <p className="text-basic text-gray-600 mb-8">
         <strong>Eternal record:</strong> the longest bros call lasted 12 hours and 32 minutes on February 22, 2016.

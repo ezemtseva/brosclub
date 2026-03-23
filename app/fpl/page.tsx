@@ -228,7 +228,7 @@ export default async function FPLPage() {
     ]
 
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">
           X anniversary season of no-names turning our teams into a shit joke.
@@ -248,7 +248,7 @@ export default async function FPLPage() {
   } catch (error) {
     console.error("Error in FPLPage:", error)
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
         <h2 className="text-title font-bold mb-4">Standings</h2>

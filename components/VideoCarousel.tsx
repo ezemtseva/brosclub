@@ -54,7 +54,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   return (
     <>
       <div className="relative">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {displayedVideos.map((video, index) => (
             <div
               key={index}

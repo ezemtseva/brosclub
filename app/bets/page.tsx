@@ -102,7 +102,7 @@ export default async function BetsPage() {
   const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
       <p className="text-base text-gray-600 mb-8">
         XIII season of boring betting on top football leagues. Currently only English Premier League matches.

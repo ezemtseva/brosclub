@@ -6,15 +6,15 @@ import FifaSeasonTabs from "../../components/FifaSeasonTabs"
 
 const columns = [
   { header: "#", accessor: "position" },
-  { header: "Team", accessor: "team" },
-  { header: "G", accessor: "games" },
-  { header: "W", accessor: "wins" },
-  { header: "D", accessor: "draws" },
-  { header: "L", accessor: "losses" },
-  { header: "GS", accessor: "goalsScored" },
-  { header: "GC", accessor: "goalsConceded" },
-  { header: "GD", accessor: "goalDifference" },
-  { header: "P", accessor: "points" },
+  { header: "Team", accessor: "team", width: "365px" },
+  { header: "G", accessor: "games", width: "83px" },
+  { header: "W", accessor: "wins", width: "83px" },
+  { header: "D", accessor: "draws", width: "83px" },
+  { header: "L", accessor: "losses", width: "83px" },
+  { header: "GS", accessor: "goalsScored", width: "83px" },
+  { header: "GC", accessor: "goalsConceded", width: "83px" },
+  { header: "GD", accessor: "goalDifference", width: "83px" },
+  { header: "P", accessor: "points", width: "83px" },
 ]
 
 // Team colors for 2024/25 season (historical - DO NOT CHANGE)
@@ -57,45 +57,6 @@ const teamColors2024 = {
   ],
 }
 
-// Team colors for 2025/26 season (NEW)
-const teamColors2025 = {
-  red: [
-    "Liverpool",
-    "Eintracht Frankfurt",
-    "AS Roma",
-    "RB Leipzig",
-    "Arsenal",
-    "Atletico Madrid",
-    "Borussia Dortmund",
-    "Marseille",
-    "Sporting CP",
-    "Bayer Leverkusen",
-  ],
-  blue: [
-    "Villarreal",
-    "Chelsea",
-    "SS Lazio",
-    "PSG",
-    "Barcelona",
-    "Inter",
-    "Milan",
-    "Manchester United",
-    "Galatasaray",
-    "Wolfsburg",
-  ],
-  green: [
-    "Juventus",
-    "Tottenham",
-    "Newcastle",
-    "Napoli",
-    "Athletic Bilbao",
-    "Aston Villa",
-    "Real Madrid",
-    "Bayern Munich",
-    "Manchester City",
-    "Nottingham Forrest",
-  ],
-}
 
 const getTeamColor2024 = (team: string) => {
   if (teamColors2024.red.includes(team)) return "#ea7878"
@@ -104,16 +65,26 @@ const getTeamColor2024 = (team: string) => {
   return "transparent"
 }
 
-const getTeamColor2025 = (team: string) => {
-  if (teamColors2025.red.includes(team)) return "#ea7878"
-  if (teamColors2025.blue.includes(team)) return "#4b98de"
-  if (teamColors2025.green.includes(team)) return "#4fcb90"
-  return "transparent"
+const PLAYER_COLORS: Record<string, string> = {
+  Vanilla: "#ea7878",
+  Choco:   "#4b98de",
+  Panda:   "#4fcb90",
 }
 
 // Helper function to process FIFA data for 2025/26 season
-function processFifaData2025(entries: any[]) {
-  return entries
+function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }) {
+  const getColor = (team: string) => {
+    for (const [player, teams] of Object.entries(playerTeams)) {
+      if (teams.includes(team)) return PLAYER_COLORS[player] ?? "transparent"
+    }
+    return "transparent"
+  }
+
+  // Only show teams assigned to a player in setup
+  const assignedTeams = new Set([...playerTeams.Vanilla, ...playerTeams.Choco, ...playerTeams.Panda])
+  const filtered = assignedTeams.size > 0 ? entries.filter((e) => assignedTeams.has(e.team)) : entries
+
+  return filtered
     .map((entry) => ({
       ...entry,
       goalDifference: entry.goalsScored - entry.goalsConceded,
@@ -135,7 +106,7 @@ function processFifaData2025(entries: any[]) {
             {entry.team}
             <span
               className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: getTeamColor2025(entry.team) }}
+              style={{ backgroundColor: getColor(entry.team) }}
             />
           </span>
         </div>
@@ -148,7 +119,7 @@ function processFifaData2025(entries: any[]) {
       goalsConceded: entry.goalsConceded,
       goalDifference: entry.goalDifference,
       points: entry.points,
-      hoverColor: getTeamColor2025(entry.team),
+      hoverColor: getColor(entry.team),
       className: index === 0 ? "bg-amber-50" : undefined,
     }))
 }
@@ -210,14 +181,33 @@ async function getHistoricalSeasonData() {
   }
 }
 
+async function getPlayerTeams(season: string) {
+  const rows = await prisma.fifaPlayerTeam.findMany({ where: { season } })
+  const result: Record<string, string[]> = { Vanilla: [], Choco: [], Panda: [] }
+  for (const row of rows) {
+    if (result[row.player]) result[row.player].push(row.team)
+  }
+  return result as { Vanilla: string[]; Choco: string[]; Panda: string[] }
+}
+
+async function getMatches(season: string) {
+  return prisma.fifaMatch.findMany({ where: { season }, orderBy: { createdAt: "desc" } })
+}
+
 export default async function FIFAPage() {
   // Fetch current season data (2025/26)
-  const currentEntries = await getCurrentSeasonData()
-  const teamNames = currentEntries.map((e) => e.team).sort()
-  const currentSeasonData = processFifaData2025(currentEntries)
+  const [currentEntries, historicalEntries, playerTeams, matches] = await Promise.all([
+    getCurrentSeasonData(),
+    getHistoricalSeasonData(),
+    getPlayerTeams("2025/26"),
+    getMatches("2025/26"),
+  ])
 
-  // Fetch historical season data (2024/25)
-  const historicalEntries = await getHistoricalSeasonData()
+  const teamNames = currentEntries.map((e: { team: string }) => e.team).sort()
+  const teamLogos: Record<string, string> = Object.fromEntries(
+    currentEntries.map((e: { team: string; logo: string }) => [e.team, e.logo || "/placeholder.svg"])
+  )
+  const currentSeasonData = processFifaData2025(currentEntries, playerTeams)
   const historicalSeasonData = processFifaData2024(historicalEntries)
 
   // Current season highlights (2025/26) - update as new highlights happen
@@ -649,6 +639,9 @@ export default async function FIFAPage() {
         historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
         teamNames={teamNames}
+        playerTeams={playerTeams}
+        matches={matches.map((m: { id: number; season: string; teamA: string; scoreA: number; teamB: string; scoreB: number; createdAt: Date }) => ({ ...m, createdAt: m.createdAt.toISOString() }))}
+        teamLogos={teamLogos}
       />
     </div>
   )

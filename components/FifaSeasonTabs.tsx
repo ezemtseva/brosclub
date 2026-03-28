@@ -6,6 +6,8 @@ import Image from "next/image"
 import DataTable from "./DataTable"
 import VideoCarousel from "./VideoCarousel"
 import AddMatchDialog from "./AddMatchDialog"
+import FifaSeasonConfig from "./FifaSeasonConfig"
+import FifaMatchResults from "./FifaMatchResults"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -3425,6 +3427,21 @@ const getTeamColor = (team: string) => {
   return "transparent"
 }
 
+interface PlayerTeams {
+  Vanilla: string[]
+  Choco: string[]
+  Panda: string[]
+}
+
+interface MatchRecord {
+  id: number
+  teamA: string
+  scoreA: number
+  teamB: string
+  scoreB: number
+  createdAt: string
+}
+
 type FifaSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonHighlights: any[]
@@ -3432,6 +3449,9 @@ type FifaSeasonTabsProps = {
   historicalSeasonHighlights: any[]
   columns: any[]
   teamNames: string[]
+  playerTeams: PlayerTeams
+  matches: MatchRecord[]
+  teamLogos: Record<string, string>
 }
 
 export default function FifaSeasonTabs({
@@ -3441,16 +3461,32 @@ export default function FifaSeasonTabs({
   historicalSeasonHighlights,
   columns,
   teamNames,
+  playerTeams: initialPlayerTeams,
+  matches: initialMatches,
+  teamLogos,
 }: FifaSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>(seasons[0])
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+  const [activeSeason, setActiveSeason]   = useState<Season>(seasons[0])
+  const [dialogOpen, setDialogOpen]       = useState(false)
+  const [configOpen, setConfigOpen]       = useState(false)
+  const [showToast, setShowToast]         = useState(false)
+  const [playerTeams, setPlayerTeams]     = useState<PlayerTeams>(initialPlayerTeams)
+  const [matches, setMatches]             = useState<MatchRecord[]>(initialMatches)
+  const [resultsSearch, setResultsSearch] = useState("")
   const router = useRouter()
 
-  const handleMatchSuccess = () => {
+  const handleMatchSuccess = async () => {
+    // Refresh matches from server
+    const res = await fetch("/api/fifa-matches?season=2025/26")
+    if (res.ok) setMatches(await res.json())
     router.refresh()
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
+  }
+
+  const handleConfigSaved = async () => {
+    const res = await fetch("/api/fifa-season-config?season=2025/26")
+    if (res.ok) setPlayerTeams(await res.json())
+    router.refresh()
   }
 
   // Process past season data for display
@@ -3498,8 +3534,53 @@ export default function FifaSeasonTabs({
       // For the current season (2025/26), use the live data from fifaEntry
       return (
         <>
-          <div className="fifa-standings-table">
-            <DataTable columns={columns} data={currentSeasonData} />
+          <div className="flex flex-col lg:flex-row justify-between gap-6">
+            {/* Standings column */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-4 h-9">
+                <h2 className="text-title font-bold leading-none m-0">Standings</h2>
+                <button
+                  onClick={() => setConfigOpen(true)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors leading-none"
+                  style={{ fontSize: "1.75rem" }}
+                  title="Configure player teams"
+                >
+                  ⚙
+                </button>
+              </div>
+              <div className="fifa-standings-table">
+                <DataTable columns={columns} data={currentSeasonData} />
+              </div>
+            </div>
+
+            {/* Results column */}
+            <div className="shrink-0">
+              <div className="flex items-center justify-between mb-4 h-9">
+                <h2 className="text-title font-bold leading-none m-0">Results</h2>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Search by team"
+                    value={resultsSearch}
+                    onChange={(e) => setResultsSearch(e.target.value)}
+                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:italic"
+                  />
+                  <button
+                    onClick={() => setDialogOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
+                  >
+                    <span className="text-base leading-none">+</span> Add
+                  </button>
+                </div>
+              </div>
+              <div className="fifa-standings-table">
+                <FifaMatchResults
+                  matches={resultsSearch ? matches.filter(m => m.teamA.toLowerCase().includes(resultsSearch.toLowerCase()) || m.teamB.toLowerCase().includes(resultsSearch.toLowerCase())) : matches}
+                  playerTeams={playerTeams}
+                  teamLogos={teamLogos}
+                />
+              </div>
+            </div>
           </div>
 
           <section className="mt-12">
@@ -3588,23 +3669,29 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-title font-bold">Standings</h2>
-        {activeSeason === "2025/26" && (
-          <button
-            onClick={() => setDialogOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            <span className="text-base leading-none">+</span> Add Game
-          </button>
-        )}
-      </div>
+      {activeSeason !== "2025/26" && (
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-title font-bold">Standings</h2>
+        </div>
+      )}
 
       {dialogOpen && (
         <AddMatchDialog
           teams={teamNames}
+          playerTeams={playerTeams}
+          playedMatches={matches}
           onSuccess={handleMatchSuccess}
           onClose={() => setDialogOpen(false)}
+        />
+      )}
+
+      {configOpen && (
+        <FifaSeasonConfig
+          season="2025/26"
+          initialPlayerTeams={playerTeams}
+          allTeams={teamNames}
+          onClose={() => setConfigOpen(false)}
+          onSaved={handleConfigSaved}
         />
       )}
 

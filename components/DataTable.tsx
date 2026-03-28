@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 interface Column {
   header: string
   accessor: string
+  width?: string
 }
 
 interface DataTableProps {
@@ -20,9 +21,9 @@ export default function DataTable({ columns, data, maxHeight = '400px' }: DataTa
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
         <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal">
+          <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
             {columns.map((column, index) => (
-              <th key={index} className={`py-2 px-2 md:py-3 md:px-6 ${column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left' : 'text-center'}`}>
+              <th key={index} style={column.width ? { width: column.width } : undefined} className={`py-2 px-4 ${column.accessor === 'position' ? 'text-left w-px whitespace-nowrap' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left whitespace-nowrap' : 'text-center'}`}>
                 {column.header}
               </th>
             ))}
@@ -32,7 +33,7 @@ export default function DataTable({ columns, data, maxHeight = '400px' }: DataTa
           {data.map((row, rowIndex) => (
             <tr
               key={rowIndex}
-              className="border-b border-gray-200 transition-colors duration-200"
+              className="border-b border-gray-200 transition-colors duration-200 h-[45px]"
               style={{
                 backgroundColor: hoveredRow === rowIndex ? `${row.hoverColor}80` : 'transparent',
               }}
@@ -40,7 +41,7 @@ export default function DataTable({ columns, data, maxHeight = '400px' }: DataTa
               onMouseLeave={() => setHoveredRow(null)}
             >
               {columns.map((column, colIndex) => (
-                <td key={colIndex} className={`py-2 px-2 md:py-3 md:px-6 ${column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left' : 'text-center'}`}>
+                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 px-4 ${column.accessor === 'position' ? 'text-left w-px whitespace-nowrap' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left whitespace-nowrap' : 'text-center'}`}>
                   {row[column.accessor]}
                 </td>
               ))}

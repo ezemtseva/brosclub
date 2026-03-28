@@ -111,11 +111,15 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* overflow-x: clip prevents horizontal scroll without creating a sticky-breaking scroll container */
+.fifa-standings-table > div {
+  overflow-x: clip;
+}
+
 /* Ensure the header stays fixed */
 .fifa-standings-table thead {
   position: sticky;
   top: 0;
-  background-color: var(--background);
   z-index: 1;
 }
 

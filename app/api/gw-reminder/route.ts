@@ -13,14 +13,14 @@ export async function GET() {
   // Find the next upcoming gameweek (first match not yet started)
   const now = new Date()
   const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-  const in25h = new Date(now.getTime() + 25 * 60 * 60 * 1000)
+  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000)
 
-  // Find the earliest upcoming match that kicks off within the 24-25h window
+  // Find the first match of the next upcoming gameweek that starts tomorrow (24–48h from now)
   const match = await prisma.plMatch.findFirst({
     where: {
       season: '2025/26',
       status: { notIn: ['FINISHED', 'POSTPONED'] },
-      kickoff: { gte: in24h, lte: in25h },
+      kickoff: { gte: in24h, lte: in48h },
     },
     orderBy: { kickoff: 'asc' },
   })

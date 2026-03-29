@@ -1,5 +1,6 @@
 {
   "crons": [
-    { "path": "/api/pl-sync", "schedule": "0 6 * * *" }
+    { "path": "/api/pl-sync", "schedule": "0 6 * * *" },
+    { "path": "/api/gw-reminder", "schedule": "0 9 * * *" }
   ]
 }

@@ -88,9 +88,9 @@ async function getHistoricalSeasonData() {
 }
 
 async function getInitialGameweek(): Promise<number> {
-  // Find the lowest gameweek with non-finished matches (i.e. current/upcoming)
+  // Find the lowest gameweek with active/upcoming matches (ignore POSTPONED)
   const next = await prisma.plMatch.findFirst({
-    where: { season: "2025/26", status: { not: "FINISHED" } },
+    where: { season: "2025/26", status: { notIn: ["FINISHED", "POSTPONED"] } },
     orderBy: { gameweek: "asc" },
     select: { gameweek: true },
   })

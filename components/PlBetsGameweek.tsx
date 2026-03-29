@@ -55,7 +55,7 @@ function formatKickoff(kickoff: string): string {
 }
 
 function betBg(points: number | null): string {
-  if (points === 3) return "bg-green-100"
+  if (points !== null && points >= 3) return "bg-green-100"
   if (points === 1) return "bg-yellow-100"
   return ""
 }

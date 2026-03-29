@@ -1,7 +1,10 @@
 import prisma from "./prisma"
 
 function calcPoints(betHome: number, betAway: number, matchHome: number, matchAway: number): number {
-  if (betHome === matchHome && betAway === matchAway) return 3
+  if (betHome === matchHome && betAway === matchAway) {
+    const bonus = matchHome + matchAway >= 4 ? 1 : 0
+    return 3 + bonus
+  }
   if (Math.sign(betHome - betAway) === Math.sign(matchHome - matchAway)) return 1
   return 0
 }

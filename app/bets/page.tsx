@@ -15,7 +15,9 @@ const columns = [
   { header: "Wins", accessor: "wins" },
   { header: "Points", accessor: "points" },
   { header: "Difference", accessor: "difference" },
-  { header: "W%", accessor: "winPercentage" },
+  { header: "GW%", accessor: "winPercentage" },
+  { header: "PS%", accessor: "outcomePercent" },
+  { header: "EPS%", accessor: "exactPercent" },
 ]
 
 const playerColors = {
@@ -25,29 +27,34 @@ const playerColors = {
 }
 
 // Helper function to process data for display
-function processSeasonData(latestEntries: any[]) {
+function processSeasonData(latestEntries: any[], betStats?: Record<string, { total: number; outcome: number; exact: number }>) {
   const totalWins = latestEntries.reduce((sum: number, entry: any) => sum + entry.wins, 0)
 
   return latestEntries
     .sort((a: any, b: any) => b.points - a.points)
-    .map((entry: any, index: number) => ({
-      position: index + 1,
-      player: (
-        <span className="relative">
-          {entry.player}
-          <span
-            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]"
-            style={{ backgroundColor: playerColors[entry.player as keyof typeof playerColors] }}
-          />
-        </span>
-      ),
-      games: entry.games,
-      wins: entry.wins,
-      points: entry.points,
-      difference: index === 0 ? "-" : (latestEntries[index - 1].points - entry.points).toString(),
-      winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : "0%",
-      hoverColor: playerColors[entry.player as keyof typeof playerColors],
-    }))
+    .map((entry: any, index: number) => {
+      const stats = betStats?.[entry.player]
+      return {
+        position: index + 1,
+        player: (
+          <span className="relative">
+            {entry.player}
+            <span
+              className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]"
+              style={{ backgroundColor: playerColors[entry.player as keyof typeof playerColors] }}
+            />
+          </span>
+        ),
+        games: entry.games,
+        wins: entry.wins,
+        points: entry.points,
+        difference: index === 0 ? "-" : (latestEntries[index - 1].points - entry.points).toString(),
+        winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : "0%",
+        outcomePercent: stats && stats.total > 0 ? `${((stats.outcome / stats.total) * 100).toFixed(1)}%` : "—",
+        exactPercent: stats && stats.total > 0 ? `${((stats.exact / stats.total) * 100).toFixed(1)}%` : "—",
+        hoverColor: playerColors[entry.player as keyof typeof playerColors],
+      }
+    })
 }
 
 // Helper function to create pie chart data
@@ -57,6 +64,21 @@ function createPieChartData(latestEntries: any[]) {
     value: entry.wins,
     color: playerColors[entry.player as keyof typeof playerColors],
   }))
+}
+
+async function getBetStats() {
+  const bets = await prisma.plBet.findMany({
+    where: { points: { not: null } },
+    select: { player: true, points: true },
+  })
+  const stats: Record<string, { total: number; outcome: number; exact: number }> = {}
+  for (const bet of bets) {
+    if (!stats[bet.player]) stats[bet.player] = { total: 0, outcome: 0, exact: 0 }
+    stats[bet.player].total++
+    if ((bet.points ?? 0) >= 1) stats[bet.player].outcome++
+    if ((bet.points ?? 0) >= 3) stats[bet.player].exact++
+  }
+  return stats
 }
 
 async function getCurrentSeasonData() {
@@ -112,8 +134,11 @@ export default async function BetsPage() {
   // Fetch historical season data (2024/25)
   const { entries: historicalEntries, latestEntries: historicalLatestEntries } = await getHistoricalSeasonData()
 
+  // Fetch bet stats for 2025/26
+  const betStats = await getBetStats()
+
   // Process current season data
-  const currentSeasonData = processSeasonData(currentLatestEntries)
+  const currentSeasonData = processSeasonData(currentLatestEntries, betStats)
   const currentSeasonPieData = createPieChartData(currentLatestEntries)
 
   // Process historical season data

@@ -12,8 +12,10 @@ type TableDataItem = {
   position: number
   player: React.ReactNode
   games: number
+  wins: number
   points: number
   difference: string
+  winPercent: string
   hoverColor: string
 }
 
@@ -38,8 +40,10 @@ const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
   { header: "Games", accessor: "games" },
+  { header: "Wins", accessor: "wins" },
   { header: "Points", accessor: "points" },
   { header: "Difference", accessor: "difference" },
+  { header: "W%", accessor: "winPercent" },
 ]
 
 const players = [
@@ -48,16 +52,43 @@ const players = [
   { name: "Panda", teamId: "5663", color: "#4fcb90" },
 ]
 
+function calculateWins(playersData: PlayerData[]): Record<string, number> {
+  // Collect all weeks across all players
+  const allWeeks = Array.from(new Set(playersData.flatMap((p) => p.entries.map((e) => e.week)))).sort((a, b) => a - b)
+
+  const wins: Record<string, number> = {}
+  for (const p of playersData) wins[p.name] = 0
+
+  for (const week of allWeeks) {
+    // Per-week points = cumulative[week] - cumulative[prev week]
+    const weekPoints: Record<string, number> = {}
+    for (const player of playersData) {
+      const curr = player.entries.find((e) => e.week === week)
+      if (!curr) continue
+      const prevEntry = player.entries.filter((e) => e.week < week).at(-1)
+      weekPoints[player.name] = curr.points - (prevEntry?.points ?? 0)
+    }
+    const max = Math.max(...Object.values(weekPoints))
+    const winners = Object.entries(weekPoints).filter(([, pts]) => pts === max)
+    if (winners.length === 1) wins[winners[0][0]]++
+  }
+
+  return wins
+}
+
 // Helper function to process FPL data for display
 function processFplData(playersData: PlayerData[]): TableDataItem[] {
+  const wins = calculateWins(playersData)
+
   return playersData
     .map((player) => {
       const lastEntry = player.entries[player.entries.length - 1]
       return {
         player: player.name,
-        games: lastEntry.games,
-        points: lastEntry.points,
+        games: lastEntry?.games ?? 0,
+        points: lastEntry?.points ?? 0,
         color: player.color,
+        wins: wins[player.name] ?? 0,
       }
     })
     .sort((a, b) => b.points - a.points)
@@ -70,8 +101,10 @@ function processFplData(playersData: PlayerData[]): TableDataItem[] {
         </span>
       ),
       games: entry.games,
+      wins: entry.wins,
       points: entry.points,
       difference: index === 0 ? "-" : (sortedData[index - 1].points - entry.points).toString(),
+      winPercent: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
       hoverColor: entry.color,
     }))
 }

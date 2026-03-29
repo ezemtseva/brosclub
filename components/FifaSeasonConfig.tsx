@@ -106,7 +106,7 @@ export default function FifaSeasonConfig({
                 {/* Player header */}
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full flex-none" style={{ backgroundColor: color }} />
-                  <span className="font-semibold text-sm">{player}</span>
+                  <span className="font-semibold text-[14px]">{player}</span>
                   <span className="text-xs text-gray-400 ml-auto">{playerTeams[player].length} teams</span>
                 </div>
 

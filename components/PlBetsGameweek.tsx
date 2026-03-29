@@ -254,6 +254,13 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
             Prev
           </button>
           <button
+            onClick={() => setGameweek(initialGameweek)}
+            disabled={gameweek === initialGameweek}
+            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Current
+          </button>
+          <button
             onClick={() => setGameweek((g) => Math.min(38, g + 1))}
             disabled={gameweek === 38}
             className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -283,13 +290,15 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
         <div className={`overflow-x-auto transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
           <table className="w-full bg-white">
             <thead>
-              <tr className="bg-gray-200 text-gray-600 uppercase text-[14px] leading-normal h-[45px]">
-                <th className="py-2 px-4 text-left whitespace-nowrap">Date</th>
-                <th className="py-2 px-4 text-left whitespace-nowrap">Match</th>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-[12.25px] leading-normal h-[45px]">
+                <th className="py-2 px-4 text-left w-[130px]">Date</th>
+                <th className="py-2 pl-0 pr-4 text-right whitespace-nowrap w-px">Home</th>
+                <th className="py-2 px-2 text-center whitespace-nowrap">Score</th>
+                <th className="py-2 pl-2 pr-4 text-left whitespace-nowrap w-px">Away</th>
                 <th className="py-2 px-4 text-center whitespace-nowrap">Status</th>
                 {PLAYERS.map((p) => (
                   <th key={p} className="py-2 px-4 text-center whitespace-nowrap">
-                    <span className="relative inline-block text-[14px]">
+                    <span className="relative inline-block text-[12.25px]">
                       {p}
                       <span className="absolute bottom-[-2px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS[p] }} />
                     </span>
@@ -304,27 +313,29 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
                 const postponed = match.status === "POSTPONED"
                 return (
                   <tr key={match.matchId} className="border-b border-gray-200 h-[45px]">
-                    <td className="py-2 px-4 whitespace-nowrap text-[12.25px]">{formatKickoff(match.kickoff)}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`flex items-center gap-1.5 rounded px-1 ${finished && match.scoreHome! > match.scoreAway! ? "bg-green-50" : ""}`}>
-                          {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="shrink-0 object-contain" />}
-                          <span className="font-medium text-[14px]">{match.homeTeam}</span>
-                        </span>
-                        {finished ? (
-                          <span className="mx-1 tabular-nums text-[14px]">
-                            <span className={match.scoreHome! > match.scoreAway! ? "font-bold" : "font-normal"}>{match.scoreHome}</span>
-                            <span className="text-gray-300">:</span>
-                            <span className={match.scoreAway! > match.scoreHome! ? "font-bold" : "font-normal"}>{match.scoreAway}</span>
-                          </span>
-                        ) : (
-                          <span className="mx-1 text-gray-300 text-[14px]">vs</span>
-                        )}
-                        <span className={`flex items-center gap-1.5 rounded px-1 ${finished && match.scoreAway! > match.scoreHome! ? "bg-green-50" : ""}`}>
-                          <span className="font-medium text-[14px]">{match.awayTeam}</span>
-                          {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="shrink-0 object-contain" />}
-                        </span>
-                      </div>
+                    <td className="py-2 px-4 w-[130px] text-[12.25px]">{formatKickoff(match.kickoff)}</td>
+                    <td className="py-2 pl-0 pr-4 w-px whitespace-nowrap">
+                      <span className={`flex items-center justify-end gap-1.5 rounded px-1 ${finished && match.scoreHome! > match.scoreAway! ? "bg-green-50" : ""}`}>
+                        <span className="font-medium text-[14px]">{match.homeTeam}</span>
+                        {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="shrink-0 object-contain" />}
+                      </span>
+                    </td>
+                    <td className="py-2 px-2 text-center whitespace-nowrap tabular-nums">
+                      {finished ? (
+                        <>
+                          <span className={match.scoreHome! > match.scoreAway! ? "font-bold" : "font-normal"}>{match.scoreHome}</span>
+                          <span className="text-gray-300 mx-0.5">:</span>
+                          <span className={match.scoreAway! > match.scoreHome! ? "font-bold" : "font-normal"}>{match.scoreAway}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-300">vs</span>
+                      )}
+                    </td>
+                    <td className="py-2 pl-2 pr-4 w-px whitespace-nowrap">
+                      <span className={`flex items-center gap-1.5 rounded px-1 ${finished && match.scoreAway! > match.scoreHome! ? "bg-green-50" : ""}`}>
+                        {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="shrink-0 object-contain" />}
+                        <span className="font-medium text-[14px]">{match.awayTeam}</span>
+                      </span>
                     </td>
                     <td className="py-2 px-4 text-center whitespace-nowrap">
                       {finished ? (

@@ -205,3 +205,9 @@ model PlBet {
 
   @@unique([matchId, player])
 }
+
+model PlGwReminder {
+  id        Int      @id @default(autoincrement())
+  gameweek  Int      @unique
+  sentAt    DateTime @default(now())
+}

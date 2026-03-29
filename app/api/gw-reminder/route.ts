@@ -12,21 +12,29 @@ const recipients = [
 export async function GET() {
   // Find the next upcoming gameweek (first match not yet started)
   const now = new Date()
-  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000)
+  const in25h = new Date(now.getTime() + 25 * 60 * 60 * 1000)
 
-  // Find the first match of the next upcoming gameweek that starts tomorrow (24–48h from now)
+  // Find the first upcoming match within the next 25 hours
   const match = await prisma.plMatch.findFirst({
     where: {
       season: '2025/26',
       status: { notIn: ['FINISHED', 'POSTPONED'] },
-      kickoff: { gte: in24h, lte: in48h },
+      kickoff: { lte: in25h },
     },
     orderBy: { kickoff: 'asc' },
   })
 
   if (!match) {
-    return Response.json({ skipped: true, reason: 'No gameweek starting in ~24h' })
+    return Response.json({ skipped: true, reason: 'No match within 25h' })
+  }
+
+  // Check if we already sent a reminder for this gameweek
+  const alreadySent = await prisma.plGwReminder.findUnique({
+    where: { gameweek: match.gameweek },
+  })
+
+  if (alreadySent) {
+    return Response.json({ skipped: true, reason: `Reminder for GW${match.gameweek} already sent` })
   }
 
   const gwDate = match.kickoff.toLocaleString('en-GB', {
@@ -61,6 +69,9 @@ export async function GET() {
     console.error('[Bearos] GW reminder failed:', result.error)
     return Response.json({ error: result.error }, { status: 500 })
   }
+
+  // Mark as sent so we don't send again
+  await prisma.plGwReminder.create({ data: { gameweek: match.gameweek } })
 
   console.log(`[Bearos] GW${match.gameweek} reminder sent:`, result.data?.id)
   return Response.json({ success: true, gameweek: match.gameweek })

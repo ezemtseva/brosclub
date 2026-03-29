@@ -3554,7 +3554,7 @@ export default function FifaSeasonTabs({
             </div>
 
             {/* Results column */}
-            <div className="shrink-0 w-[480px]">
+            <div className="w-full lg:shrink-0 lg:w-[480px]">
               <div className="flex items-center justify-between mb-4 h-9">
                 <h2 className="text-title font-bold leading-none m-0">Results</h2>
                 <div className="flex items-center gap-2">

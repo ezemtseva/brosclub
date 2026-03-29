@@ -236,9 +236,9 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
         <h2 className="text-title font-bold leading-none m-0">Gameweek {gameweek}</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setGameweek(1)}
             disabled={gameweek === 1}
@@ -288,7 +288,7 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
         <p className="text-sm text-gray-400">No fixtures for GW{gameweek}. Click <strong>Sync</strong> to fetch.</p>
       ) : (
         <div className={`overflow-x-auto transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
-          <table className="w-full bg-white">
+          <table className="min-w-max w-full bg-white">
             <thead>
               <tr className="bg-gray-200 text-gray-600 uppercase text-[12.25px] leading-normal h-[45px]">
                 <th className="py-2 px-4 text-left w-[130px]">Date</th>

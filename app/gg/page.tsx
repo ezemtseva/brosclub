@@ -14,7 +14,7 @@ const columns = [
   { header: "Wins", accessor: "wins" },
   { header: "5K", accessor: "fiveK" },
   { header: "Points", accessor: "points" },
-  { header: "Difference", accessor: "difference" },
+  { header: "PD", accessor: "difference" },
   { header: "W%", accessor: "winPercentage" },
 ]
 

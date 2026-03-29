@@ -42,7 +42,7 @@ const columns = [
   { header: "Games", accessor: "games" },
   { header: "Wins", accessor: "wins" },
   { header: "Points", accessor: "points" },
-  { header: "Difference", accessor: "difference" },
+  { header: "PD", accessor: "difference" },
   { header: "W%", accessor: "winPercent" },
 ]
 

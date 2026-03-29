@@ -53,7 +53,7 @@ function TeamCell({ team, playerTeams, teamLogos, align = "left" }: { team: stri
 export default function FifaMatchResults({ matches, playerTeams, teamLogos }: FifaMatchResultsProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="bg-white">
+      <table className="bg-white w-full">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
             <th className="py-2 px-4 text-right w-px whitespace-nowrap">Home</th>

@@ -437,19 +437,12 @@ export default function BetsSeasonTabs({
       // For the current season (2025/26), use the live data from betsEntry
       return (
         <>
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6">
             <h2 className="text-title font-bold">Standings</h2>
-            <button
-              onClick={() => setDialogOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <span className="text-base leading-none">+</span> Add Game
-            </button>
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">This Gameweek</h2>
             <PlBetsGameweek initialGameweek={initialGameweek} />
           </section>
 

@@ -36,7 +36,7 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
             }`}
             onClick={() => setChartView("points")}
           >
-            Points per Win
+            Points
           </button>
           <button
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -44,7 +44,7 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
             }`}
             onClick={() => setChartView("gamepoints")}
           >
-            Points per Game
+            Game Points
           </button>
         </div>
       </div>

@@ -81,6 +81,7 @@
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  overflow-x: clip;
 }
 
 .history-table::-webkit-scrollbar {

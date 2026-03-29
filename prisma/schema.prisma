@@ -175,19 +175,21 @@ model FifaMatch {
 }
 
 model PlMatch {
-  id        Int      @id @default(autoincrement())
-  matchId   Int      @unique
-  season    String
-  gameweek  Int
-  homeTeam  String
-  awayTeam  String
-  kickoff   DateTime
-  status    String
-  scoreHome Int?
-  scoreAway Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  bets      PlBet[]
+  id         Int      @id @default(autoincrement())
+  matchId    Int      @unique
+  season     String
+  gameweek   Int
+  homeTeam   String
+  awayTeam   String
+  homeCrest  String?
+  awayCrest  String?
+  kickoff    DateTime
+  status     String
+  scoreHome  Int?
+  scoreAway  Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  bets       PlBet[]
 }
 
 model PlBet {

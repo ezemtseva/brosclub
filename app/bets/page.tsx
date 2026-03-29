@@ -1,6 +1,7 @@
 import prisma from "../../lib/prisma"
 import dynamicImport from "next/dynamic"
 import BetsSeasonTabs from "../../components/BetsSeasonTabs"
+import { settleAndRecalculate } from "../../lib/pl-settle"
 
 export const dynamic = 'force-dynamic'
 
@@ -120,6 +121,9 @@ export default async function BetsPage() {
   const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
 
   const initialGameweek = await getInitialGameweek()
+
+  // Auto-settle finished matches on every page load
+  await settleAndRecalculate().catch(console.error)
 
   return (
     <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">

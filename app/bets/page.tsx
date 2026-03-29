@@ -86,6 +86,24 @@ async function getHistoricalSeasonData() {
   }
 }
 
+async function getInitialGameweek(): Promise<number> {
+  // Find the lowest gameweek with non-finished matches (i.e. current/upcoming)
+  const next = await prisma.plMatch.findFirst({
+    where: { season: "2025/26", status: { not: "FINISHED" } },
+    orderBy: { gameweek: "asc" },
+    select: { gameweek: true },
+  })
+  if (next) return next.gameweek
+
+  // All finished — return the latest
+  const last = await prisma.plMatch.findFirst({
+    where: { season: "2025/26" },
+    orderBy: { gameweek: "desc" },
+    select: { gameweek: true },
+  })
+  return last?.gameweek ?? 1
+}
+
 export default async function BetsPage() {
   // Fetch current season data (2025/26)
   const { entries: currentEntries, latestEntries: currentLatestEntries } = await getCurrentSeasonData()
@@ -100,6 +118,8 @@ export default async function BetsPage() {
   // Process historical season data
   const historicalSeasonData = processSeasonData(historicalLatestEntries)
   const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
+
+  const initialGameweek = await getInitialGameweek()
 
   return (
     <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
@@ -116,6 +136,7 @@ export default async function BetsPage() {
         historicalSeasonChartData={historicalEntries}
         historicalSeasonPieData={historicalSeasonPieData}
         columns={columns}
+        initialGameweek={initialGameweek}
       />
     </div>
   )

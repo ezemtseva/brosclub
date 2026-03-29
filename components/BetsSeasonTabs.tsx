@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import DataTable from "./DataTable"
 import dynamic from "next/dynamic"
 import AddGameDialog from "./AddGameDialog"
+import PlBetsGameweek from "./PlBetsGameweek"
 
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -406,6 +407,7 @@ type BetsSeasonTabsProps = {
   historicalSeasonChartData: any[]
   historicalSeasonPieData: any[]
   columns: any[]
+  initialGameweek: number
 }
 
 export default function BetsSeasonTabs({
@@ -416,6 +418,7 @@ export default function BetsSeasonTabs({
   historicalSeasonChartData,
   historicalSeasonPieData,
   columns,
+  initialGameweek,
 }: BetsSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -444,6 +447,11 @@ export default function BetsSeasonTabs({
             </button>
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">This Gameweek</h2>
+            <PlBetsGameweek initialGameweek={initialGameweek} />
+          </section>
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Weekly progress</h2>

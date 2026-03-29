@@ -173,3 +173,33 @@ model FifaMatch {
   scoreB    Int
   createdAt DateTime @default(now())
 }
+
+model PlMatch {
+  id        Int      @id @default(autoincrement())
+  matchId   Int      @unique
+  season    String
+  gameweek  Int
+  homeTeam  String
+  awayTeam  String
+  kickoff   DateTime
+  status    String
+  scoreHome Int?
+  scoreAway Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bets      PlBet[]
+}
+
+model PlBet {
+  id        Int      @id @default(autoincrement())
+  matchId   Int
+  player    String
+  scoreHome Int
+  scoreAway Int
+  points    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  match     PlMatch  @relation(fields: [matchId], references: [matchId])
+
+  @@unique([matchId, player])
+}

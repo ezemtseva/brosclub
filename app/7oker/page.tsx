@@ -144,9 +144,7 @@ export default async function SevenOkerPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/7oker/2526game3.png", alt: "New season highlight", caption: "Гульназ Рафиковна - базару нет" },
-    { src: "/imgs/7oker/2526game2.png", alt: "New season highlight", caption: "Not-classic last round win for Vanilla" },
-    { src: "/imgs/7oker/2526game1.png", alt: "New season highlight", caption: "Classic last round win for Panda" },
+    { src: "/imgs/7oker/2526game4.png", alt: "New season highlight", caption: "Brand-new game, same old last round pain" },
     // Add more current season images as they happen
   ]
 

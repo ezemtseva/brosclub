@@ -10,7 +10,9 @@ interface PlayerTeams {
 
 interface MatchRecord {
   teamA: string
+  scoreA: number
   teamB: string
+  scoreB: number
 }
 
 interface AddMatchDialogProps {
@@ -114,6 +116,47 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
   )
 }
 
+// Compute win/draw/loss probabilities for teamA vs teamB based on last 5 form
+function computeOdds(
+  teamA: string,
+  teamB: string,
+  matches: MatchRecord[]
+): { probA: number; probDraw: number; probB: number } | null {
+  const getForm = (team: string) => {
+    const teamMatches = matches
+      .filter((m) => m.teamA === team || m.teamB === team)
+      .slice(-5)
+    if (teamMatches.length === 0) return null
+    return teamMatches.map((m) => {
+      const scored = m.teamA === team ? m.scoreA : m.scoreB
+      const conceded = m.teamA === team ? m.scoreB : m.scoreA
+      return scored > conceded ? 3 : scored === conceded ? 1 : 0
+    })
+  }
+
+  const formA = getForm(teamA)
+  const formB = getForm(teamB)
+  if (!formA || !formB) return null
+
+  const ptsA = formA.reduce((s, v) => s + v, 0)
+  const ptsB = formB.reduce((s, v) => s + v, 0)
+  const total = ptsA + ptsB || 1
+
+  const rawA = ptsA / total
+  const rawB = ptsB / total
+  // draw tendency: teams with similar form → more draw probability
+  const diff = Math.abs(rawA - rawB)
+  const drawBoost = Math.max(0, 0.25 - diff)
+  const rawDraw = 0.15 + drawBoost
+
+  const scale = 1 + rawDraw
+  const probA    = Math.round((rawA    / scale) * 100)
+  const probB    = Math.round((rawB    / scale) * 100)
+  const probDraw = 100 - probA - probB
+
+  return { probA, probDraw, probB }
+}
+
 // Count matches between two specific teams
 function matchCount(teamA: string, teamB: string, matches: MatchRecord[]): number {
   return matches.filter(
@@ -144,6 +187,7 @@ export default function AddMatchDialog({
   const [error, setError] = useState("")
 
   const configured = Object.values(playerTeams).some((arr) => arr.length > 0)
+  const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches) : null
 
   // Build available options for team A: all teams (or just configured ones)
   const teamsForA: { team: string; matchCount: number }[] = (
@@ -281,6 +325,27 @@ export default function AddMatchDialog({
             playerTeams={playerTeams}
           />
         </div>
+
+        {odds && (
+          <div className="mb-5">
+            <div className="flex h-2 rounded-full overflow-hidden mb-1.5">
+              <div style={{ width: `${odds.probA}%`, backgroundColor: getTeamColor(teamA, playerTeams) || "#9ca3af" }} />
+              <div style={{ width: `${odds.probDraw}%` }} className="bg-gray-200" />
+              <div style={{ width: `${odds.probB}%`, backgroundColor: getTeamColor(teamB, playerTeams) || "#9ca3af" }} />
+            </div>
+            <div className="relative flex justify-between text-xs">
+              <span className="font-semibold" style={{ color: getTeamColor(teamA, playerTeams) || "#374151" }}>{odds.probA}%</span>
+              <span
+                className="absolute -translate-x-1/2 text-gray-400"
+                style={{ left: `${odds.probA + odds.probDraw / 2}%` }}
+              >
+                {odds.probDraw}%
+              </span>
+              <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "#374151" }}>{odds.probB}%</span>
+            </div>
+            <p className="text-sm text-gray-500 text-center mt-1">Based on last 5 games</p>
+          </div>
+        )}
 
         {!configured && (
           <p className="text-xs text-amber-600 mb-4 text-center">

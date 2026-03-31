@@ -15,6 +15,7 @@ const columns = [
   { header: "GC", accessor: "goalsConceded", width: "83px" },
   { header: "GD", accessor: "goalDifference", width: "83px" },
   { header: "P", accessor: "points", width: "83px" },
+  { header: "Form", accessor: "form", width: "140px" },
 ]
 
 // Team colors for 2024/25 season (historical - DO NOT CHANGE)
@@ -71,8 +72,45 @@ const PLAYER_COLORS: Record<string, string> = {
   Panda:   "#4fcb90",
 }
 
+type MatchRecord = { teamA: string; scoreA: number; teamB: string; scoreB: number }
+
+function getTeamForm(team: string, matches: MatchRecord[]) {
+  const results = matches
+    .filter((m) => m.teamA === team || m.teamB === team)
+    .slice(0, 5)
+    .reverse()
+    .map((m) => {
+      const scored = m.teamA === team ? m.scoreA : m.scoreB
+      const conceded = m.teamA === team ? m.scoreB : m.scoreA
+      const opponent = m.teamA === team ? m.teamB : m.teamA
+      const result = scored > conceded ? "W" : scored === conceded ? "D" : "L"
+      return { result, scored, conceded, opponent }
+    })
+  return (
+    <div className="flex items-center gap-1">
+      {results.map(({ result, scored, conceded, opponent }, i) => (
+        <span key={i} className="relative group">
+          <span
+            className={`w-6 h-6 text-[11px] font-bold inline-flex items-center justify-center rounded text-white leading-none ${
+              result === "W" ? "bg-green-500" : result === "D" ? "bg-gray-400" : "bg-red-400"
+            }`}
+          >
+            {result}
+          </span>
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-50">
+            <span className="bg-gray-900 text-white text-[10px] font-medium rounded px-2 py-1 whitespace-nowrap">
+              {scored}–{conceded} vs {opponent}
+            </span>
+            <span className="w-1.5 h-1.5 bg-gray-900 rotate-45 -mt-1" />
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
 // Helper function to process FIFA data for 2025/26 season
-function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }) {
+function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }, matches: MatchRecord[]) {
   const getColor = (team: string) => {
     for (const [player, teams] of Object.entries(playerTeams)) {
       if (teams.includes(team)) return PLAYER_COLORS[player] ?? "transparent"
@@ -119,6 +157,7 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
       goalsConceded: entry.goalsConceded,
       goalDifference: entry.goalDifference,
       points: entry.points,
+      form: getTeamForm(entry.team, matches),
       hoverColor: getColor(entry.team),
       className: index === 0 ? "bg-amber-50" : undefined,
     }))
@@ -207,7 +246,7 @@ export default async function FIFAPage() {
   const teamLogos: Record<string, string> = Object.fromEntries(
     currentEntries.map((e: { team: string; logo: string }) => [e.team, e.logo || "/placeholder.svg"])
   )
-  const currentSeasonData = processFifaData2025(currentEntries, playerTeams)
+  const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches)
   const historicalSeasonData = processFifaData2024(historicalEntries)
 
   // Current season highlights (2025/26) - update as new highlights happen
@@ -628,7 +667,7 @@ export default async function FIFAPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
       <p className="text-basic text-gray-600 mb-8">X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually.</p>
 

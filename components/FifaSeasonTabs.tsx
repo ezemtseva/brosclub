@@ -8,6 +8,7 @@ import VideoCarousel from "./VideoCarousel"
 import AddMatchDialog from "./AddMatchDialog"
 import FifaSeasonConfig from "./FifaSeasonConfig"
 import FifaMatchResults from "./FifaMatchResults"
+import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -3472,6 +3473,7 @@ export default function FifaSeasonTabs({
   const [playerTeams, setPlayerTeams]     = useState<PlayerTeams>(initialPlayerTeams)
   const [matches, setMatches]             = useState<MatchRecord[]>(initialMatches)
   const [resultsSearch, setResultsSearch] = useState("")
+  const [analyticsOpen, setAnalyticsOpen] = useState(true)
   const router = useRouter()
 
   const handleMatchSuccess = async () => {
@@ -3569,7 +3571,7 @@ export default function FifaSeasonTabs({
                     onClick={() => setDialogOpen(true)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
                   >
-                    <span className="text-base leading-none">+</span> Add
+                    <span className="text-base leading-none">+</span> Add Game
                   </button>
                 </div>
               </div>
@@ -3582,6 +3584,17 @@ export default function FifaSeasonTabs({
               </div>
             </div>
           </div>
+
+          <section className="mt-12">
+            <button
+              onClick={() => setAnalyticsOpen((v) => !v)}
+              className="flex items-center gap-2 w-full text-left mb-6"
+            >
+              <h2 className="text-title font-bold">Insights</h2>
+              <span className="text-gray-400 text-sm">{analyticsOpen ? "▲" : "▼"}</span>
+            </button>
+            {analyticsOpen && <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />}
+          </section>
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>

@@ -51,7 +51,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative px-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {displayedImages.map((image, index) => (
             <div
@@ -76,16 +76,16 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         {totalPages > 1 && (
           <>
             <button
-              className="absolute top-1/2 -left-12 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={prevPage}
             >
-              <ChevronLeft size={24} className="text-gray-800" />
+              <ChevronLeft size={20} className="text-gray-800" />
             </button>
             <button
-              className="absolute top-1/2 -right-12 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={nextPage}
             >
-              <ChevronRight size={24} className="text-gray-800" />
+              <ChevronRight size={20} className="text-gray-800" />
             </button>
           </>
         )}

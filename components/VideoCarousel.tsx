@@ -53,7 +53,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative px-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {displayedVideos.map((video, index) => (
             <div
@@ -81,16 +81,16 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         {totalPages > 1 && (
           <>
             <button
-              className="absolute top-1/2 -left-12 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={prevPage}
             >
-              <ChevronLeft size={24} className="text-gray-800" />
+              <ChevronLeft size={20} className="text-gray-800" />
             </button>
             <button
-              className="absolute top-1/2 -right-12 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={nextPage}
             >
-              <ChevronRight size={24} className="text-gray-800" />
+              <ChevronRight size={20} className="text-gray-800" />
             </button>
           </>
         )}
@@ -111,13 +111,13 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
                 className="absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 left-4"
                 onClick={prevVideo}
               >
-                <ChevronLeft size={24} className="text-gray-800" />
+                <ChevronLeft size={20} className="text-gray-800" />
               </button>
               <button
                 className="absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 right-4"
                 onClick={nextVideo}
               >
-                <ChevronRight size={24} className="text-gray-800" />
+                <ChevronRight size={20} className="text-gray-800" />
               </button>
             </div>
             <div className="p-4 flex flex-col items-center">

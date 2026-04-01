@@ -1,6 +1,7 @@
 import prisma from "../../lib/prisma"
 import Link from "next/link"
 import SevenOkerSeasonTabs from "../../components/SevenOkerSeasonTab"
+import { PLAYER_COLORS } from "../../lib/teamColors"
 
 export const dynamic = 'force-dynamic'
 
@@ -16,11 +17,7 @@ const columns = [
   { header: "W%", accessor: "winPercentage" },
 ]
 
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
+const playerColors: Record<string, string> = PLAYER_COLORS
 
 // Define types for the entries
 type SevenOkerEntry = {
@@ -144,7 +141,7 @@ export default async function SevenOkerPage() {
 
   // Current season highlights (update as new highlights happen)
   const currentSeasonHighlights = [
-    { src: "/imgs/7oker/2526game4.png", alt: "New season highlight", caption: "Brand-new game, same old last round pain" },
+    { src: "/imgs/7oker/2526game4.png", alt: "New season highlight", caption: "Brand-new game, same old pain" },
     // Add more current season images as they happen
   ]
 
@@ -184,7 +181,7 @@ export default async function SevenOkerPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
         II season of loosing solid games in the last round. {" "}

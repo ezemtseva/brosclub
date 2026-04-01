@@ -2,15 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import Image from "next/image"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const PLAYERS = ["Vanilla", "Choco", "Panda"] as const
 type Player = (typeof PLAYERS)[number]
-
-const PLAYER_COLORS: Record<Player, string> = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
 
 interface PlBet {
   id: number

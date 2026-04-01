@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { PLAYER_COLORS } from '../lib/teamColors'
 
 type FplEntry = {
   player: string;
@@ -114,9 +115,9 @@ export default function FplChart({ entries }: FplChartProps) {
             width={40}
           />
           <Tooltip content={<CustomTooltip />} />
-          {renderLine('Vanilla', '#ea7878')}
-          {renderLine('Choco', '#4b98de')}
-          {renderLine('Panda', '#4fcb90')}
+          {renderLine('Vanilla', PLAYER_COLORS.Vanilla)}
+          {renderLine('Choco', PLAYER_COLORS.Choco)}
+          {renderLine('Panda', PLAYER_COLORS.Panda)}
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -6,6 +6,7 @@ import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamic from "next/dynamic"
 import AddGGGameDialog from "./AddGGGameDialog"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const GGChart = dynamic(() => import("./GGChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -15,11 +16,7 @@ const seasons = ["2025/26", "2024/25"] as const
 type Season = (typeof seasons)[number]
 
 // Player colors for consistent styling
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
+const playerColors = PLAYER_COLORS
 
 type GGSeasonTabsProps = {
   currentSeasonData: any[]

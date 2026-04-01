@@ -1,12 +1,7 @@
 "use client"
 
 import Image from "next/image"
-
-const PLAYER_COLORS: Record<string, string> = {
-  Vanilla: "#ea7878",
-  Choco:   "#4b98de",
-  Panda:   "#4fcb90",
-}
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 interface FifaMatchRecord {
   id: number

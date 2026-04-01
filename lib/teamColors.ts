@@ -1,3 +1,9 @@
+export const PLAYER_COLORS: Record<string, string> = {
+  Vanilla: "#ea7878",
+  Choco:   "#4b98de",
+  Panda:   "#4fcb90",
+}
+
 export const teamColors = {
     red: ['Liverpool', 'Real Betis', 'AS Roma', 'RB Leipzig', 'Arsenal', 'Atletico Madrid', 'Borussia Dortmund', 'Marseille', 'Sporting CP', 'Bayer Leverkusen'],
     blue: ['Villarreal', 'Chelsea', 'SS Lazio', 'PSG', 'Barcelona', 'Inter', 'Milan', 'Manchester United', 'Galatasaray', 'Wolfsburg'],

@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -93,11 +94,6 @@ interface TeamProjection {
 
 const PLAYERS: PlayerName[] = ["Vanilla", "Choco", "Panda"]
 
-const PLAYER_COLORS: Record<PlayerName, string> = {
-  Vanilla: "#ea7878",
-  Choco:   "#4b98de",
-  Panda:   "#4fcb90",
-}
 
 const GAMES_PER_PAIR = 2 // each team plays each opponent twice
 

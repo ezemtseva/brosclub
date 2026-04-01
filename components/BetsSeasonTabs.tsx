@@ -8,6 +8,7 @@ import DataTable from "./DataTable"
 import dynamic from "next/dynamic"
 import AddGameDialog from "./AddGameDialog"
 import PlBetsGameweek from "./PlBetsGameweek"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -62,11 +63,9 @@ type PastSeasonsData = {
 }
 
 // Player colors for consistent styling
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Chocolate: "#4b98de", // Same as Choco
-  Panda: "#4fcb90",
+const playerColors: Record<string, string> = {
+  ...PLAYER_COLORS,
+  Chocolate: PLAYER_COLORS.Choco, // Same as Choco
 }
 
 // Helper function to create player element with consistent styling

@@ -6,6 +6,7 @@ import { useState } from "react"
 import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamic from "next/dynamic"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const PokerChart = dynamic(() => import("./PokerChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -56,7 +57,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 58,
@@ -64,14 +65,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 70,
         pointsDifference: "-",
         winPercentage: "41.4%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 58,
@@ -79,14 +80,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 55,
         pointsDifference: "15",
         winPercentage: "25.9%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 3,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 58,
@@ -94,24 +95,24 @@ const pastSeasonsData: PastSeasonsData = {
         points: 49,
         pointsDifference: "6",
         winPercentage: "32.8%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
     ],
     pieChartData: [
       {
         name: "Panda",
         value: 24,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Choco",
         value: 15,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
       {
         name: "Vanilla",
         value: 19,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
     ],
   },
@@ -132,7 +133,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 24,
@@ -140,14 +141,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 39,
         pointsDifference: "4",
         winPercentage: "33.3%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 3,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 24,
@@ -155,14 +156,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 32,
         pointsDifference: "7",
         winPercentage: "12.5%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 4,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 24,
@@ -170,7 +171,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 30,
         pointsDifference: "2",
         winPercentage: "12.5%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
@@ -182,17 +183,17 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Panda",
         value: 8,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Vanilla",
         value: 3,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
       {
         name: "Choco",
         value: 3,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
     ],
   },
@@ -203,7 +204,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 44,
@@ -211,7 +212,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 90,
         pointsDifference: "-",
         winPercentage: "50.0%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
@@ -228,7 +229,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 44,
@@ -236,14 +237,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 59,
         pointsDifference: "7",
         winPercentage: "15.9%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 4,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 44,
@@ -251,14 +252,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 49,
         pointsDifference: "10",
         winPercentage: "6.8%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
       {
         name: "Panda",
         value: 22,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "DSQ",
@@ -268,12 +269,12 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Vanilla",
         value: 7,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
       {
         name: "Choco",
         value: 3,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
     ],
     highlights: ["Panda set the biggest win rate in a season"],
@@ -285,7 +286,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 36,
@@ -293,7 +294,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 72,
         pointsDifference: "-",
         winPercentage: "47.2%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
@@ -310,7 +311,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 36,
@@ -318,14 +319,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 47,
         pointsDifference: "2",
         winPercentage: "11.1%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 4,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 36,
@@ -333,14 +334,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 47,
         pointsDifference: "0",
         winPercentage: "16.7%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
       {
         name: "Panda",
         value: 17,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "DSQ",
@@ -350,12 +351,12 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Choco",
         value: 6,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
       {
         name: "Vanilla",
         value: 4,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
     ],
     highlights: ["The largest gap between 1st and 2nd place"],
@@ -367,7 +368,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
@@ -375,14 +376,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 67,
         pointsDifference: "-",
         winPercentage: "31.6%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
@@ -390,7 +391,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 60,
         pointsDifference: "7",
         winPercentage: "28.9%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
@@ -407,7 +408,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
@@ -415,19 +416,19 @@ const pastSeasonsData: PastSeasonsData = {
         points: 46,
         pointsDifference: "9",
         winPercentage: "15.8%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
       {
         name: "Panda",
         value: 12,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Vanilla",
         value: 11,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
       {
         name: "DSQ",
@@ -437,7 +438,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Choco",
         value: 6,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
     ],
   },
@@ -448,7 +449,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 70,
@@ -456,7 +457,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 124,
         pointsDifference: "-",
         winPercentage: "41.4%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
@@ -473,7 +474,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 70,
@@ -481,14 +482,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 95,
         pointsDifference: "24",
         winPercentage: "14.3%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 4,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 70,
@@ -496,14 +497,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 94,
         pointsDifference: "1",
         winPercentage: "20.0%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
       {
         name: "Panda",
         value: 29,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "DSQ",
@@ -513,12 +514,12 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Choco",
         value: 14,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
       {
         name: "Vanilla",
         value: 10,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
     ],
     highlights: ["The longest poker game lasted 1 hour and 41 minutes"],
@@ -530,7 +531,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 67,
@@ -538,14 +539,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 114,
         pointsDifference: "-",
         winPercentage: "35.8%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 67,
@@ -553,14 +554,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 110,
         pointsDifference: "4",
         winPercentage: "20.9%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 67,
@@ -568,7 +569,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 105,
         pointsDifference: "5",
         winPercentage: "23.9%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 4,
@@ -585,17 +586,17 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Panda",
         value: 24,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Choco",
         value: 16,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
       {
         name: "Vanilla",
         value: 14,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
       {
         name: "DSQ",
@@ -615,7 +616,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 48,
@@ -623,14 +624,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 142,
         pointsDifference: "-",
         winPercentage: "41.7%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 48,
@@ -638,14 +639,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 136,
         pointsDifference: "6",
         winPercentage: "27.1%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 48,
@@ -653,7 +654,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 117,
         pointsDifference: "19",
         winPercentage: "14.6%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 4,
@@ -670,12 +671,12 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Panda",
         value: 20,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Vanilla",
         value: 13,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
       {
         name: "DSQ",
@@ -685,7 +686,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Choco",
         value: 7,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
     ],
     highlights: ["Choco is the first player to get a straight flush and four aces"],
@@ -707,7 +708,7 @@ const pastSeasonsData: PastSeasonsData = {
         bearo: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 21,
@@ -715,14 +716,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 46,
         pointsDifference: "1",
         winPercentage: "28.6%",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 3,
         bearo: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 21,
@@ -730,14 +731,14 @@ const pastSeasonsData: PastSeasonsData = {
         points: 45,
         pointsDifference: "1",
         winPercentage: "14.3%",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 4,
         bearo: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 21,
@@ -745,7 +746,7 @@ const pastSeasonsData: PastSeasonsData = {
         points: 44,
         pointsDifference: "1",
         winPercentage: "23.8%",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     pieChartData: [
@@ -757,17 +758,17 @@ const pastSeasonsData: PastSeasonsData = {
       {
         name: "Panda",
         value: 6,
-        color: "#4fcb90",
+        color: PLAYER_COLORS.Panda,
       },
       {
         name: "Choco",
         value: 5,
-        color: "#4b98de",
+        color: PLAYER_COLORS.Choco,
       },
       {
         name: "Vanilla",
         value: 3,
-        color: "#ea7878",
+        color: PLAYER_COLORS.Vanilla,
       },
     ],
     highlights: ["Panda won the first club game", "The smallest gap between 1st and 2nd place"],

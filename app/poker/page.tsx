@@ -1,6 +1,7 @@
 import prisma from "../../lib/prisma"
 import dynamicImport from "next/dynamic"
 import HoldemSeasonTabs from "../../components/HoldemSeasonTabs"
+import { PLAYER_COLORS } from "../../lib/teamColors"
 
 export const dynamic = 'force-dynamic'
 
@@ -17,11 +18,7 @@ const columns = [
   { header: "W%", accessor: "winPercentage" },
 ]
 
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
+const playerColors: Record<string, string> = PLAYER_COLORS
 
 // Helper function to process data for display
 function processSeasonData(latestEntries: any[]) {
@@ -153,7 +150,7 @@ export default async function PokerPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <h1 className="text-title font-bold mb-4">Texas Holdem Cup</h1>
       <p className="text-base text-gray-600 mb-8">
         XI season is currently suspended - we have all had enough of Vladimir Vladimirovich reign...

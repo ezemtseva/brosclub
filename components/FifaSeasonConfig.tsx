@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const PLAYERS = [
-  { name: "Vanilla", color: "#ea7878" },
-  { name: "Choco",   color: "#4b98de" },
-  { name: "Panda",   color: "#4fcb90" },
+  { name: "Vanilla", color: PLAYER_COLORS.Vanilla },
+  { name: "Choco",   color: PLAYER_COLORS.Choco },
+  { name: "Panda",   color: PLAYER_COLORS.Panda },
 ] as const
 
 type PlayerName = "Vanilla" | "Choco" | "Panda"

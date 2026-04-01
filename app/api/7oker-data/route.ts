@@ -18,16 +18,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Use the exact model name from your schema.prisma file
-    // Replace 'sevenOkerEntry' with whatever name appears in your schema
-    const modelName = "sevenOkerEntry" // Change this to match your schema
-
-    // Check if the model exists using dynamic property access
-    if (!(prisma as any)[modelName]) {
-      return NextResponse.json({ error: "Database model not found. Check your schema.prisma file." }, { status: 500 })
-    }
-
-    const latestWeek = await (prisma as any)[modelName].findFirst({
+    const latestWeek = await prisma.sevenOkerEntry.findFirst({
       orderBy: { week: "desc" },
       select: { week: true },
     })
@@ -35,9 +26,8 @@ export async function POST(request: Request) {
     const newWeek = latestWeek ? latestWeek.week + 1 : 1
 
     const upsertOperations = data.map((entry) =>
-      (prisma as any)[modelName].upsert({
+      prisma.sevenOkerEntry.upsert({
         where: {
-          // Use the correct unique constraint name from your schema
           week_bearo: {
             week: newWeek,
             bearo: entry.bearo,
@@ -47,6 +37,7 @@ export async function POST(request: Request) {
           games: entry.games,
           wins: entry.wins,
           points: entry.points,
+          gamepoints: entry.gamepoints ?? 0,
         },
         create: {
           week: newWeek,
@@ -54,6 +45,7 @@ export async function POST(request: Request) {
           games: entry.games,
           wins: entry.wins,
           points: entry.points,
+          gamepoints: entry.gamepoints ?? 0,
         },
       }),
     )

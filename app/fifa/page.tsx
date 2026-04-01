@@ -3,6 +3,7 @@ import prisma from "../../lib/prisma"
 
 export const dynamic = 'force-dynamic'
 import FifaSeasonTabs from "../../components/FifaSeasonTabs"
+import { PLAYER_COLORS } from "../../lib/teamColors"
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -60,16 +61,10 @@ const teamColors2024 = {
 
 
 const getTeamColor2024 = (team: string) => {
-  if (teamColors2024.red.includes(team)) return "#ea7878"
-  if (teamColors2024.blue.includes(team)) return "#4b98de"
-  if (teamColors2024.green.includes(team)) return "#4fcb90"
+  if (teamColors2024.red.includes(team)) return PLAYER_COLORS.Vanilla
+  if (teamColors2024.blue.includes(team)) return PLAYER_COLORS.Choco
+  if (teamColors2024.green.includes(team)) return PLAYER_COLORS.Panda
   return "transparent"
-}
-
-const PLAYER_COLORS: Record<string, string> = {
-  Vanilla: "#ea7878",
-  Choco:   "#4b98de",
-  Panda:   "#4fcb90",
 }
 
 type MatchRecord = { teamA: string; scoreA: number; teamB: string; scoreB: number }

@@ -6,17 +6,14 @@ import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import SevenOkerChartToggle from "./SevenOkerChartToggle"
 import AddGameDialog from "./AddGameDialog"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 // Define the seasons array
 const seasons = ["2025/26", "2024/25"] as const
 type Season = (typeof seasons)[number]
 
 // Player colors for consistent styling
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
+const playerColors = PLAYER_COLORS
 
 type SevenOkerSeasonTabsProps = {
   currentSeasonData: any[]

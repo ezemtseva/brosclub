@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import { PLAYER_COLORS } from "../lib/teamColors"
+import { ChartTooltip } from "./ChartTooltip"
 
 type SevenOkerEntry = {
   id?: number
@@ -30,38 +32,6 @@ type ChartDataPoint = {
 type SevenOkerChartProps = {
   entries: SevenOkerEntry[]
   dataKey?: "points" | "gamepoints"
-}
-
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const sortedPayload = [...payload].sort(
-      (a, b) => (b.value ?? 0) - (a.value ?? 0),
-    )
-
-    return (
-      <div className="bg-white border border-gray-300 p-2 shadow-md">
-        {sortedPayload.map(
-          (entry: any, index: number) =>
-            entry.value !== null && (
-              <p
-                key={index}
-                style={{
-                  color:
-                    entry.dataKey === "Vanilla"
-                      ? "#ea7878"
-                      : entry.dataKey === "Choco"
-                        ? "#4b98de"
-                        : "#4fcb90",
-                }}
-              >
-                {entry.name}: {entry.value}
-              </p>
-            ),
-        )}
-      </div>
-    )
-  }
-  return null
 }
 
 export default function SevenOkerChart({
@@ -152,12 +122,12 @@ export default function SevenOkerChart({
             width={50}
           />
 
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<ChartTooltip />} />
 
           <Line
             type="monotone"
             dataKey="Vanilla"
-            stroke="#ea7878"
+            stroke={PLAYER_COLORS.Vanilla}
             dot={{ r: 1 }}
             activeDot={{ r: 4 }}
             connectNulls
@@ -165,7 +135,7 @@ export default function SevenOkerChart({
           <Line
             type="monotone"
             dataKey="Choco"
-            stroke="#4b98de"
+            stroke={PLAYER_COLORS.Choco}
             dot={{ r: 1 }}
             activeDot={{ r: 4 }}
             connectNulls
@@ -173,7 +143,7 @@ export default function SevenOkerChart({
           <Line
             type="monotone"
             dataKey="Panda"
-            stroke="#4fcb90"
+            stroke={PLAYER_COLORS.Panda}
             dot={{ r: 1 }}
             activeDot={{ r: 4 }}
             connectNulls

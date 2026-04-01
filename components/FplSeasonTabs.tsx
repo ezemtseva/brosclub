@@ -6,6 +6,7 @@ import { useState } from "react"
 import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamicImport from "next/dynamic"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 const FplChart = dynamicImport(() => import("./FplChart"), { ssr: false })
 
@@ -53,39 +54,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 2511,
         difference: "-",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 2339,
         difference: "172",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2217,
         difference: "122",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
     ],
     highlights: ["Panda set the new record - the most points in a season!"],
@@ -97,39 +98,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 2422,
         difference: "-",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2309,
         difference: "113",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 2209,
         difference: "100",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     highlights: [
@@ -144,39 +145,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2187,
         difference: "-",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 2164,
         difference: "23",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 2150,
         difference: "14",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
     highlights: [
@@ -191,39 +192,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 2332,
         difference: "-",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2192,
         difference: "140",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 2192,
         difference: "0",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
   },
@@ -234,39 +235,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2232,
         difference: "-",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 2160,
         difference: "72",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 1981,
         difference: "179",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
     ],
   },
@@ -277,39 +278,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 2017,
         difference: "-",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 1967,
         difference: "50",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 1907,
         difference: "60",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
     ],
   },
@@ -320,39 +321,39 @@ const pastSeasonsData: PastSeasonsData = {
         player: (
           <span className="relative">
             Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#ea7878" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
           </span>
         ),
         games: 38,
         points: 2177,
         difference: "-",
-        hoverColor: "#ea7878",
+        hoverColor: PLAYER_COLORS.Vanilla,
       },
       {
         position: 2,
         player: (
           <span className="relative">
             Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4b98de" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
           </span>
         ),
         games: 38,
         points: 1921,
         difference: "256",
-        hoverColor: "#4b98de",
+        hoverColor: PLAYER_COLORS.Choco,
       },
       {
         position: 3,
         player: (
           <span className="relative">
             Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: "#4fcb90" }} />
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
           </span>
         ),
         games: 38,
         points: 1902,
         difference: "19",
-        hoverColor: "#4fcb90",
+        hoverColor: PLAYER_COLORS.Panda,
       },
     ],
     highlights: ["The largest gap between 1st and 2nd place ever"],

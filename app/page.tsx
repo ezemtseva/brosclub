@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import prisma from "../lib/prisma"
-import { getTeamColor } from "../lib/teamColors"
+import { getTeamColor, PLAYER_COLORS } from "../lib/teamColors"
 import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
 import FlippableCard from "../components/FlippableCard"
@@ -31,11 +31,6 @@ const clubMembers = [
   },
 ]
 
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
@@ -194,7 +189,7 @@ const UnderlinedPlayer = ({ name, isFifaTeam = false }: { name: string; isFifaTe
   if (name === "-" || name === "DNF" || name === "DSQ") {
     return <span>{name}</span>
   }
-  const color = isFifaTeam ? getTeamColor(name) : playerColors[name as keyof typeof playerColors]
+  const color = isFifaTeam ? getTeamColor(name) : PLAYER_COLORS[name]
   return (
     <span className="relative">
       <span className="relative">

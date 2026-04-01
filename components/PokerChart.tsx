@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { PLAYER_COLORS } from '../lib/teamColors'
+import { ChartTooltip } from './ChartTooltip'
 
 type PokerEntry = {
   bearo: string;
@@ -18,24 +20,6 @@ type ChartDataPoint = {
 type PokerChartProps = {
   entries: PokerEntry[];
 }
-
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const sortedPayload = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
-    return (
-      <div className="bg-white border border-gray-300 p-2 shadow-md">
-        {sortedPayload.map((entry: any, index: number) => (
-          entry.value !== null && (
-            <p key={index} style={{ color: entry.dataKey === 'Vanilla' ? '#ea7878' : entry.dataKey === 'Choco' ? '#4b98de' : '#4fcb90' }}>
-              {entry.name}: {entry.value}
-            </p>
-          )
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
 
 export default function PokerChart({ entries }: PokerChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
@@ -90,10 +74,10 @@ export default function PokerChart({ entries }: PokerChartProps) {
             interval={0}
             width={40}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="Vanilla" stroke="#ea7878" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
-          <Line type="monotone" dataKey="Choco" stroke="#4b98de" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
-          <Line type="monotone" dataKey="Panda" stroke="#4fcb90" dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Tooltip content={<ChartTooltip />} />
+          <Line type="monotone" dataKey="Vanilla" stroke={PLAYER_COLORS.Vanilla} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Choco" stroke={PLAYER_COLORS.Choco} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Panda" stroke={PLAYER_COLORS.Panda} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>

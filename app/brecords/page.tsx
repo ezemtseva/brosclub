@@ -1,10 +1,8 @@
 "use client"
 
-const playerColors = {
-  Vanilla: "#ea7878",
-  Choco: "#4b98de",
-  Panda: "#4fcb90",
-}
+import { PLAYER_COLORS } from "../lib/teamColors"
+
+const playerColors: Record<string, string> = PLAYER_COLORS
 
 const UnderlinedPlayer = ({ name }: { name: string }) => (
   <span className="relative">
@@ -173,7 +171,7 @@ const sections = [
 
 export default function BrecordsPage() {
   return (
-    <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <h1 className="text-title font-bold mb-4">Brecords</h1>
       <p className="text-basic text-gray-600 mb-8">
         <strong>Eternal record:</strong> the longest bros call lasted 12 hours and 32 minutes on February 22, 2016.

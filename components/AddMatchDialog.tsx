@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { PLAYER_COLORS } from "../lib/teamColors"
 
 interface PlayerTeams {
   Vanilla: string[]
@@ -31,11 +32,6 @@ interface TeamSelectProps {
   playerTeams: PlayerTeams
 }
 
-const PLAYER_COLORS: Record<string, string> = {
-  Vanilla: "#ea7878",
-  Choco:   "#4b98de",
-  Panda:   "#4fcb90",
-}
 
 function getTeamColor(team: string, playerTeams: PlayerTeams): string {
   for (const [player, teams] of Object.entries(playerTeams)) {

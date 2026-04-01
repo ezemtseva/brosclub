@@ -3,6 +3,7 @@ import prisma from "../../lib/prisma"
 import { updateFplData } from "../../lib/fplUtils"
 import dynamicImport from "next/dynamic"
 import FplSeasonTabs from "../../components/FplSeasonTabs"
+import { PLAYER_COLORS } from "../../lib/teamColors"
 
 const FplChart = dynamicImport(() => import("../../components/FplChart"), { ssr: false })
 
@@ -39,7 +40,7 @@ type PlayerData = {
 const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
-  { header: "Games", accessor: "games" },
+  { header: "GW", accessor: "games" },
   { header: "Wins", accessor: "wins" },
   { header: "Points", accessor: "points" },
   { header: "PD", accessor: "difference" },
@@ -47,9 +48,9 @@ const columns = [
 ]
 
 const players = [
-  { name: "Vanilla", teamId: "1546526", color: "#ea7878" },
-  { name: "Choco", teamId: "3214199", color: "#4b98de" },
-  { name: "Panda", teamId: "5663", color: "#4fcb90" },
+  { name: "Vanilla", teamId: "1546526", color: PLAYER_COLORS.Vanilla },
+  { name: "Choco", teamId: "3214199", color: PLAYER_COLORS.Choco },
+  { name: "Panda", teamId: "5663", color: PLAYER_COLORS.Panda },
 ]
 
 function calculateWins(playersData: PlayerData[]): Record<string, number> {
@@ -261,7 +262,7 @@ export default async function FPLPage() {
     ]
 
     return (
-      <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+      <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">
           X anniversary season of no-names turning our teams into a shit joke.
@@ -281,7 +282,7 @@ export default async function FPLPage() {
   } catch (error) {
     console.error("Error in FPLPage:", error)
     return (
-      <div className="container mx-auto px-3 py-4 md:px-4 md:py-8">
+      <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
         <h2 className="text-title font-bold mb-4">Standings</h2>

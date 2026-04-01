@@ -310,7 +310,7 @@ function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams
   const teamData: Record<string, {
     player: PlayerName; games: number; points: number
     formPPG: number; overallPPG: number; strength: number
-    form: ("W" | "D" | "L")[]; trend: "up" | "down" | "stable"
+    form: { result: "W" | "D" | "L"; scored: number; conceded: number; opponent: string }[]; trend: "up" | "down" | "stable"
   }> = {}
 
   for (const team of allTeams) {

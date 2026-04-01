@@ -134,8 +134,8 @@ function computeOdds(
   const formB = getForm(teamB)
   if (!formA || !formB) return null
 
-  const ptsA = formA.reduce((s, v) => s + v, 0)
-  const ptsB = formB.reduce((s, v) => s + v, 0)
+  const ptsA = formA.reduce((s, v) => s + v, 0 as number)
+  const ptsB = formB.reduce((s, v) => s + v, 0 as number)
   const total = ptsA + ptsB || 1
 
   const rawA = ptsA / total

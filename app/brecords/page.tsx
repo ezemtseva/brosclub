@@ -1,6 +1,6 @@
 "use client"
 
-import { PLAYER_COLORS } from "../lib/teamColors"
+import { PLAYER_COLORS } from "../../lib/teamColors"
 
 const playerColors: Record<string, string> = PLAYER_COLORS
 

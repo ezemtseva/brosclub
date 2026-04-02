@@ -33,9 +33,6 @@ const sections = [
         95.65%, 2024/25 <strong>✯</strong>
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> is the fastest to score 100 goals by a team (Liverpool) – 20 games, 2024/25 <strong>✯</strong>
-      </>,
-      <>
         <UnderlinedPlayer name="Choco" /> is the first to score a goal by a goalkeeper (Atletico Madrid), 2017
       </>,
       <>
@@ -98,23 +95,23 @@ const sections = [
     ],
   },
   {
-    title: "GeoGuessr",
+    title: "7oker",
     records: [
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4
-        m, Plaza Mayor (Arequipa), 2024/25 <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 <strong>✯</strong>{" "}
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown –
-        910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong>{" "}
-      </>,
-      <>
-        <UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25{" "}
-        <strong>✯</strong>{" "}
-      </>,
-      <>
-      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 11, 2024/25 <strong>✯</strong>{" "}
+      <UnderlinedPlayer name="Panda" /> won the first season, it took him only 71 games to get 100 points <strong>✯</strong>{" "}
     </>,
+    <>
+  <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
+</>,
+  <>
+  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
+</>,
+<>
+  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 <strong>✯</strong>{" "}
+</>,
     ],
   },
   {
@@ -148,23 +145,23 @@ const sections = [
     ],
   },
   {
-    title: "7oker",
+    title: "GeoGuessr",
     records: [
       <>
-        <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4
+        m, Plaza Mayor (Arequipa), 2024/25 <strong>✯</strong>{" "}
       </>,
       <>
-      <UnderlinedPlayer name="Panda" /> won the first season, it took him only 71 games to get 100 points <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown –
+        910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong>{" "}
+      </>,
+      <>
+        <UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25{" "}
+        <strong>✯</strong>{" "}
+      </>,
+      <>
+      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 11, 2024/25 <strong>✯</strong>{" "}
     </>,
-    <>
-  <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
-</>,
-  <>
-  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
-</>,
-<>
-  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 <strong>✯</strong>{" "}
-</>,
     ],
   },
 ]
@@ -179,7 +176,7 @@ export default function BrecordsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {sections.map((section, index) => (
           <div key={index} className="flex">
-            <section className="bg-gray-50 shadow-lg rounded-lg p-6 flex-1 flex flex-col">
+            <section className="bg-gray-50 shadow-lg rounded-lg p-6 flex-1 flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
               <h2 className="text-title font-semibold mb-4">{section.title}</h2>
               <ul className="space-y-2 list-disc pl-5 flex-1">
                 {section.records.map((record, recordIndex) => (

@@ -12,11 +12,28 @@ const GGChart = dynamic(() => import("./GGChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
 // Define the seasons array
-const seasons = ["2025/26", "2024/25"] as const
+const seasons = ["2025/26", "2024/25", "All Time"] as const
 type Season = (typeof seasons)[number]
 
 // Player colors for consistent styling
 const playerColors = PLAYER_COLORS
+
+// Helper to reverse-map player color -> player name
+function playerNameFromColor(color: string): string {
+  return Object.entries(playerColors).find(([, c]) => c === color)?.[0] ?? ""
+}
+
+// All Time columns
+const allTimeColumns = [
+  { header: "#", accessor: "position" },
+  { header: "Bearo", accessor: "player" },
+  { header: "Games", accessor: "games" },
+  { header: "Wins", accessor: "wins" },
+  { header: "5K", accessor: "fiveK" },
+  { header: "Points", accessor: "points" },
+  { header: "PD", accessor: "difference" },
+  { header: "W%", accessor: "winPercentage" },
+]
 
 type GGSeasonTabsProps = {
   currentSeasonData: any[]
@@ -45,6 +62,58 @@ export default function GGSeasonTabs({
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
+
+  // Compute All Time standings
+  const computeAllTimeStandings = () => {
+    const totals: Record<string, { games: number; wins: number; fiveK: number; points: number; hoverColor: string }> = {}
+
+    const ensurePlayer = (name: string) => {
+      if (!totals[name]) {
+        totals[name] = { games: 0, wins: 0, fiveK: 0, points: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+      }
+    }
+
+    for (const chartData of [currentSeasonChartData, historicalSeasonChartData]) {
+      const maxGames: Record<string, number> = {}
+      const maxPoints: Record<string, number> = {}
+      const maxWins: Record<string, number> = {}
+      const maxFiveK: Record<string, number> = {}
+      for (const row of chartData) {
+        const p = row.player as string
+        if (maxGames[p] === undefined || row.games > maxGames[p]) maxGames[p] = row.games
+        if (maxPoints[p] === undefined || row.points > maxPoints[p]) maxPoints[p] = row.points
+        if (maxWins[p] === undefined || row.wins > maxWins[p]) maxWins[p] = row.wins
+        if (maxFiveK[p] === undefined || row.fiveK > maxFiveK[p]) maxFiveK[p] = row.fiveK
+      }
+      for (const player of Object.keys(maxGames)) {
+        ensurePlayer(player)
+        totals[player].games += maxGames[player] ?? 0
+        totals[player].points += maxPoints[player] ?? 0
+        totals[player].wins += maxWins[player] ?? 0
+        totals[player].fiveK += maxFiveK[player] ?? 0
+      }
+    }
+
+    const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
+    const leaderPoints = sorted[0]?.[1].points ?? 0
+    const totalWins = Object.values(totals).reduce((sum, d) => sum + d.wins, 0)
+    return sorted.map(([name, data], index) => ({
+        position: index + 1,
+        player: (
+          <span className="relative">
+            {name}
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
+          </span>
+        ),
+        games: data.games,
+        wins: data.wins,
+        fiveK: data.fiveK,
+        points: data.points,
+        difference: index === 0 ? "-" : String(data.points - leaderPoints),
+        winPercentage: totalWins > 0 ? `${((data.wins / totalWins) * 100).toFixed(1)}%` : "0%",
+        hoverColor: data.hoverColor,
+      }))
+  }
 
   const handleGameSuccess = () => {
     router.refresh()
@@ -114,6 +183,14 @@ export default function GGSeasonTabs({
               <ImageCarousel images={historicalSeasonHighlights} />
             </div>
           </section>
+        </>
+      )
+    } else if (activeSeason === "All Time") {
+      const allTimeData = computeAllTimeStandings()
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
     }

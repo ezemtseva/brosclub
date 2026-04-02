@@ -104,8 +104,45 @@ function getTeamForm(team: string, matches: MatchRecord[]) {
   )
 }
 
+// Compute position movements based on last match
+function computePositionMovements(entries: any[], matches: MatchRecord[]): Record<string, number> {
+  if (matches.length === 0) return {}
+  const lastMatch = matches[0] // sorted desc
+
+  const rankEntries = (ents: any[]) =>
+    [...ents]
+      .map((e) => ({ team: e.team, pts: e.wins * 3 + e.draws, gd: e.goalsScored - e.goalsConceded }))
+      .sort((a, b) => b.pts - a.pts || b.gd - a.gd)
+      .reduce((acc, e, i) => { acc[e.team] = i + 1; return acc }, {} as Record<string, number>)
+
+  const current = rankEntries(entries)
+
+  const prevEntries = entries.map((e) => {
+    if (e.team !== lastMatch.teamA && e.team !== lastMatch.teamB) return e
+    const isA = e.team === lastMatch.teamA
+    const scored = isA ? lastMatch.scoreA : lastMatch.scoreB
+    const conceded = isA ? lastMatch.scoreB : lastMatch.scoreA
+    return {
+      ...e,
+      games: e.games - 1,
+      wins: e.wins - (scored > conceded ? 1 : 0),
+      draws: e.draws - (scored === conceded ? 1 : 0),
+      losses: e.losses - (scored < conceded ? 1 : 0),
+      goalsScored: e.goalsScored - scored,
+      goalsConceded: e.goalsConceded - conceded,
+    }
+  })
+  const prev = rankEntries(prevEntries)
+
+  const movements: Record<string, number> = {}
+  for (const team of Object.keys(current)) {
+    movements[team] = (prev[team] ?? current[team]) - current[team]
+  }
+  return movements
+}
+
 // Helper function to process FIFA data for 2025/26 season
-function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }, matches: MatchRecord[]) {
+function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }, matches: MatchRecord[], movements: Record<string, number> = {}) {
   const getColor = (team: string) => {
     for (const [player, teams] of Object.entries(playerTeams)) {
       if (teams.includes(team)) return PLAYER_COLORS[player] ?? "transparent"
@@ -124,38 +161,45 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
       points: entry.wins * 3 + entry.draws,
     }))
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
-    .map((entry, index) => ({
-      position: index + 1,
-      team: (
-        <div className="flex items-center space-x-2">
-          <Image
-            src={entry.logo || "/placeholder.svg"}
-            alt={entry.team}
-            width={24}
-            height={24}
-            className="rounded-full"
-          />
-          <span className="relative">
-            {entry.team}
-            <span
-              className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: getColor(entry.team) }}
+    .map((entry, index) => {
+      const mv = movements[entry.team] ?? 0
+      return {
+        position: mv > 0
+          ? <span className="flex items-center gap-1">{index + 1}<span className="text-green-500 text-xs leading-none">↑</span></span>
+          : mv < 0
+          ? <span className="flex items-center gap-1">{index + 1}<span className="text-red-400 text-xs leading-none">↓</span></span>
+          : index + 1,
+        team: (
+          <div className="flex items-center space-x-2">
+            <Image
+              src={entry.logo || "/placeholder.svg"}
+              alt={entry.team}
+              width={24}
+              height={24}
+              className="rounded-full"
             />
-          </span>
-        </div>
-      ),
-      games: entry.games,
-      wins: entry.wins,
-      draws: entry.draws,
-      losses: entry.losses,
-      goalsScored: entry.goalsScored,
-      goalsConceded: entry.goalsConceded,
-      goalDifference: entry.goalDifference,
-      points: entry.points,
-      form: getTeamForm(entry.team, matches),
-      hoverColor: getColor(entry.team),
-      className: index === 0 ? "bg-amber-50" : undefined,
-    }))
+            <span className="relative">
+              {entry.team}
+              <span
+                className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
+                style={{ backgroundColor: getColor(entry.team) }}
+              />
+            </span>
+          </div>
+        ),
+        games: entry.games,
+        wins: entry.wins,
+        draws: entry.draws,
+        losses: entry.losses,
+        goalsScored: entry.goalsScored,
+        goalsConceded: entry.goalsConceded,
+        goalDifference: entry.goalDifference,
+        points: entry.points,
+        form: getTeamForm(entry.team, matches),
+        hoverColor: getColor(entry.team),
+        className: index === 0 ? "bg-amber-50" : undefined,
+      }
+    })
 }
 
 // Helper function to process FIFA data for 2024/25 season
@@ -241,7 +285,8 @@ export default async function FIFAPage() {
   const teamLogos: Record<string, string> = Object.fromEntries(
     currentEntries.map((e: { team: string; logo: string }) => [e.team, e.logo || "/placeholder.svg"])
   )
-  const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches)
+  const positionMovements = computePositionMovements(currentEntries, matches)
+  const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches, positionMovements)
   const historicalSeasonData = processFifaData2024(historicalEntries)
 
   // Current season highlights (2025/26) - update as new highlights happen
@@ -675,8 +720,11 @@ export default async function FIFAPage() {
         columns={columns}
         teamNames={teamNames}
         playerTeams={playerTeams}
+        historicalPlayerTeams={{ Vanilla: teamColors2024.red, Choco: teamColors2024.blue, Panda: teamColors2024.green }}
         matches={matches.map((m: { id: number; season: string; teamA: string; scoreA: number; teamB: string; scoreB: number; createdAt: Date }) => ({ ...m, createdAt: m.createdAt.toISOString() }))}
         teamLogos={teamLogos}
+        currentRawEntries={currentEntries}
+        historicalRawEntries={historicalEntries}
       />
     </div>
   )

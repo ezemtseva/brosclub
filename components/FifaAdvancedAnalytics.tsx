@@ -556,10 +556,11 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   return (
     <div className="flex flex-col gap-3">
       {projections.map((t, i) => (
-        <div key={t.team} className="bg-gray-50 rounded-lg p-4 shadow-sm flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+        <div key={t.team} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 flex flex-col gap-2">
+          {/* Row 1: team + points */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[2.25rem] font-black leading-none text-center w-9 shrink-0" style={{ color: RANK_COLORS[i] }}>{i + 1}</span>
+              <span className="text-[2.25rem] font-bold leading-none text-center w-9 shrink-0" style={{ color: RANK_COLORS[i] }}>{i + 1}</span>
               <div className="w-9 h-9 shrink-0 flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -578,15 +579,14 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
                 />
               </span>
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-1 justify-end">
-                {trendIcon(t.trend)}
-                <span className="text-[2.25rem] font-bold leading-none text-gray-800">{Math.round(t.projectedPoints)}</span>
-              </div>
+            <div className="flex items-center gap-1">
+              {trendIcon(t.trend)}
+              <span className="text-[2.25rem] font-bold leading-none text-gray-800">{Math.round(t.projectedPoints)}</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[9px] md:text-xs text-gray-500">
+          {/* Row 2: stats */}
+          <div className="flex items-center justify-between text-[9px] md:text-xs text-gray-500 md:pl-[44px]">
             <span>
               <span className="md:hidden">Now: {t.currentPoints} pts</span>
               <span className="hidden md:inline">Now: <span className="font-semibold text-gray-700">{t.currentPoints} pts</span> in {t.currentGames} games</span>
@@ -599,7 +599,6 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
               <span className="hidden md:inline">Form PPG: <span className="font-semibold text-gray-700">{t.formPPG.toFixed(2)}</span></span>
             </span>
           </div>
-
         </div>
       ))}
       <p className="text-xs text-gray-400 mt-2 leading-relaxed">

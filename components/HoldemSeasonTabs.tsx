@@ -12,7 +12,7 @@ const PokerChart = dynamic(() => import("./PokerChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
 // Define the seasons array with all the required seasons - added 2025/26 as first tab
-const seasons = ["XXXX/XX", "2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012"] as const //Update to return 25-26
+const seasons = ["XXXX/XX", "2024/25", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "All Time"] as const //Update to return 25-26
 type Season = (typeof seasons)[number]
 
 const visibleSeasons = seasons.filter((season) => season !== "XXXX/XX")
@@ -775,6 +775,22 @@ const pastSeasonsData: PastSeasonsData = {
   },
 }
 
+// Helper to reverse-map PLAYER_COLORS color -> player name
+function playerNameFromColor(color: string): string {
+  return Object.entries(PLAYER_COLORS).find(([, c]) => c === color)?.[0] ?? ""
+}
+
+// All Time columns
+const allTimeColumns = [
+  { header: "#", accessor: "position" },
+  { header: "Bearo", accessor: "bearo" },
+  { header: "G", accessor: "games" },
+  { header: "W", accessor: "wins" },
+  { header: "P", accessor: "points" },
+  { header: "PD", accessor: "difference" },
+  { header: "W%", accessor: "winPercentage" },
+]
+
 type HoldemSeasonTabsProps = {
   currentSeasonData: StandingsData[]
   currentSeasonChartData: any[]
@@ -799,6 +815,68 @@ export default function HoldemSeasonTabs({
   columns,
 }: HoldemSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2024/25") // Update to return 2025-26
+
+  // Compute All Time standings
+  const computeAllTimeStandings = () => {
+    const totals: Record<string, { games: number; wins: number; points: number; hoverColor: string }> = {}
+
+    const ensurePlayer = (name: string) => {
+      if (!totals[name]) {
+        totals[name] = { games: 0, wins: 0, points: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
+      }
+    }
+
+    // From DB seasons: max games/points/wins per player from chart data
+    for (const chartData of [currentSeasonChartData, historicalSeasonChartData]) {
+      const maxGames: Record<string, number> = {}
+      const maxPoints: Record<string, number> = {}
+      const maxWins: Record<string, number> = {}
+      for (const row of chartData) {
+        const p = (row.bearo ?? row.player) as string
+        if (maxGames[p] === undefined || row.games > maxGames[p]) maxGames[p] = row.games
+        if (maxPoints[p] === undefined || row.points > maxPoints[p]) maxPoints[p] = row.points
+        if (maxWins[p] === undefined || row.wins > maxWins[p]) maxWins[p] = row.wins
+      }
+      for (const player of Object.keys(maxGames)) {
+        ensurePlayer(player)
+        totals[player].games += maxGames[player] ?? 0
+        totals[player].points += maxPoints[player] ?? 0
+        totals[player].wins += maxWins[player] ?? 0
+      }
+    }
+
+    // From static pastSeasonsData - only include known players (skip DSQ)
+    for (const seasonKey of Object.keys(pastSeasonsData)) {
+      const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
+      if (!sd || !sd.standings) continue
+      for (const entry of sd.standings) {
+        const name = playerNameFromColor(entry.hoverColor)
+        if (!name) continue // skip DSQ and unknown players
+        ensurePlayer(name)
+        totals[name].games += entry.games
+        totals[name].points += entry.points
+        totals[name].wins += entry.wins
+      }
+    }
+
+    const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
+    const leaderPoints = sorted[0]?.[1].points ?? 0
+    return sorted.map(([name, data], index) => ({
+        position: index + 1,
+        bearo: (
+          <span className="relative">
+            {name}
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
+          </span>
+        ),
+        games: data.games,
+        wins: data.wins,
+        points: data.points,
+        difference: index === 0 ? "-" : String(data.points - leaderPoints),
+        winPercentage: data.games > 0 ? `${((data.wins / data.games) * 100).toFixed(1)}%` : "0%",
+        hoverColor: data.hoverColor,
+      }))
+  }
 
   // Render content based on active tab
   const renderContent = () => {
@@ -893,6 +971,14 @@ export default function HoldemSeasonTabs({
               )}
             </section>
           )}
+        </>
+      )
+    } else if (activeSeason === "All Time") {
+      const allTimeData = computeAllTimeStandings()
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
     } else {

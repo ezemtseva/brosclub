@@ -23,6 +23,7 @@ const seasons = [
   "2017/18",
   "2016/17",
   "2015/16",
+  "All Time",
 ] as const
 type Season = (typeof seasons)[number]
 
@@ -48,7 +49,7 @@ type SeasonData = {
 }
 
 type PastSeasonsData = {
-  [K in Exclude<Season, "2025/26" | "2024/25">]: SeasonData
+  [K in Exclude<Season, "2025/26" | "2024/25" | "All Time">]: SeasonData
 }
 
 // Static data for past seasons (2023/24 and earlier)
@@ -3453,8 +3454,11 @@ type FifaSeasonTabsProps = {
   columns: any[]
   teamNames: string[]
   playerTeams: PlayerTeams
+  historicalPlayerTeams: PlayerTeams
   matches: MatchRecord[]
   teamLogos: Record<string, string>
+  currentRawEntries: any[]
+  historicalRawEntries: any[]
 }
 
 export default function FifaSeasonTabs({
@@ -3465,8 +3469,11 @@ export default function FifaSeasonTabs({
   columns,
   teamNames,
   playerTeams: initialPlayerTeams,
+  historicalPlayerTeams,
   matches: initialMatches,
   teamLogos,
+  currentRawEntries,
+  historicalRawEntries,
 }: FifaSeasonTabsProps) {
   const [activeSeason, setActiveSeason]   = useState<Season>(seasons[0])
   const [dialogOpen, setDialogOpen]       = useState(false)
@@ -3491,6 +3498,237 @@ export default function FifaSeasonTabs({
     const res = await fetch("/api/fifa-season-config?season=2025/26")
     if (res.ok) setPlayerTeams(await res.json())
     router.refresh()
+  }
+
+  // All Time columns
+  const allTimeColumns = [
+    { header: "#", accessor: "position" },
+    { header: "Team", accessor: "team" },
+    { header: "G", accessor: "games" },
+    { header: "W", accessor: "wins" },
+    { header: "D", accessor: "draws" },
+    { header: "L", accessor: "losses" },
+    { header: "GS", accessor: "goalsScored" },
+    { header: "GC", accessor: "goalsConceded" },
+    { header: "GD", accessor: "goalDifference" },
+    { header: "P", accessor: "points" },
+  ]
+
+  const allTimePlayerColumns = [
+    { header: "#", accessor: "position" },
+    { header: "Player", accessor: "player" },
+    { header: "G", accessor: "games" },
+    { header: "W", accessor: "wins" },
+    { header: "D", accessor: "draws" },
+    { header: "L", accessor: "losses" },
+    { header: "GS", accessor: "goalsScored" },
+    { header: "GC", accessor: "goalsConceded" },
+    { header: "GD", accessor: "goalDifference" },
+    { header: "P", accessor: "points" },
+    { header: "W%", accessor: "winPercentage" },
+  ]
+
+  // Compute All Time standings by player
+  const computeAllTimePlayerStandings = () => {
+    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; hoverColor: string }> = {}
+
+    const ensurePlayer = (name: string) => {
+      if (!totals[name]) {
+        totals[name] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
+      }
+    }
+
+    // 2025/26 — use playerTeams state
+    for (const [playerName, teams] of Object.entries(playerTeams)) {
+      ensurePlayer(playerName)
+      for (const entry of currentRawEntries) {
+        if ((teams as string[]).includes(entry.team)) {
+          totals[playerName].games += entry.games ?? 0
+          totals[playerName].wins += entry.wins ?? 0
+          totals[playerName].draws += entry.draws ?? 0
+          totals[playerName].losses += entry.losses ?? 0
+          totals[playerName].goalsScored += entry.goalsScored ?? 0
+          totals[playerName].goalsConceded += entry.goalsConceded ?? 0
+        }
+      }
+    }
+
+    // 2024/25 — use historicalPlayerTeams prop
+    for (const [playerName, teams] of Object.entries(historicalPlayerTeams)) {
+      ensurePlayer(playerName)
+      for (const entry of historicalRawEntries) {
+        if ((teams as string[]).includes(entry.team)) {
+          totals[playerName].games += entry.games ?? 0
+          totals[playerName].wins += entry.wins ?? 0
+          totals[playerName].draws += entry.draws ?? 0
+          totals[playerName].losses += entry.losses ?? 0
+          totals[playerName].goalsScored += entry.goalsScored ?? 0
+          totals[playerName].goalsConceded += entry.goalsConceded ?? 0
+        }
+      }
+    }
+
+    // Past seasons — reverse-map team color → player name
+    for (const seasonKey of Object.keys(pastSeasonsData)) {
+      const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
+      if (!sd) continue
+      for (const entry of sd.standings) {
+        const playerName = Object.entries(PLAYER_COLORS).find(([, c]) => c === entry.color)?.[0]
+        if (!playerName) continue
+        ensurePlayer(playerName)
+        totals[playerName].games += entry.games
+        totals[playerName].wins += entry.wins
+        totals[playerName].draws += entry.draws
+        totals[playerName].losses += entry.losses
+        totals[playerName].goalsScored += entry.goalsScored
+        totals[playerName].goalsConceded += entry.goalsConceded
+      }
+    }
+
+    const sorted = Object.entries(totals)
+      .map(([name, data]) => ({
+        name,
+        ...data,
+        points: data.wins * 3 + data.draws,
+        goalDifference: data.goalsScored - data.goalsConceded,
+      }))
+      .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+
+    return sorted.map((entry, index) => ({
+      position: index + 1,
+      player: (
+        <span className="relative">
+          {entry.name}
+          <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: entry.hoverColor }} />
+        </span>
+      ),
+      games: entry.games,
+      wins: entry.wins,
+      draws: entry.draws,
+      losses: entry.losses,
+      goalsScored: entry.goalsScored,
+      goalsConceded: entry.goalsConceded,
+      goalDifference: entry.goalDifference,
+      points: entry.points,
+      winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
+      hoverColor: entry.hoverColor,
+    }))
+  }
+
+  // Helper: aggregate all-time totals from a given set of current-season entries
+  const computeAllTimeTotals = (overrideCurrentEntries: any[]) => {
+    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; logo: string; color: string }> = {}
+
+    const ensureTeam = (team: string, logo: string, color: string) => {
+      if (!totals[team]) {
+        totals[team] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, logo, color }
+      }
+    }
+
+    for (const entry of overrideCurrentEntries) {
+      ensureTeam(entry.team, entry.logo || "/placeholder.svg", getTeamColor(entry.team))
+      totals[entry.team].games += entry.games ?? 0
+      totals[entry.team].wins += entry.wins ?? 0
+      totals[entry.team].draws += entry.draws ?? 0
+      totals[entry.team].losses += entry.losses ?? 0
+      totals[entry.team].goalsScored += entry.goalsScored ?? 0
+      totals[entry.team].goalsConceded += entry.goalsConceded ?? 0
+    }
+
+    for (const entry of historicalRawEntries) {
+      ensureTeam(entry.team, entry.logo || "/placeholder.svg", getTeamColor(entry.team))
+      totals[entry.team].games += entry.games ?? 0
+      totals[entry.team].wins += entry.wins ?? 0
+      totals[entry.team].draws += entry.draws ?? 0
+      totals[entry.team].losses += entry.losses ?? 0
+      totals[entry.team].goalsScored += entry.goalsScored ?? 0
+      totals[entry.team].goalsConceded += entry.goalsConceded ?? 0
+    }
+
+    for (const seasonKey of Object.keys(pastSeasonsData)) {
+      const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
+      if (!sd) continue
+      for (const entry of sd.standings) {
+        ensureTeam(entry.team, entry.logo, entry.color || getTeamColor(entry.team))
+        totals[entry.team].games += entry.games
+        totals[entry.team].wins += entry.wins
+        totals[entry.team].draws += entry.draws
+        totals[entry.team].losses += entry.losses
+        totals[entry.team].goalsScored += entry.goalsScored
+        totals[entry.team].goalsConceded += entry.goalsConceded
+      }
+    }
+
+    return Object.entries(totals)
+      .map(([teamName, data]) => ({
+        teamName,
+        ...data,
+        points: data.wins * 3 + data.draws,
+        goalDifference: data.goalsScored - data.goalsConceded,
+      }))
+      .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
+  }
+
+  // Compute All Time standings aggregated across all seasons
+  const computeAllTimeStandings = () => {
+    const currentSorted = computeAllTimeTotals(currentRawEntries)
+
+    // Compute previous ranking by undoing the last match from currentRawEntries
+    let prevRanks: Record<string, number> = {}
+    if (matches.length > 0) {
+      const lastMatch = matches[0]
+      const prevCurrentEntries = currentRawEntries.map((e: any) => {
+        if (e.team !== lastMatch.teamA && e.team !== lastMatch.teamB) return e
+        const isA = e.team === lastMatch.teamA
+        const scored = isA ? lastMatch.scoreA : lastMatch.scoreB
+        const conceded = isA ? lastMatch.scoreB : lastMatch.scoreA
+        return {
+          ...e,
+          games: (e.games ?? 0) - 1,
+          wins: (e.wins ?? 0) - (scored > conceded ? 1 : 0),
+          draws: (e.draws ?? 0) - (scored === conceded ? 1 : 0),
+          losses: (e.losses ?? 0) - (scored < conceded ? 1 : 0),
+          goalsScored: (e.goalsScored ?? 0) - scored,
+          goalsConceded: (e.goalsConceded ?? 0) - conceded,
+        }
+      })
+      const prevSorted = computeAllTimeTotals(prevCurrentEntries)
+      prevRanks = prevSorted.reduce((acc, e, i) => { acc[e.teamName] = i + 1; return acc }, {} as Record<string, number>)
+    }
+
+    return currentSorted.map((entry, index) => {
+      const currentRank = index + 1
+      const prevRank = prevRanks[entry.teamName] ?? currentRank
+      const mv = prevRank - currentRank
+      return {
+        position: mv > 0
+          ? <span className="flex items-center gap-1">{currentRank}<span className="text-green-500 text-xs leading-none">↑</span></span>
+          : mv < 0
+          ? <span className="flex items-center gap-1">{currentRank}<span className="text-red-400 text-xs leading-none">↓</span></span>
+          : currentRank,
+        team: (
+          <div className="flex items-center space-x-2">
+            <Image
+              src={entry.logo || "/placeholder.svg"}
+              alt={entry.teamName}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+            <span>{entry.teamName}</span>
+          </div>
+        ),
+        games: entry.games,
+        wins: entry.wins,
+        draws: entry.draws,
+        losses: entry.losses,
+        goalsScored: entry.goalsScored,
+        goalsConceded: entry.goalsConceded,
+        goalDifference: entry.goalDifference,
+        points: entry.points,
+        hoverColor: "#e5e7eb",
+      }
+    })
   }
 
   // Process past season data for display
@@ -3616,10 +3854,11 @@ export default function FifaSeasonTabs({
       )
     } else if (activeSeason === "2024/25") {
       // For the 2024/25 season, use the historical data from fifaEntry2024
+      const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
       return (
         <>
           <div className="fifa-standings-table">
-            <DataTable columns={columns} data={historicalSeasonData} />
+            <DataTable columns={columnsWithoutForm} data={historicalSeasonData} />
           </div>
 
           <section className="mt-12">
@@ -3630,12 +3869,30 @@ export default function FifaSeasonTabs({
           </section>
         </>
       )
+    } else if (activeSeason === "All Time") {
+      const allTimeData = computeAllTimeStandings()
+      const allTimePlayerData = computeAllTimePlayerStandings()
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <div className="fifa-standings-table">
+            <DataTable columns={allTimeColumns} data={allTimeData} />
+          </div>
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">All Time by Player</h2>
+            <div className="fifa-standings-table">
+              <DataTable columns={allTimePlayerColumns} data={allTimePlayerData} />
+            </div>
+          </section>
+        </>
+      )
     } else {
       // For past seasons (2023/24 and earlier), use static data
       const pastSeasonData = getPastSeasonTableData(activeSeason)
       const seasonData = pastSeasonsData[activeSeason as keyof typeof pastSeasonsData]
       const seasonDescription = seasonData && "description" in seasonData ? seasonData.description : undefined
       const seasonHighlights = seasonData && "highlights" in seasonData ? seasonData.highlights : undefined
+      const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
 
       return (
         <>
@@ -3643,7 +3900,7 @@ export default function FifaSeasonTabs({
 
           <div className="fifa-standings-table">
             {pastSeasonData.length > 0 ? (
-              <DataTable columns={columns} data={pastSeasonData} />
+              <DataTable columns={columnsWithoutForm} data={pastSeasonData} />
             ) : (
               <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
             )}
@@ -3692,7 +3949,7 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      {activeSeason !== "2025/26" && (
+      {activeSeason !== "2025/26" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-title font-bold">Standings</h2>
         </div>

@@ -22,6 +22,7 @@ const seasons = [
   "2019/20",
   "2018/19",
   "2017/18",
+  "All Time",
 ] as const
 type Season = (typeof seasons)[number]
 
@@ -373,6 +374,21 @@ type FplSeasonTabsProps = {
   columns: any[]
 }
 
+// Helper to reverse-map PLAYER_COLORS color -> player name
+function playerNameFromColor(color: string): string {
+  return Object.entries(PLAYER_COLORS).find(([, c]) => c === color)?.[0] ?? ""
+}
+
+// All Time columns
+const allTimeColumns = [
+  { header: "#", accessor: "position" },
+  { header: "Player", accessor: "player" },
+  { header: "GW", accessor: "games" },
+  { header: "Wins", accessor: "wins" },
+  { header: "Points", accessor: "points" },
+  { header: "PD", accessor: "difference" },
+]
+
 export default function FplSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
@@ -385,6 +401,74 @@ export default function FplSeasonTabs({
   columns,
 }: FplSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+
+  // Compute All Time standings
+  const computeAllTimeStandings = () => {
+    const totals: Record<string, { games: number; wins: number; points: number; hoverColor: string }> = {}
+
+    const ensurePlayer = (name: string) => {
+      if (!totals[name]) {
+        totals[name] = { games: 0, wins: 0, points: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
+      }
+    }
+
+    // From DB seasons: get max games and max points per player (cumulative charts)
+    const dbChartSets = [
+      { chartData: currentSeasonChartData, standings: currentSeasonData },
+      { chartData: historicalSeasonChartData, standings: historicalSeasonData },
+    ]
+    for (const { chartData, standings } of dbChartSets) {
+      const maxGames: Record<string, number> = {}
+      const maxPoints: Record<string, number> = {}
+      for (const row of chartData) {
+        const p = row.player as string
+        if (maxGames[p] === undefined || row.games > maxGames[p]) maxGames[p] = row.games
+        if (maxPoints[p] === undefined || row.points > maxPoints[p]) maxPoints[p] = row.points
+      }
+      // wins from processed standings
+      const winsMap: Record<string, number> = {}
+      for (const row of standings) {
+        const name = playerNameFromColor(row.hoverColor)
+        if (name) winsMap[name] = row.wins ?? 0
+      }
+      for (const [player, g] of Object.entries(maxGames)) {
+        ensurePlayer(player)
+        totals[player].games += g
+        totals[player].points += maxPoints[player] ?? 0
+        totals[player].wins += winsMap[player] ?? 0
+      }
+    }
+
+    // From static pastSeasonsData
+    for (const seasonKey of Object.keys(pastSeasonsData)) {
+      const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
+      if (!sd) continue
+      for (const entry of sd.standings) {
+        const name = playerNameFromColor(entry.hoverColor)
+        if (!name) continue
+        ensurePlayer(name)
+        totals[name].games += typeof entry.games === "number" ? entry.games : 0
+        totals[name].points += entry.points
+      }
+    }
+
+    const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
+    const leaderPoints = sorted[0]?.[1].points ?? 0
+    return sorted.map(([name, data], index) => ({
+        position: index + 1,
+        player: (
+          <span className="relative">
+            {name}
+            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
+          </span>
+        ),
+        games: data.games,
+        wins: data.wins,
+        points: data.points,
+        difference: index === 0 ? "-" : String(data.points - leaderPoints),
+        hoverColor: data.hoverColor,
+      }))
+  }
 
   // Render content based on active tab
   const renderContent = () => {
@@ -445,10 +529,11 @@ export default function FplSeasonTabs({
     } else if (pastSeasonsData[activeSeason]) {
       // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
+      const pastColumns = columns.filter((col) => col.accessor !== "wins" && col.accessor !== "winPercent")
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={seasonData.standings} />
+          <DataTable columns={pastColumns} data={seasonData.standings} />
 
           {seasonData.highlights && seasonData.highlights.length > 0 && (
             <section className="mt-12">
@@ -465,6 +550,14 @@ export default function FplSeasonTabs({
               </div>
             </section>
           )}
+        </>
+      )
+    } else if (activeSeason === "All Time") {
+      const allTimeData = computeAllTimeStandings()
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
     } else {

@@ -28,6 +28,7 @@ const seasons = [
   "2014",
   "2013",
   "2012",
+  "All Time",
 ] as const
 type Season = (typeof seasons)[number]
 
@@ -409,6 +410,31 @@ type BetsSeasonTabsProps = {
   initialGameweek: number
 }
 
+// Helper to reverse-map PLAYER_COLORS color -> player name
+function playerNameFromColor(color: string): string {
+  return Object.entries(playerColors).find(([, c]) => c === color)?.[0] ?? ""
+}
+
+// All Time columns
+const allTimeColumns = [
+  { header: "#", accessor: "position" },
+  { header: "Player", accessor: "player" },
+  { header: "Games", accessor: "games" },
+  { header: "Points", accessor: "points" },
+  { header: "PD", accessor: "difference" },
+]
+
+// Helper to create player element for All Time table
+const createAllTimePlayerElement = (name: string) => {
+  const color = playerColors[name as keyof typeof playerColors] || "#cccccc"
+  return (
+    <span className="relative">
+      {name}
+      <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: color }} />
+    </span>
+  )
+}
+
 export default function BetsSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
@@ -423,6 +449,69 @@ export default function BetsSeasonTabs({
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
+
+  // Compute All Time standings
+  const computeAllTimeStandings = () => {
+    const totals: Record<string, { games: number; wins: number; points: number; hoverColor: string }> = {}
+
+    const ensurePlayer = (name: string) => {
+      if (!totals[name]) {
+        totals[name] = { games: 0, wins: 0, points: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+      }
+    }
+
+    // From DB seasons: max games/points per player from chart data, wins from standings
+    const dbSets = [
+      { chartData: currentSeasonChartData, standings: currentSeasonData },
+      { chartData: historicalSeasonChartData, standings: historicalSeasonData },
+    ]
+    for (const { chartData, standings } of dbSets) {
+      const maxGames: Record<string, number> = {}
+      const maxPoints: Record<string, number> = {}
+      for (const row of chartData) {
+        const p = row.player as string
+        if (maxGames[p] === undefined || row.games > maxGames[p]) maxGames[p] = row.games
+        if (maxPoints[p] === undefined || row.points > maxPoints[p]) maxPoints[p] = row.points
+      }
+      const winsMap: Record<string, number> = {}
+      for (const row of standings) {
+        const name = playerNameFromColor(row.hoverColor)
+        if (name) winsMap[name] = row.wins ?? 0
+      }
+      for (const [player, g] of Object.entries(maxGames)) {
+        ensurePlayer(player)
+        totals[player].games += g
+        totals[player].points += maxPoints[player] ?? 0
+        totals[player].wins += winsMap[player] ?? 0
+      }
+    }
+
+    // From static pastSeasonsData
+    for (const seasonKey of Object.keys(pastSeasonsData)) {
+      const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
+      if (!sd) continue
+      for (const entry of sd.standings) {
+        const name = playerNameFromColor(entry.hoverColor)
+        if (!name) continue
+        ensurePlayer(name)
+        totals[name].games += typeof entry.games === "number" ? entry.games : 0
+        totals[name].points += entry.points
+        totals[name].wins += entry.wins ?? 0
+      }
+    }
+
+    const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
+    const leaderPoints = sorted[0]?.[1].points ?? 0
+    return sorted.map(([name, data], index) => ({
+        position: index + 1,
+        player: createAllTimePlayerElement(name),
+        games: data.games,
+        wins: data.wins,
+        points: data.points,
+        difference: index === 0 ? "-" : String(data.points - leaderPoints),
+        hoverColor: data.hoverColor,
+      }))
+  }
 
   const handleGameSuccess = () => {
     router.refresh()
@@ -460,10 +549,11 @@ export default function BetsSeasonTabs({
       )
     } else if (activeSeason === "2024/25") {
       // For the 2024/25 season, use the historical data from betsEntry2024
+      const historicalColumns = columns.filter((col) => col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={historicalSeasonData} />
+          <DataTable columns={historicalColumns} data={historicalSeasonData} />
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Weekly progress</h2>
@@ -483,7 +573,7 @@ export default function BetsSeasonTabs({
       const seasonData = pastSeasonsData[activeSeason]!
 
       // Create modified columns for past seasons without wins and winPercentage
-      let seasonColumns = columns.filter((col) => col.accessor !== "wins" && col.accessor !== "winPercentage")
+      let seasonColumns = columns.filter((col) => col.accessor !== "wins" && col.accessor !== "winPercentage" && col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
 
       // For 2012-2017 seasons, also remove the games column
       const oldSeasons = ["2012", "2013", "2014", "2015", "2016", "2017"]
@@ -511,6 +601,14 @@ export default function BetsSeasonTabs({
               </div>
             </section>
           )}
+        </>
+      )
+    } else if (activeSeason === "All Time") {
+      const allTimeData = computeAllTimeStandings()
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
     } else {

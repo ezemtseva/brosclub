@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PLAYER_COLORS } from '../lib/teamColors'
+import { ChartTooltip } from './ChartTooltip'
 
 type FplEntry = {
   player: string;
@@ -20,29 +21,11 @@ type FplChartProps = {
   entries: FplEntry[];
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const sortedPayload = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
-    return (
-      <div className="bg-white border border-gray-300 p-2 shadow-md">
-        {sortedPayload.map((entry: any, index: number) => (
-          entry.value !== null && (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value} points
-            </p>
-          )
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
 const CustomYAxisTick = (props: any) => {
   const { x, y, payload } = props;
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={4} textAnchor="end" fill="#666" fontSize={12}>
+      <text x={0} y={0} dy={4} textAnchor="end" fill="#666">
         {payload.value}
       </text>
     </g>
@@ -64,7 +47,9 @@ export default function FplChart({ entries }: FplChartProps) {
       return acc
     }, {})
 
-    const chartData = Array.from({ length: 39 }, (_, i) => {
+    const maxGames = entries.length > 0 ? Math.max(...entries.map(entry => entry.games)) : 38
+
+    const chartData = Array.from({ length: maxGames + 1 }, (_, i) => {
       const gameNumber = i
       const dataPoint: ChartDataPoint = { games: gameNumber }
 
@@ -79,19 +64,6 @@ export default function FplChart({ entries }: FplChartProps) {
     setChartData(chartData)
   }, [entries])
 
-  const renderLine = (player: string, color: string) => {
-    return (
-      <Line 
-        type="monotone" 
-        dataKey={player}
-        name={player} 
-        stroke={color} 
-        activeDot={{ r: 8 }} 
-        connectNulls={false}
-      />
-    )
-  }
-
   return (
     <div className="h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -100,27 +72,26 @@ export default function FplChart({ entries }: FplChartProps) {
           margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="games" 
-            type="number" 
-            domain={[0, 38]}
-            ticks={Array.from({ length: 39 }, (_, i) => i)}
-            tick={{ fontSize: 12 }}
-          />
-          <YAxis 
+          <XAxis
+            dataKey="games"
             type="number"
-            domain={[0, 2511]}
-            ticks={[0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2511]}
+            domain={[0, 38]}
+            ticks={Array.from({ length: 20 }, (_, i) => i * 2)}
+          />
+          <YAxis
+            type="number"
+            domain={[0, 2500]}
+            ticks={[0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500]}
+            interval={0}
             tick={<CustomYAxisTick />}
             width={40}
           />
-          <Tooltip content={<CustomTooltip />} />
-          {renderLine('Vanilla', PLAYER_COLORS.Vanilla)}
-          {renderLine('Choco', PLAYER_COLORS.Choco)}
-          {renderLine('Panda', PLAYER_COLORS.Panda)}
+          <Tooltip content={<ChartTooltip />} />
+          <Line type="monotone" dataKey="Vanilla" stroke={PLAYER_COLORS.Vanilla} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Choco" stroke={PLAYER_COLORS.Choco} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Panda" stroke={PLAYER_COLORS.Panda} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>
   )
 }
-

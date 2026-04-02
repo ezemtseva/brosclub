@@ -165,13 +165,14 @@ model FifaPlayerTeam {
 }
 
 model FifaMatch {
-  id        Int      @id @default(autoincrement())
-  season    String
-  teamA     String
-  scoreA    Int
-  teamB     String
-  scoreB    Int
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  season     String
+  teamA      String
+  scoreA     Int
+  teamB      String
+  scoreB     Int
+  prediction String?
+  createdAt  DateTime @default(now())
 }
 
 model PlMatch {

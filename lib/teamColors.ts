@@ -1,7 +1,7 @@
 export const PLAYER_COLORS: Record<string, string> = {
-  Vanilla: "#ea7878",
-  Choco:   "#4b98de",
-  Panda:   "#4fcb90",
+  Vanilla: "#FA5053",
+  Choco:   "#007FFF",
+  Panda:   "#00E893",
 }
 
 export const teamColors = {

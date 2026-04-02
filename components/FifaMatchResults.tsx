@@ -36,7 +36,7 @@ function TeamCell({ team, playerTeams, teamLogos, align = "left" }: { team: stri
   const logo = teamLogos[team] || "/placeholder.svg"
   const abbr = TEAM_ABBR[team]
   return (
-    <div className="flex items-center justify-center space-x-2 whitespace-nowrap">
+    <div className={`flex items-center space-x-2 whitespace-nowrap w-full ${align === "right" ? "flex-row-reverse space-x-reverse justify-center md:justify-start" : "justify-center md:justify-start"}`}>
       <Image src={logo} alt={team} width={24} height={24} className="rounded-full shrink-0" />
       <span className="relative">
         <span className="hidden md:inline">{team}</span>
@@ -53,9 +53,9 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
       <table className="bg-white w-auto min-w-full">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
-            <th className="py-2 px-4 text-center w-px whitespace-nowrap">Home</th>
+            <th className="py-2 px-4 text-center w-[45%] whitespace-nowrap">Home</th>
             <th className="py-2 px-1 text-center w-px whitespace-nowrap">Score</th>
-            <th className="py-2 px-4 text-center w-px whitespace-nowrap">Away</th>
+            <th className="py-2 px-4 text-center w-[45%] whitespace-nowrap">Away</th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-xs md:text-sm font-light">
@@ -69,16 +69,16 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
               const bWins = match.scoreB > match.scoreA
               return (
                 <tr key={match.id} className="border-b border-gray-200 h-[45px]">
-                  <td className="py-2 px-4 w-px whitespace-nowrap text-center">
-                    <TeamCell team={match.teamA} playerTeams={playerTeams} teamLogos={teamLogos} align="right" />
+                  <td className="py-2 px-4 w-[45%] whitespace-nowrap">
+                    <TeamCell team={match.teamA} playerTeams={playerTeams} teamLogos={teamLogos} />
                   </td>
                   <td className="py-2 px-1 text-center w-px whitespace-nowrap">
                     <span className={aWins ? "font-bold text-gray-900" : "text-gray-400"}>{match.scoreA}</span>
                     <span className="text-gray-300 mx-0.5">:</span>
                     <span className={bWins ? "font-bold text-gray-900" : "text-gray-400"}>{match.scoreB}</span>
                   </td>
-                  <td className="py-2 px-4 w-px whitespace-nowrap">
-                    <TeamCell team={match.teamB} playerTeams={playerTeams} teamLogos={teamLogos} />
+                  <td className="py-2 px-4 w-[45%] whitespace-nowrap">
+                    <TeamCell team={match.teamB} playerTeams={playerTeams} teamLogos={teamLogos} align="right" />
                   </td>
                 </tr>
               )

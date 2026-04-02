@@ -3441,6 +3441,7 @@ interface MatchRecord {
   scoreA: number
   teamB: string
   scoreB: number
+  prediction?: string | null
   createdAt: string
 }
 

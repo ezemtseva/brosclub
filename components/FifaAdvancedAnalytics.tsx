@@ -11,6 +11,7 @@ interface MatchRecord {
   scoreA: number
   teamB: string
   scoreB: number
+  prediction?: string | null
   createdAt: string
 }
 
@@ -456,7 +457,7 @@ function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" |
 
 function PlayerStatsCard({ s }: { s: PlayerStats }) {
   return (
-    <div className="bg-white rounded-lg p-4 flex flex-col gap-3 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+    <div className="bg-gray-50 rounded-lg p-4 flex flex-col gap-3 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
       <div className="flex items-center justify-center">
         <span className="font-bold" style={{ color: s.color }}>{s.player}</span>
       </div>
@@ -511,7 +512,7 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
         const r = matrix[pA][pB]
         const total = r.wins + r.draws + r.losses
         return (
-          <div key={pA + pB} className="bg-white rounded-lg border border-gray-100 p-4 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+          <div key={pA + pB} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
             <div className="flex items-center justify-between mb-3">
               <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pA] }}>{pA}</span>
               <span className="text-gray-400">{total} games</span>
@@ -555,7 +556,7 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   return (
     <div className="flex flex-col gap-3">
       {projections.map((t, i) => (
-        <div key={t.team} className="bg-white rounded-lg p-4 border border-gray-100 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+        <div key={t.team} className="bg-gray-50 rounded-lg p-4 shadow-sm flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-[2.25rem] font-black leading-none text-center w-9 shrink-0" style={{ color: RANK_COLORS[i] }}>{i + 1}</span>
@@ -610,7 +611,7 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
 
 function RecordCard({ label, content, className = "" }: { label: string; content: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white rounded-lg p-3 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${className}`}>
+    <div className={`bg-gray-50 rounded-lg p-3 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${className}`}>
       <div className="text-[10px] text-gray-400 uppercase font-medium mb-2">{label}</div>
       {content}
     </div>
@@ -777,7 +778,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {predictions.map(({ pair, probA, probDraw, probB }) => (
-        <div key={pair.join("v")} className="bg-white rounded-lg p-4 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+        <div key={pair.join("v")} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
           <div className="flex justify-between items-center mb-3">
             <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pair[0]] }}>{pair[0]}</span>
             <span className="text-[10px] text-gray-200">·</span>
@@ -848,7 +849,22 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
       {/* Predictions */}
       <section>
         <h3 className="text-[16px] font-bold mb-2">Predictions</h3>
-        <p className="text-xs text-gray-400 mb-4">Based on H2H record (60%) and last 5 games form (40%)</p>
+        <div className="flex items-baseline gap-3 mb-4">
+          <p className="text-xs text-gray-400">Based on H2H record (60%) and last 5 games form (40%)</p>
+          {(() => {
+            const withPred = matches.filter((m) => m.prediction != null && m.prediction !== "")
+            if (withPred.length === 0) return null
+            const correct = withPred.filter((m) => {
+              const actual = m.scoreA > m.scoreB ? "A" : m.scoreB > m.scoreA ? "B" : "Draw"
+              return m.prediction === actual
+            }).length
+            return (
+              <span className="text-xs text-gray-400 whitespace-nowrap">
+                · Prediction accuracy: {Math.round((correct / withPred.length) * 100)}%
+              </span>
+            )
+          })()}
+        </div>
         <PredictionSection predictions={predictions} />
       </section>
     </div>

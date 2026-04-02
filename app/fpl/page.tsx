@@ -111,6 +111,16 @@ function processFplData(playersData: PlayerData[]): TableDataItem[] {
     }))
 }
 
+// Helper function to create pie chart data (wins per player)
+function createPieChartData(playersData: PlayerData[]) {
+  const wins = calculateWins(playersData)
+  return players.map((player) => ({
+    name: player.name,
+    value: wins[player.name] ?? 0,
+    color: player.color,
+  }))
+}
+
 // Helper function to create chart data
 function createChartData(playersData: PlayerData[]) {
   return playersData.flatMap((player) =>
@@ -180,10 +190,12 @@ export default async function FPLPage() {
     // Process current season data
     const currentSeasonData = processFplData(currentPlayersData)
     const currentSeasonChartData = createChartData(currentPlayersData)
+    const currentSeasonPieData = createPieChartData(currentPlayersData)
 
     // Process historical season data
     const historicalSeasonData = processFplData(historicalPlayersData)
     const historicalSeasonChartData = createChartData(historicalPlayersData)
+    const historicalSeasonPieData = createPieChartData(historicalPlayersData)
 
     // Current season highlights (update as new highlights happen)
     const currentSeasonHighlights = [
@@ -273,9 +285,11 @@ export default async function FPLPage() {
         <FplSeasonTabs
           currentSeasonData={currentSeasonData}
           currentSeasonChartData={currentSeasonChartData}
+          currentSeasonPieData={currentSeasonPieData}
           currentSeasonHighlights={currentSeasonHighlights}
           historicalSeasonData={historicalSeasonData}
           historicalSeasonChartData={historicalSeasonChartData}
+          historicalSeasonPieData={historicalSeasonPieData}
           historicalSeasonHighlights={historicalSeasonHighlights}
           columns={columns}
         />

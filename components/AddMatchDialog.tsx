@@ -10,10 +10,12 @@ interface PlayerTeams {
 }
 
 interface MatchRecord {
+  id?: number
   teamA: string
   scoreA: number
   teamB: string
   scoreB: number
+  prediction?: string | null
 }
 
 interface AddMatchDialogProps {
@@ -153,6 +155,18 @@ function computeOdds(
   return { probA, probDraw, probB }
 }
 
+// Compute prediction accuracy from past matches that have predictions stored
+function computePredictionAccuracy(matches: MatchRecord[]): { correct: number; total: number } | null {
+  const withPrediction = matches.filter((m) => m.prediction != null && m.prediction !== "")
+  if (withPrediction.length === 0) return null
+  let correct = 0
+  for (const m of withPrediction) {
+    const actual = m.scoreA > m.scoreB ? "A" : m.scoreB > m.scoreA ? "B" : "Draw"
+    if (m.prediction === actual) correct++
+  }
+  return { correct, total: withPrediction.length }
+}
+
 // Count matches between two specific teams
 function matchCount(teamA: string, teamB: string, matches: MatchRecord[]): number {
   return matches.filter(
@@ -184,6 +198,16 @@ export default function AddMatchDialog({
 
   const configured = Object.values(playerTeams).some((arr) => arr.length > 0)
   const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches) : null
+  const accuracy = computePredictionAccuracy(playedMatches)
+
+  // Predicted outcome based on highest probability
+  const predictedOutcome = odds
+    ? odds.probA > odds.probB && odds.probA > odds.probDraw
+      ? "A"
+      : odds.probB > odds.probA && odds.probB > odds.probDraw
+      ? "B"
+      : "Draw"
+    : null
 
   // Build available options for team A: all teams (or just configured ones)
   const teamsForA: { team: string; matchCount: number }[] = (
@@ -256,6 +280,7 @@ export default function AddMatchDialog({
         scoreA: Number(scoreA),
         teamB,
         scoreB: Number(scoreB),
+        prediction: predictedOutcome,
       }),
     })
 
@@ -339,7 +364,12 @@ export default function AddMatchDialog({
               </span>
               <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "#374151" }}>{odds.probB}%</span>
             </div>
-            <p className="text-sm text-gray-500 text-center mt-1">Based on last 5 games</p>
+            <p className="text-sm text-gray-500 text-center mt-1">
+              Based on last 5 games
+              {accuracy && (
+                <span className="ml-2 text-sm text-gray-500">· Prediction accuracy: {Math.round((accuracy.correct / accuracy.total) * 100)}%</span>
+              )}
+            </p>
           </div>
         )}
 

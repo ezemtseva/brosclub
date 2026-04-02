@@ -9,6 +9,7 @@ import dynamicImport from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 
 const FplChart = dynamicImport(() => import("./FplChart"), { ssr: false })
+const PieChart = dynamicImport(() => import("./PieChart"), { ssr: false })
 
 // Define the seasons array with all the required seasons - added 2025/26 as first tab
 const seasons = [
@@ -363,9 +364,11 @@ const pastSeasonsData: PastSeasonsData = {
 type FplSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonChartData: any[]
+  currentSeasonPieData: any[]
   currentSeasonHighlights: any[]
   historicalSeasonData: any[]
   historicalSeasonChartData: any[]
+  historicalSeasonPieData: any[]
   historicalSeasonHighlights: any[]
   columns: any[]
 }
@@ -373,9 +376,11 @@ type FplSeasonTabsProps = {
 export default function FplSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
+  currentSeasonPieData,
   currentSeasonHighlights,
   historicalSeasonData,
   historicalSeasonChartData,
+  historicalSeasonPieData,
   historicalSeasonHighlights,
   columns,
 }: FplSeasonTabsProps) {
@@ -392,8 +397,13 @@ export default function FplSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="w-full">
-              <FplChart entries={currentSeasonChartData} />
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <FplChart entries={currentSeasonChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <PieChart data={currentSeasonPieData} />
+              </div>
             </div>
           </section>
 
@@ -414,8 +424,13 @@ export default function FplSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Weekly progress</h2>
-            <div className="w-full">
-              <FplChart entries={historicalSeasonChartData} />
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <FplChart entries={historicalSeasonChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <PieChart data={historicalSeasonPieData} />
+              </div>
             </div>
           </section>
 

@@ -81,7 +81,13 @@
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  overflow-x: clip;
+  overflow-x: auto;
+}
+
+@media (min-width: 768px) {
+  .history-table {
+    overflow-x: clip;
+  }
 }
 
 .history-table::-webkit-scrollbar {
@@ -114,7 +120,13 @@
 
 /* overflow-x: clip prevents horizontal scroll without creating a sticky-breaking scroll container */
 .fifa-standings-table > div {
-  overflow-x: clip;
+  overflow-x: auto;
+}
+
+@media (min-width: 768px) {
+  .fifa-standings-table > div {
+    overflow-x: clip;
+  }
 }
 
 /* Ensure the header stays fixed */
@@ -122,6 +134,29 @@
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+/* Prevent iOS auto-zoom on input focus */
+@media (max-width: 767px) {
+  input:focus, select:focus, textarea:focus {
+    font-size: 16px !important;
+  }
+}
+
+/* FIFA Records grid */
+.records-row-1 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.records-row-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 768px) {
+  .records-row-1 {
+    grid-template-columns: auto auto 1fr 1fr 1fr;
+  }
+  .records-row-2 {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 /* Flip card styles */

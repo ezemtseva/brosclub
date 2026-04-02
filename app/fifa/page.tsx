@@ -3,6 +3,7 @@ import prisma from "../../lib/prisma"
 
 export const dynamic = 'force-dynamic'
 import FifaSeasonTabs from "../../components/FifaSeasonTabs"
+import AutoRefresh from "../../components/AutoRefresh"
 import { PLAYER_COLORS } from "../../lib/teamColors"
 
 const columns = [
@@ -73,7 +74,6 @@ function getTeamForm(team: string, matches: MatchRecord[]) {
   const results = matches
     .filter((m) => m.teamA === team || m.teamB === team)
     .slice(0, 5)
-    .reverse()
     .map((m) => {
       const scored = m.teamA === team ? m.scoreA : m.scoreB
       const conceded = m.teamA === team ? m.scoreB : m.scoreA
@@ -663,6 +663,7 @@ export default async function FIFAPage() {
 
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+      <AutoRefresh intervalMs={30000} />
       <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
       <p className="text-basic text-gray-600 mb-8">X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually.</p>
 

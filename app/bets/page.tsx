@@ -1,6 +1,7 @@
 import prisma from "../../lib/prisma"
 import dynamicImport from "next/dynamic"
 import BetsSeasonTabs from "../../components/BetsSeasonTabs"
+import AutoRefresh from "../../components/AutoRefresh"
 import { settleAndRecalculate } from "../../lib/pl-settle"
 import { PLAYER_COLORS } from "../../lib/teamColors"
 
@@ -149,6 +150,7 @@ export default async function BetsPage() {
 
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+      <AutoRefresh intervalMs={30000} />
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
       <p className="text-base text-gray-600 mb-8">
         XIII season of boring betting on top football leagues. Currently only English Premier League matches.

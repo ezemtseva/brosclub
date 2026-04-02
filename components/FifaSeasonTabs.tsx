@@ -3542,13 +3542,21 @@ export default function FifaSeasonTabs({
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-4 h-9">
                 <h2 className="text-title font-bold leading-none m-0">Standings</h2>
+                {/* Desktop: gear icon */}
                 <button
                   onClick={() => setConfigOpen(true)}
-                  className="text-gray-500 hover:text-gray-700 transition-colors leading-none"
+                  className="hidden md:block text-gray-500 hover:text-gray-700 transition-colors leading-none"
                   style={{ fontSize: "1.75rem" }}
                   title="Configure player teams"
                 >
                   ⚙
+                </button>
+                {/* Mobile: Add Game button */}
+                <button
+                  onClick={() => setDialogOpen(true)}
+                  className="flex md:hidden items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
+                >
+                  <span className="text-base leading-none">+</span> Add Game
                 </button>
               </div>
               <div className="fifa-standings-table">
@@ -3570,7 +3578,7 @@ export default function FifaSeasonTabs({
                   />
                   <button
                     onClick={() => setDialogOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
+                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
                   >
                     <span className="text-base leading-none">+</span> Add Game
                   </button>
@@ -3599,7 +3607,7 @@ export default function FifaSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
+            <div className="">
               <VideoCarousel videos={currentSeasonHighlights} />
             </div>
           </section>
@@ -3615,7 +3623,7 @@ export default function FifaSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
+            <div className="">
               <VideoCarousel videos={historicalSeasonHighlights} />
             </div>
           </section>

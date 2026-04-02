@@ -585,12 +585,18 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Now: <span className="font-semibold text-gray-700">{t.currentPoints} pts</span> in {t.currentGames} games</span>
+          <div className="flex items-center justify-between text-[9px] md:text-xs text-gray-500">
+            <span>
+              <span className="md:hidden">Now: {t.currentPoints} pts</span>
+              <span className="hidden md:inline">Now: <span className="font-semibold text-gray-700">{t.currentPoints} pts</span> in {t.currentGames} games</span>
+            </span>
             {t.avgOpponentStrength !== null && (
               <span>Opp: <span className="font-semibold text-gray-700">{t.avgOpponentStrength.toFixed(2)}</span></span>
             )}
-            <span>Form PPG: <span className="font-semibold text-gray-700">{t.formPPG.toFixed(2)}</span></span>
+            <span>
+              <span className="md:hidden">PPG: {t.formPPG.toFixed(2)}</span>
+              <span className="hidden md:inline">Form PPG: <span className="font-semibold text-gray-700">{t.formPPG.toFixed(2)}</span></span>
+            </span>
           </div>
 
         </div>
@@ -602,9 +608,9 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   )
 }
 
-function RecordCard({ label, content }: { label: string; content: React.ReactNode }) {
+function RecordCard({ label, content, className = "" }: { label: string; content: React.ReactNode; className?: string }) {
   return (
-    <div className="bg-white rounded-lg p-3 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+    <div className={`bg-white rounded-lg p-3 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${className}`}>
       <div className="text-[10px] text-gray-400 uppercase font-medium mb-2">{label}</div>
       {content}
     </div>
@@ -630,8 +636,9 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
   return (
     <div className="flex flex-col gap-3">
       {/* Row 1: team records */}
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'auto auto 1fr 1fr 1fr' }}>
+      <div className="grid records-row-1 gap-3">
         <RecordCard
+          className="col-span-2 md:col-span-1"
           label="Biggest Win"
           content={records.biggestWin
             ? <>
@@ -647,6 +654,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
+          className="col-span-2 md:col-span-1"
           label="Highest Scoring"
           content={records.highestScoring
             ? <>
@@ -662,6 +670,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
+          className="col-span-2 md:col-span-1"
           label="Best Attack"
           content={records.bestAttack
             ? <>
@@ -677,6 +686,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
+          className="col-span-2 md:col-span-1"
           label="Best Defense"
           content={records.bestDefense
             ? <>
@@ -692,6 +702,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
+          className="col-span-2 md:col-span-1"
           label="Best Win Rate"
           content={records.bestWinRate
             ? <div className="flex items-start justify-between gap-2">
@@ -705,7 +716,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
         />
       </div>
       {/* Row 2: player records */}
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid records-row-2 gap-3">
         <RecordCard
           label="Win Streak"
           content={records.longestWinStreak

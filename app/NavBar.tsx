@@ -73,9 +73,12 @@ export default function NavBar() {
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-700 px-4 py-2 flex flex-col">
-          {mainNavItems.map((item) => renderNavLink(item.href, item.label, () => setMenuOpen(false)))}
-        </div>
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+          <div className="md:hidden border-t border-gray-700 px-4 py-2 flex flex-col relative z-20">
+            {mainNavItems.map((item) => renderNavLink(item.href, item.label, () => setMenuOpen(false)))}
+          </div>
+        </>
       )}
     </nav>
   )

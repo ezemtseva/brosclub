@@ -53,8 +53,30 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
 
   return (
     <>
-      <div className="relative px-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+      {/* Mobile: horizontal scroll */}
+      <div className="md:hidden overflow-x-auto flex gap-4 pb-2">
+        {videos.map((video, index) => (
+          <div
+            key={index}
+            className="w-[75vw] shrink-0 bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => openModal(index)}
+          >
+            <div className="aspect-video relative">
+              <Image src={video.thumbnail} alt={video.title} layout="fill" objectFit="cover" />
+              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm flex items-center justify-center">
+                <p className="text-white text-lg font-semibold">{video.coverageText}</p>
+              </div>
+            </div>
+            <div className="p-4">
+              <p className="text-gray-600 truncate">{video.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: paginated grid with buttons */}
+      <div className="hidden md:block relative px-14">
+        <div className="grid grid-cols-3 gap-6">
           {displayedVideos.map((video, index) => (
             <div
               key={index}
@@ -62,12 +84,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
               onClick={() => openModal(currentPage * videosPerPage + index)}
             >
               <div className="aspect-video relative">
-                <Image
-                  src={video.thumbnail}
-                  alt={video.title}
-                  layout="fill"
-                  objectFit="cover"
-                />
+                <Image src={video.thumbnail} alt={video.title} layout="fill" objectFit="cover" />
                 <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-filter backdrop-blur-sm flex items-center justify-center">
                   <p className="text-white text-lg font-semibold">{video.coverageText}</p>
                 </div>

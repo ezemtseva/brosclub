@@ -83,7 +83,7 @@ export default function GGSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
+            <div className="">
               <ImageCarousel images={currentSeasonHighlights} />
             </div>
           </section>
@@ -110,7 +110,7 @@ export default function GGSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="px-12">
+            <div className="">
               <ImageCarousel images={historicalSeasonHighlights} />
             </div>
           </section>

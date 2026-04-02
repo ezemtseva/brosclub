@@ -294,8 +294,8 @@ export default async function Home() {
   return (
     <>
       {(currentMonth === 12 || currentMonth === 1) && <Snowfall />}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <section className="mb-12">
+      <div className="max-w-6xl mx-auto px-4 py-4 md:py-8">
+        <section className="mb-6 md:mb-12">
           <h1 className="text-title font-bold mb-4 relative inline-block">
             Welcome to Bearos Club
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
@@ -306,7 +306,7 @@ export default async function Home() {
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {clubMembers.map((member, index) => (
-              <div key={index} className="h-[300px]">
+              <div key={index} className="h-[210px] md:h-[300px]">
                 <FlippableCard
                   bgColor={member.bgColor}
                   frontContent={
@@ -317,26 +317,26 @@ export default async function Home() {
                           alt={member.name}
                           width={200}
                           height={200}
-                          className="rounded-full object-cover w-48 h-48"
+                          className="rounded-full object-cover w-32 h-32 md:w-48 md:h-48"
                         />
                       </div>
                       <div className="flex flex-col items-center mt-auto">
-                        <h2 className="text-title font-semibold mb-2">{member.name}</h2>
+                        <h2 className="text-[17.5px] md:text-title font-semibold mb-2">{member.name}</h2>
                         <p className="text-sm text-gray-300 italic">Click to see cups</p>
                       </div>
                     </div>
                   }
                   backContent={
                     <>
-                      <h2 className="text-xl font-semibold mb-6">Cups of {member.name}:</h2>
+                      <h2 className="text-xl font-semibold mb-3 md:mb-6">Cups of {member.name}:</h2>
                       <ul className="list-none pl-0 text-sm text-gray-600">
                         {member.achievements.map((achievement, i) => (
-                          <li key={i} className="mb-2 text-base">
+                          <li key={i} className="mb-1 md:mb-2 text-sm md:text-base">
                             {achievement}
                           </li>
                         ))}
                       </ul>
-                      <p className="text-sm text-gray-300 mt-6 italic">Click to flip back</p>
+                      <p className="text-sm text-gray-300 mt-3 md:mt-6 italic">Click to flip back</p>
                     </>
                   }
                 />
@@ -365,7 +365,7 @@ export default async function Home() {
 
         <section className="mb-12">
           <h2 className="text-title font-bold mb-6">History</h2>
-          <div className="history-table">
+          <div className="history-table overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg">
               <thead className="bg-gray-100">
                 <tr>

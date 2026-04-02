@@ -3,6 +3,7 @@ import prisma from "../../lib/prisma"
 import { updateFplData } from "../../lib/fplUtils"
 import dynamicImport from "next/dynamic"
 import FplSeasonTabs from "../../components/FplSeasonTabs"
+import AutoRefresh from "../../components/AutoRefresh"
 import { PLAYER_COLORS } from "../../lib/teamColors"
 
 const FplChart = dynamicImport(() => import("../../components/FplChart"), { ssr: false })
@@ -267,6 +268,7 @@ export default async function FPLPage() {
         <p className="text-base text-gray-600 mb-8">
           X anniversary season of no-names turning our teams into a shit joke.
         </p>
+        <AutoRefresh intervalMs={30000} />
 
         <FplSeasonTabs
           currentSeasonData={currentSeasonData}

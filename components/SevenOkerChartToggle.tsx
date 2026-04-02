@@ -27,20 +27,25 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
 
   return (
     <>
-      <div className="flex items-center mb-6">
-        <h2 className="text-title font-bold mr-4">Weekly progress</h2>
-        <div className="flex space-x-2 rounded-lg p-1">
+      {/* Mobile: title + buttons on one line */}
+      <div className="flex items-center justify-between mb-6 md:hidden">
+        <h2 className="text-title font-bold whitespace-nowrap">Weekly progress</h2>
+        <div className="flex gap-2">
           <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "points" ? "bg-gray-200" : "text-gray-600 hover:bg-gray-200"
+            className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
+              chartView === "points"
+                ? "border-gray-400 text-gray-800 bg-gray-50"
+                : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
             }`}
             onClick={() => setChartView("points")}
           >
             Points
           </button>
           <button
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              chartView === "gamepoints" ? "bg-gray-200" : "text-gray-600 hover:bg-gray-200"
+            className={`px-3 py-1.5 text-sm border rounded-lg transition-colors whitespace-nowrap ${
+              chartView === "gamepoints"
+                ? "border-gray-400 text-gray-800 bg-gray-50"
+                : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
             }`}
             onClick={() => setChartView("gamepoints")}
           >
@@ -48,8 +53,34 @@ export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOke
           </button>
         </div>
       </div>
+
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-2/3">
+          <div className="hidden md:flex items-center justify-between mb-4">
+            <h2 className="text-title font-bold">Weekly progress</h2>
+            <div className="flex gap-2">
+              <button
+                className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
+                  chartView === "points"
+                    ? "border-gray-400 text-gray-800 bg-gray-50"
+                    : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                }`}
+                onClick={() => setChartView("points")}
+              >
+                Points
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm border rounded-lg transition-colors whitespace-nowrap ${
+                  chartView === "gamepoints"
+                    ? "border-gray-400 text-gray-800 bg-gray-50"
+                    : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                }`}
+                onClick={() => setChartView("gamepoints")}
+              >
+                Game Points
+              </button>
+            </div>
+          </div>
           <SevenOkerChart entries={entries} dataKey={chartView} />
         </div>
         <div className="w-full md:w-1/3">

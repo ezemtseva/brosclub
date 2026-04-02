@@ -1,6 +1,7 @@
 import prisma from "../../lib/prisma"
 import Link from "next/link"
 import SevenOkerSeasonTabs from "../../components/SevenOkerSeasonTab"
+import AutoRefresh from "../../components/AutoRefresh"
 import { PLAYER_COLORS } from "../../lib/teamColors"
 
 export const dynamic = 'force-dynamic'
@@ -182,6 +183,7 @@ export default async function SevenOkerPage() {
 
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+      <AutoRefresh intervalMs={30000} />
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
         II season of loosing solid games in the last round. {" "}

@@ -109,7 +109,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Real Sosiedad",
+        team: "Real Sociedad",
         logo: "/imgs/fifa/rs.png",
         games: 28,
         wins: 22,
@@ -122,7 +122,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "SL Benfica",
+        team: "Benfica",
         logo: "/imgs/fifa/ben.png",
         games: 28,
         wins: 21,
@@ -213,7 +213,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Feyenord",
+        team: "Feyenoord",
         logo: "/imgs/fifa/fey.png",
         games: 28,
         wins: 16,
@@ -369,7 +369,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "River PLate",
+        team: "River Plate",
         logo: "/imgs/fifa/rp.png",
         games: 26,
         wins: 8,
@@ -729,7 +729,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "A.S. Roma",
+        team: "AS Roma",
         logo: "/imgs/fifa/rom.png",
         games: 44,
         wins: 26,
@@ -976,7 +976,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Lille OSC",
+        team: "Lille",
         logo: "/imgs/fifa/lil.png",
         games: 28,
         wins: 10,
@@ -989,7 +989,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "S.L. Benfica",
+        team: "Benfica",
         logo: "/imgs/fifa/ben.png",
         games: 44,
         wins: 9,
@@ -1093,7 +1093,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "S.S. Lazio",
+        team: "SS Lazio",
         logo: "/imgs/fifa/laz.png",
         games: 28,
         wins: 4,
@@ -1106,7 +1106,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Leicester",
+        team: "Leicester City",
         logo: "/imgs/fifa/lei.png",
         games: 28,
         wins: 3,
@@ -1423,7 +1423,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Leicester",
+        team: "Leicester City",
         logo: "/imgs/fifa/lei.png",
         games: 15,
         wins: 2,
@@ -1449,7 +1449,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "AC Milan",
+        team: "Milan",
         logo: "/imgs/fifa/mil.png",
         games: 15,
         wins: 1,
@@ -1518,7 +1518,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Lazio",
+        team: "SS Lazio",
         logo: "/imgs/fifa/laz.png",
         games: 40,
         wins: 28,
@@ -1583,7 +1583,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Sevillia",
+        team: "Sevilla",
         logo: "/imgs/fifa/sev.png",
         games: 40,
         wins: 24,
@@ -1596,7 +1596,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "AC Milan",
+        team: "Milan",
         logo: "/imgs/fifa/mil.png",
         games: 40,
         wins: 23,
@@ -1739,7 +1739,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Leicester",
+        team: "Leicester City",
         logo: "/imgs/fifa/lei.png",
         games: 40,
         wins: 14,
@@ -1791,7 +1791,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Atletic Bilbao",
+        team: "Athletic Bilbao",
         logo: "/imgs/fifa/atb.png",
         games: 40,
         wins: 5,
@@ -2047,7 +2047,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Monaco",
+        team: "AS Monaco",
         logo: "/imgs/fifa/mon.png",
         games: 32,
         wins: 18,
@@ -2248,7 +2248,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Monaco",
+        team: "AS Monaco",
         logo: "/imgs/fifa/mon.png",
         games: 44,
         wins: 23,
@@ -2300,7 +2300,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Roma",
+        team: "AS Roma",
         logo: "/imgs/fifa/rom.png",
         games: 44,
         wins: 19,
@@ -2391,7 +2391,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Lazio",
+        team: "SS Lazio",
         logo: "/imgs/fifa/laz.png",
         games: 39,
         wins: 17,
@@ -2482,7 +2482,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Borussia Monhengladbah",
+        team: "Borussia Mönchengladbach",
         logo: "/imgs/fifa/bmo.png",
         games: 40,
         wins: 16,
@@ -2599,7 +2599,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Atlectic Bilbao",
+        team: "Athletic Bilbao",
         logo: "/imgs/fifa/atb.png",
         games: 40,
         wins: 11,
@@ -2651,7 +2651,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Sevillia",
+        team: "Sevilla",
         logo: "/imgs/fifa/sev.png",
         games: 39,
         wins: 6,
@@ -2751,7 +2751,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Lazio",
+        team: "SS Lazio",
         logo: "/imgs/fifa/laz.png",
         games: 40,
         wins: 19,
@@ -2881,7 +2881,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Roma",
+        team: "AS Roma",
         logo: "/imgs/fifa/rom.png",
         games: 40,
         wins: 16,
@@ -3037,7 +3037,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Sevillia",
+        team: "Sevilla",
         logo: "/imgs/fifa/sev.png",
         games: 40,
         wins: 9,
@@ -3223,7 +3223,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Roma",
+        team: "AS Roma",
         logo: "/imgs/fifa/rom.png",
         games: 32,
         wins: 10,
@@ -3512,6 +3512,7 @@ export default function FifaSeasonTabs({
     { header: "GC", accessor: "goalsConceded" },
     { header: "GD", accessor: "goalDifference" },
     { header: "P", accessor: "points" },
+    { header: "W%", accessor: "winPercentage" },
   ]
 
   const allTimePlayerColumns = [
@@ -3615,6 +3616,32 @@ export default function FifaSeasonTabs({
     }))
   }
 
+  // Normalize team names to canonical form (fixes DB typos vs static data mismatches)
+  const normalizeTeamName = (name: string): string => {
+    const map: Record<string, string> = {
+      "Nottingham Forrest": "Nottingham Forest",
+      "Olympique Lyonnais": "Olympique Lyon",
+      "SL Benfica": "Benfica",
+      "S.L. Benfica": "Benfica",
+      "S.S. Lazio": "SS Lazio",
+      "Lazio": "SS Lazio",
+      "A.S. Roma": "AS Roma",
+      "Roma": "AS Roma",
+      "AC Milan": "Milan",
+      "Monaco": "AS Monaco",
+      "Atlectic Bilbao": "Athletic Bilbao",
+      "Atletic Bilbao": "Athletic Bilbao",
+      "Sevillia": "Sevilla",
+      "Lille OSC": "Lille",
+      "Leicester": "Leicester City",
+      "Real Sosiedad": "Real Sociedad",
+      "Borussia Monhengladbah": "Borussia Mönchengladbach",
+      "Feyenord": "Feyenoord",
+      "River PLate": "River Plate",
+    }
+    return map[name] ?? name
+  }
+
   // Helper: aggregate all-time totals from a given set of current-season entries
   const computeAllTimeTotals = (overrideCurrentEntries: any[]) => {
     const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; logo: string; color: string }> = {}
@@ -3626,36 +3653,39 @@ export default function FifaSeasonTabs({
     }
 
     for (const entry of overrideCurrentEntries) {
-      ensureTeam(entry.team, entry.logo || "/placeholder.svg", getTeamColor(entry.team))
-      totals[entry.team].games += entry.games ?? 0
-      totals[entry.team].wins += entry.wins ?? 0
-      totals[entry.team].draws += entry.draws ?? 0
-      totals[entry.team].losses += entry.losses ?? 0
-      totals[entry.team].goalsScored += entry.goalsScored ?? 0
-      totals[entry.team].goalsConceded += entry.goalsConceded ?? 0
+      const team = normalizeTeamName(entry.team)
+      ensureTeam(team, entry.logo || "/placeholder.svg", getTeamColor(team))
+      totals[team].games += entry.games ?? 0
+      totals[team].wins += entry.wins ?? 0
+      totals[team].draws += entry.draws ?? 0
+      totals[team].losses += entry.losses ?? 0
+      totals[team].goalsScored += entry.goalsScored ?? 0
+      totals[team].goalsConceded += entry.goalsConceded ?? 0
     }
 
     for (const entry of historicalRawEntries) {
-      ensureTeam(entry.team, entry.logo || "/placeholder.svg", getTeamColor(entry.team))
-      totals[entry.team].games += entry.games ?? 0
-      totals[entry.team].wins += entry.wins ?? 0
-      totals[entry.team].draws += entry.draws ?? 0
-      totals[entry.team].losses += entry.losses ?? 0
-      totals[entry.team].goalsScored += entry.goalsScored ?? 0
-      totals[entry.team].goalsConceded += entry.goalsConceded ?? 0
+      const team = normalizeTeamName(entry.team)
+      ensureTeam(team, entry.logo || "/placeholder.svg", getTeamColor(team))
+      totals[team].games += entry.games ?? 0
+      totals[team].wins += entry.wins ?? 0
+      totals[team].draws += entry.draws ?? 0
+      totals[team].losses += entry.losses ?? 0
+      totals[team].goalsScored += entry.goalsScored ?? 0
+      totals[team].goalsConceded += entry.goalsConceded ?? 0
     }
 
     for (const seasonKey of Object.keys(pastSeasonsData)) {
       const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
       if (!sd) continue
       for (const entry of sd.standings) {
-        ensureTeam(entry.team, entry.logo, entry.color || getTeamColor(entry.team))
-        totals[entry.team].games += entry.games
-        totals[entry.team].wins += entry.wins
-        totals[entry.team].draws += entry.draws
-        totals[entry.team].losses += entry.losses
-        totals[entry.team].goalsScored += entry.goalsScored
-        totals[entry.team].goalsConceded += entry.goalsConceded
+        const team = normalizeTeamName(entry.team)
+        ensureTeam(team, entry.logo, entry.color || getTeamColor(team))
+        totals[team].games += entry.games
+        totals[team].wins += entry.wins
+        totals[team].draws += entry.draws
+        totals[team].losses += entry.losses
+        totals[team].goalsScored += entry.goalsScored
+        totals[team].goalsConceded += entry.goalsConceded
       }
     }
 
@@ -3726,6 +3756,7 @@ export default function FifaSeasonTabs({
         goalsConceded: entry.goalsConceded,
         goalDifference: entry.goalDifference,
         points: entry.points,
+        winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
         hoverColor: "#e5e7eb",
       }
     })
@@ -3737,19 +3768,21 @@ export default function FifaSeasonTabs({
       return []
     }
 
-    return pastSeasonsData[season as keyof typeof pastSeasonsData].standings.map((entry, index) => ({
+    return pastSeasonsData[season as keyof typeof pastSeasonsData].standings.map((entry, index) => {
+      const teamName = normalizeTeamName(entry.team)
+      return {
       position: index + 1,
       team: (
         <div className="flex items-center space-x-2">
           <Image
             src={entry.logo || "/imgs/fifa/new.png"}
-            alt={entry.team}
+            alt={teamName}
             width={24}
             height={24}
             className="rounded-full"
           />
           <span className="relative">
-            {entry.team}
+            {teamName}
             <span
               className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
               style={{ backgroundColor: entry.color || getTeamColor(entry.team) }}
@@ -3767,7 +3800,7 @@ export default function FifaSeasonTabs({
       points: entry.points,
       hoverColor: entry.color || getTeamColor(entry.team),
       className: index === 0 ? "bg-amber-50" : undefined,
-    }))
+    }})
   }
 
   // Render content based on active tab
@@ -3876,7 +3909,7 @@ export default function FifaSeasonTabs({
         <>
           <h2 className="text-title font-bold mb-6">All Time Standings</h2>
           <div className="fifa-standings-table">
-            <DataTable columns={allTimeColumns} data={allTimeData} />
+            <DataTable columns={allTimeColumns} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">All Time by Player</h2>

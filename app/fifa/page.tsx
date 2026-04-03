@@ -70,6 +70,32 @@ const getTeamColor2024 = (team: string) => {
 
 type MatchRecord = { teamA: string; scoreA: number; teamB: string; scoreB: number }
 
+const TEAM_NAME_MAP: Record<string, string> = {
+  "Nottingham Forrest": "Nottingham Forest",
+  "Olympique Lyonnais": "Olympique Lyon",
+  "SL Benfica": "Benfica",
+  "S.L. Benfica": "Benfica",
+  "S.S. Lazio": "SS Lazio",
+  "Lazio": "SS Lazio",
+  "A.S. Roma": "AS Roma",
+  "Roma": "AS Roma",
+  "AC Milan": "Milan",
+  "Monaco": "AS Monaco",
+  "Atlectic Bilbao": "Athletic Bilbao",
+  "Atletic Bilbao": "Athletic Bilbao",
+  "Sevillia": "Sevilla",
+  "Lille OSC": "Lille",
+  "Leicester": "Leicester City",
+  "Real Sosiedad": "Real Sociedad",
+  "Borussia Monhengladbah": "Borussia Mönchengladbach",
+  "Feyenord": "Feyenoord",
+  "River PLate": "River Plate",
+}
+
+function normalizeTeam(name: string): string {
+  return TEAM_NAME_MAP[name] ?? name
+}
+
 function getTeamForm(team: string, matches: MatchRecord[]) {
   const results = matches
     .filter((m) => m.teamA === team || m.teamB === team)
@@ -162,6 +188,7 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
     }))
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
     .map((entry, index) => {
+      const teamName = normalizeTeam(entry.team)
       const mv = movements[entry.team] ?? 0
       return {
         position: mv > 0
@@ -173,13 +200,13 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
           <div className="flex items-center space-x-2">
             <Image
               src={entry.logo || "/placeholder.svg"}
-              alt={entry.team}
+              alt={teamName}
               width={24}
               height={24}
               className="rounded-full"
             />
             <span className="relative">
-              {entry.team}
+              {teamName}
               <span
                 className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
                 style={{ backgroundColor: getColor(entry.team) }}
@@ -211,19 +238,21 @@ function processFifaData2024(entries: any[]) {
       points: entry.wins * 3 + entry.draws,
     }))
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
-    .map((entry, index) => ({
+    .map((entry, index) => {
+      const teamName = normalizeTeam(entry.team)
+      return {
       position: index + 1,
       team: (
         <div className="flex items-center space-x-2">
           <Image
             src={entry.logo || "/placeholder.svg"}
-            alt={entry.team}
+            alt={teamName}
             width={24}
             height={24}
             className="rounded-full"
           />
           <span className="relative">
-            {entry.team}
+            {teamName}
             <span
               className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
               style={{ backgroundColor: getTeamColor2024(entry.team) }}
@@ -241,7 +270,7 @@ function processFifaData2024(entries: any[]) {
       points: entry.points,
       hoverColor: getTeamColor2024(entry.team),
       className: index === 0 ? "bg-amber-50" : undefined,
-    }))
+    }})
 }
 
 async function getCurrentSeasonData() {

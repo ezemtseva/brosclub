@@ -270,7 +270,7 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
             »
           </button>
           <button onClick={handleSync} disabled={syncing} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-500 hover:text-gray-800">
-            {syncing ? "Syncing..." : "Full Sync"}
+            {syncing ? "Syncing..." : "Sync"}
           </button>
         </div>
       </div>

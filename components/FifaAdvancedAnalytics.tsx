@@ -642,7 +642,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
           label="Biggest Win"
           content={records.biggestWin
             ? <>
-                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                   <TeamLogoSmall team={records.biggestWin.match.teamA} teamLogos={teamLogos} />
                   <span className="text-gray-800">{records.biggestWin.match.teamA}</span>
                   <span className="font-bold text-gray-700">{records.biggestWin.match.scoreA}:{records.biggestWin.match.scoreB}</span>
@@ -658,7 +658,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
           label="Highest Scoring"
           content={records.highestScoring
             ? <>
-                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                   <TeamLogoSmall team={records.highestScoring.match.teamA} teamLogos={teamLogos} />
                   <span className="text-gray-800">{records.highestScoring.match.teamA}</span>
                   <span className="font-bold text-gray-700">{records.highestScoring.match.scoreA}:{records.highestScoring.match.scoreB}</span>

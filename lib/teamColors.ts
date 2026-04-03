@@ -7,7 +7,7 @@ export const PLAYER_COLORS: Record<string, string> = {
 export const teamColors = {
     red: ['Liverpool', 'Atalanta', 'AS Roma', 'Eintracht Frankfurt', 'Arsenal', 'Atletico Madrid', 'Borussia Dortmund', 'Marseille', 'Sporting CP', 'Bayer Leverkusen'],
     blue: ['Villarreal', 'Chelsea', 'SS Lazio', 'PSG', 'Barcelona', 'Inter', 'Milan', 'Manchester United', 'Galatasaray', 'Wolfsburg'],
-    green: ['Juventus', 'Tottenham', 'Newcastle', 'Napoli', 'Athletic Bilbao', 'Aston Villa', 'Real Madrid', 'Bayern Munich', 'Manchester City', 'Nottingham Forrest']
+    green: ['Juventus', 'Tottenham', 'Newcastle', 'Napoli', 'Athletic Bilbao', 'Aston Villa', 'Real Madrid', 'Bayern Munich', 'Manchester City', 'Nottingham Forest']
   }
 
 export const TEAM_ABBR: Record<string, string> = {
@@ -29,7 +29,7 @@ export const TEAM_ABBR: Record<string, string> = {
   'Athletic Bilbao':    'ATB',
   Napoli:               'NAP',
   Newcastle:            'NEW',
-  'Nottingham Forrest': 'NFO',
+  'Nottingham Forest': 'NFO',
   Tottenham:            'TOT',
   Liverpool:            'LIV',
   Arsenal:              'ARS',

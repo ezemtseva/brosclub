@@ -105,8 +105,7 @@
 .fifa-standings-table > div {
   max-height: 500px;
   overflow: auto;
-  overscroll-behavior: contain;
-  -ms-overflow-style: none;
+    -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
@@ -125,8 +124,7 @@
 .fifa-results-table > div {
   max-height: 500px;
   overflow: auto;
-  overscroll-behavior: contain;
-  -ms-overflow-style: none;
+    -ms-overflow-style: none;
   scrollbar-width: none;
 }
 

@@ -103,12 +103,34 @@
 
 /* FIFA standings table styles */
 .fifa-standings-table > div {
-  overflow-x: auto;
+  max-height: 500px;
+  overflow: auto;
+  overscroll-behavior: contain;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 .fifa-standings-table > div::-webkit-scrollbar {
+  display: none;
+}
+
+.fifa-standings-table thead,
+.fifa-results-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* FIFA match results — scrollable, 10 rows */
+.fifa-results-table > div {
+  max-height: 500px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.fifa-results-table > div::-webkit-scrollbar {
   display: none;
 }
 

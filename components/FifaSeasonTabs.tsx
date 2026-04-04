@@ -3856,7 +3856,7 @@ export default function FifaSeasonTabs({
                   </button>
                 </div>
               </div>
-              <div className="fifa-standings-table">
+              <div className="fifa-results-table">
                 <FifaMatchResults
                   matches={resultsSearch ? matches.filter(m => m.teamA.toLowerCase().includes(resultsSearch.toLowerCase()) || m.teamB.toLowerCase().includes(resultsSearch.toLowerCase())) : matches}
                   playerTeams={playerTeams}

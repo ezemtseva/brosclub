@@ -33,6 +33,7 @@ interface PlMatch {
 
 interface PlBetsGameweekProps {
   initialGameweek: number
+  initialMatches: PlMatch[]
 }
 
 function isLocked(kickoff: string): boolean {
@@ -186,10 +187,10 @@ function BetCell({
   )
 }
 
-export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps) {
+export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBetsGameweekProps) {
   const [gameweek, setGameweek] = useState(initialGameweek)
-  const [matches, setMatches] = useState<PlMatch[]>([])
-  const [loading, setLoading] = useState(true)
+  const [matches, setMatches] = useState<PlMatch[]>(initialMatches)
+  const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const initialLoad = useRef(true)
@@ -202,15 +203,13 @@ export default function PlBetsGameweek({ initialGameweek }: PlBetsGameweekProps)
 
   const fetchMatches = useCallback(async () => {
     if (initialLoad.current) {
-      setLoading(true)
       initialLoad.current = false
-    } else {
-      setRefreshing(true)
+      return
     }
+    setRefreshing(true)
     const res = await fetch(`/api/pl-bets?gameweek=${gameweek}`)
     const data = await res.json()
     setMatches(Array.isArray(data) ? data : [])
-    setLoading(false)
     setRefreshing(false)
   }, [gameweek])
 

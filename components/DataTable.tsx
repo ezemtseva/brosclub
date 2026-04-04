@@ -57,7 +57,7 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
     : data
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">

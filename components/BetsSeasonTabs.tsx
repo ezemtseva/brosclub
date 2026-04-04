@@ -408,6 +408,7 @@ type BetsSeasonTabsProps = {
   historicalSeasonPieData: any[]
   columns: any[]
   initialGameweek: number
+  initialMatches: any[]
 }
 
 // Helper to reverse-map PLAYER_COLORS color -> player name
@@ -444,6 +445,7 @@ export default function BetsSeasonTabs({
   historicalSeasonPieData,
   columns,
   initialGameweek,
+  initialMatches,
 }: BetsSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -531,7 +533,7 @@ export default function BetsSeasonTabs({
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
-            <PlBetsGameweek initialGameweek={initialGameweek} />
+            <PlBetsGameweek initialGameweek={initialGameweek} initialMatches={initialMatches} />
           </section>
 
           <section className="mt-12">
@@ -634,7 +636,7 @@ export default function BetsSeasonTabs({
       {/* Season tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto">
+          <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {seasons.map((season) => (
               <button
                 key={season}

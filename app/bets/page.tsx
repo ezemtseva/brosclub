@@ -145,6 +145,12 @@ export default async function BetsPage() {
 
   const initialGameweek = await getInitialGameweek()
 
+  const initialMatches = await prisma.plMatch.findMany({
+    where: { season: "2025/26", gameweek: initialGameweek },
+    include: { bets: true },
+    orderBy: { kickoff: "asc" },
+  })
+
   // Auto-settle finished matches on every page load
   await settleAndRecalculate().catch(console.error)
 
@@ -165,6 +171,7 @@ export default async function BetsPage() {
         historicalSeasonPieData={historicalSeasonPieData}
         columns={columns}
         initialGameweek={initialGameweek}
+        initialMatches={initialMatches.map((m: any) => ({ ...m, kickoff: m.kickoff instanceof Date ? m.kickoff.toISOString() : m.kickoff }))}
       />
     </div>
   )

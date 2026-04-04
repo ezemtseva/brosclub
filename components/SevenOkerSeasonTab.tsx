@@ -185,7 +185,7 @@ export default function SevenOkerSeasonTabs({
       {/* Season tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto">
+          <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {seasons.map((season) => (
               <button
                 key={season}

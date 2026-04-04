@@ -103,21 +103,13 @@
 
 /* FIFA standings table styles */
 .fifa-standings-table > div {
-  max-height: 500px;
-  overflow: auto;
+  overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 .fifa-standings-table > div::-webkit-scrollbar {
   display: none;
-}
-
-/* Ensure the header stays fixed */
-.fifa-standings-table thead {
-  position: sticky;
-  top: 0;
-  z-index: 1;
 }
 
 /* Prevent iOS auto-zoom on input focus */

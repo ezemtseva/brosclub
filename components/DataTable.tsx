@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 interface Column {
   header: string
@@ -31,6 +31,22 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handleWheel = (e: WheelEvent) => {
+      const atTop = el.scrollTop === 0
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+      if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
+        e.preventDefault()
+        window.scrollBy({ top: e.deltaY, behavior: 'auto' })
+      }
+    }
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [])
 
   const isSortable = (accessor: string) => {
     if (!sortable) return false
@@ -57,7 +73,7 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
     : data
 
   return (
-    <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div ref={scrollRef} className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
@@ -65,7 +81,7 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
               <th
                 key={index}
                 style={column.width ? { width: column.width } : undefined}
-                className={`py-2 px-4 ${column.accessor === 'position' ? 'text-left w-px whitespace-nowrap' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left whitespace-nowrap' : 'text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
+                className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'px-4 text-left whitespace-nowrap' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}
@@ -88,7 +104,7 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
               onMouseLeave={() => setHoveredRow(null)}
             >
               {columns.map((column, colIndex) => (
-                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 px-4 ${column.accessor === 'position' ? 'text-left w-px whitespace-nowrap' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'text-left whitespace-nowrap' : 'text-center'}`}>
+                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'px-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
                   {row[column.accessor]}
                 </td>
               ))}

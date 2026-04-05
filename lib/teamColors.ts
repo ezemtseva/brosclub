@@ -29,7 +29,7 @@ export const TEAM_ABBR: Record<string, string> = {
   'Athletic Bilbao':    'ATB',
   Napoli:               'NAP',
   Newcastle:            'NEW',
-  'Nottingham Forest': 'NFO',
+  'Nottingham Forest':  'NFO',
   Tottenham:            'TOT',
   Liverpool:            'LIV',
   Arsenal:              'ARS',

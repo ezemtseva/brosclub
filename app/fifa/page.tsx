@@ -191,11 +191,14 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
       const teamName = normalizeTeam(entry.team)
       const mv = movements[entry.team] ?? 0
       return {
-        position: mv > 0
-          ? <span className="flex items-center gap-1">{index + 1}<span className="text-green-500 text-xs leading-none">↑</span></span>
-          : mv < 0
-          ? <span className="flex items-center gap-1">{index + 1}<span className="text-red-400 text-xs leading-none">↓</span></span>
-          : index + 1,
+        position: (
+          <span className="flex items-center justify-center gap-0.5">
+            <span style={{fontSize:'12.25px'}}>{index + 1}</span>
+            <span className="leading-none" style={{fontSize:'9px', color: mv > 0 ? '#22c55e' : mv < 0 ? '#f87171' : 'transparent'}}>
+              {mv > 0 ? '↑' : '↓'}
+            </span>
+          </span>
+        ),
         team: (
           <div className="flex items-center space-x-2">
             <Image
@@ -325,6 +328,42 @@ export default async function FIFAPage() {
       title: "✯ Goal of the season - Phil Foden",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 3",
+    },
+    {
+      videoId: "9FBwLvX9_80",
+      title: "Saka",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
+    },
+    {
+      videoId: "kYyVQGQMT58",
+      title: "Kobel (save)",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
+    },
+    {
+      videoId: "axYVKrwAOVs",
+      title: "Götze",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
+    },
+    {
+      videoId: "LJTM0DoiIfA",
+      title: "Ederson",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
+    },
+    {
+      videoId: "vcy1_C9VgEU",
+      title: "Mckennie",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
+    },
+    {
+      videoId: "PFrZKzLgwhA",
+      title: "Baena",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 13",
     },
     {
       videoId: "d-I7dNafuh0",

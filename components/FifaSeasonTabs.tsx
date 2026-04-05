@@ -3731,11 +3731,14 @@ export default function FifaSeasonTabs({
       const prevRank = prevRanks[entry.teamName] ?? currentRank
       const mv = prevRank - currentRank
       return {
-        position: mv > 0
-          ? <span className="flex items-center gap-1">{currentRank}<span className="text-green-500 text-xs leading-none">↑</span></span>
-          : mv < 0
-          ? <span className="flex items-center gap-1">{currentRank}<span className="text-red-400 text-xs leading-none">↓</span></span>
-          : currentRank,
+        position: (
+          <span className="flex items-center justify-center gap-0.5">
+            <span style={{fontSize:'12.25px'}}>{currentRank}</span>
+            <span className="leading-none" style={{fontSize:'9px', color: mv > 0 ? '#22c55e' : mv < 0 ? '#f87171' : 'transparent'}}>
+              {mv > 0 ? '↑' : '↓'}
+            </span>
+          </span>
+        ),
         team: (
           <div className="flex items-center space-x-2">
             <Image

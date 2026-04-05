@@ -497,7 +497,6 @@ function PlayerStatsCard({ s }: { s: PlayerStats }) {
         {Array.from({ length: 10 - s.form.length }).map((_, i) => (
           <span key={"pad" + i} className="w-6 h-6 rounded bg-gray-100" />
         ))}
-        <span className="text-[10px] text-gray-400 self-center ml-1">last 10</span>
       </div>
     </div>
   )
@@ -633,16 +632,25 @@ function TeamLogoSmall({ team, teamLogos }: { team: string; teamLogos: Record<st
 }
 
 function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsData; playerTeams: PlayerTeams; teamLogos: Record<string, string> }) {
+  const bestWinRateContent = records.bestWinRate
+    ? <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <TeamLogoSmall team={records.bestWinRate.team} teamLogos={teamLogos} />
+          <span className="text-gray-800 truncate">{records.bestWinRate.team}</span>
+        </div>
+        <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRate.winRate * 100)}%</div>
+      </div>
+    : <div className="text-gray-400 text-sm">No data</div>
+
   return (
     <div className="flex flex-col gap-3">
-      {/* Row 1: team records */}
+      {/* Row 1: team records (5 cards; at 1024-1249px the 5th is hidden and moves to row 2) */}
       <div className="grid records-row-1 gap-3">
         <RecordCard
-          className="col-span-2 md:col-span-1"
           label="Biggest Win"
           content={records.biggestWin
             ? <>
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
                   <TeamLogoSmall team={records.biggestWin.match.teamA} teamLogos={teamLogos} />
                   <span className="text-gray-800">{records.biggestWin.match.teamA}</span>
                   <span className="font-bold text-gray-700">{records.biggestWin.match.scoreA}:{records.biggestWin.match.scoreB}</span>
@@ -654,11 +662,10 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
-          className="col-span-2 md:col-span-1"
           label="Highest Scoring"
           content={records.highestScoring
             ? <>
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
                   <TeamLogoSmall team={records.highestScoring.match.teamA} teamLogos={teamLogos} />
                   <span className="text-gray-800">{records.highestScoring.match.teamA}</span>
                   <span className="font-bold text-gray-700">{records.highestScoring.match.scoreA}:{records.highestScoring.match.scoreB}</span>
@@ -670,7 +677,6 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
-          className="col-span-2 md:col-span-1"
           label="Best Attack"
           content={records.bestAttack
             ? <>
@@ -686,7 +692,6 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             : <div className="text-gray-400 text-sm">No data</div>}
         />
         <RecordCard
-          className="col-span-2 md:col-span-1"
           label="Best Defense"
           content={records.bestDefense
             ? <>
@@ -701,21 +706,11 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
               </>
             : <div className="text-gray-400 text-sm">No data</div>}
         />
-        <RecordCard
-          className="col-span-2 md:col-span-1"
-          label="Best Win Rate"
-          content={records.bestWinRate
-            ? <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <TeamLogoSmall team={records.bestWinRate.team} teamLogos={teamLogos} />
-                  <span className="text-gray-800 truncate">{records.bestWinRate.team}</span>
-                </div>
-                <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRate.winRate * 100)}%</div>
-              </div>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
+        {/* Hidden at 1024-1249px — duplicate shown in row 2 instead */}
+        <RecordCard className="records-bwr-r1" label="Best Win Rate" content={bestWinRateContent} />
       </div>
-      {/* Row 2: player records */}
+
+      {/* Row 2: player records + Best Win Rate duplicate (shown only at 1024-1249px) */}
       <div className="grid records-row-2 gap-3">
         <RecordCard
           label="Win Streak"
@@ -768,6 +763,8 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
               </>
             : <div className="text-gray-400 text-sm">No data</div>}
         />
+        {/* Duplicate of Best Win Rate — shown only at 1024-1249px */}
+        <RecordCard className="records-bwr-r2" label="Best Win Rate" content={bestWinRateContent} />
       </div>
     </div>
   )

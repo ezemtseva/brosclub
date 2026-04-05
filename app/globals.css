@@ -101,15 +101,17 @@
   z-index: 1;
 }
 
-/* FIFA standings table styles */
-.fifa-standings-table > div {
+/* FIFA standings/results table styles */
+.fifa-standings-table > div,
+.fifa-results-table > div {
   max-height: 500px;
-  overflow: auto;
-    -ms-overflow-style: none;
+  overflow-y: auto;
+  -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.fifa-standings-table > div::-webkit-scrollbar {
+.fifa-standings-table > div::-webkit-scrollbar,
+.fifa-results-table > div::-webkit-scrollbar {
   display: none;
 }
 
@@ -120,18 +122,6 @@
   z-index: 1;
 }
 
-/* FIFA match results — scrollable, 10 rows */
-.fifa-results-table > div {
-  max-height: 500px;
-  overflow: auto;
-    -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.fifa-results-table > div::-webkit-scrollbar {
-  display: none;
-}
-
 /* Prevent iOS auto-zoom on input focus */
 @media (max-width: 767px) {
   input:focus, select:focus, textarea:focus {
@@ -140,19 +130,52 @@
 }
 
 /* FIFA Records grid */
+/* Best Win Rate duplicate: visible only at 1024-1249px */
+.records-bwr-r2 { display: none; }
+
+/* Row 1 — < 768px: 2 cols, BW+HS full width */
 .records-row-1 {
   grid-template-columns: repeat(2, 1fr);
 }
+/* Row 2 — < 768px: 2 cols */
 .records-row-2 {
   grid-template-columns: repeat(2, 1fr);
 }
-@media (min-width: 768px) {
-  .records-row-1 {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .records-row-2 {
-    grid-template-columns: repeat(5, 1fr);
-  }
+@media (max-width: 767px) {
+  .records-row-1 > *:nth-child(-n+2) { grid-column: span 2; }
+}
+
+/* 768–1023px: 6 cols, 2+3 layout per row */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .records-row-1 { grid-template-columns: repeat(6, 1fr); }
+  .records-row-1 > * { grid-column: span 1; }
+  .records-row-1 > *:nth-child(-n+2) { grid-column: span 3; }
+  .records-row-1 > *:nth-child(n+3) { grid-column: span 2; }
+
+  .records-row-2 { grid-template-columns: repeat(6, 1fr); }
+  .records-row-2 > * { grid-column: span 1; }
+  .records-row-2 > *:nth-child(-n+2) { grid-column: span 3; }
+  .records-row-2 > *:nth-child(n+3):nth-child(-n+5) { grid-column: span 2; }
+}
+
+/* 1024–1249px: row 1 = 4 cards auto-sized, row 2 = 6 cards equal */
+@media (min-width: 1024px) and (max-width: 1249px) {
+  .records-row-1 { grid-template-columns: max-content max-content 1fr 1fr; }
+  .records-row-1 > * { grid-column: span 1; }
+  .records-bwr-r1 { display: none; }
+
+  .records-row-2 { grid-template-columns: repeat(6, 1fr); }
+  .records-row-2 > * { grid-column: span 1; }
+  .records-bwr-r2 { display: block; order: -1; }
+}
+
+/* ≥ 1250px: 5 cols per row */
+@media (min-width: 1250px) {
+  .records-row-1 { grid-template-columns: repeat(5, 1fr); }
+  .records-row-1 > * { grid-column: span 1; }
+
+  .records-row-2 { grid-template-columns: repeat(5, 1fr); }
+  .records-row-2 > * { grid-column: span 1; }
 }
 
 /* Flip card styles */

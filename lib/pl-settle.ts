@@ -20,6 +20,13 @@ async function recalculateBetsEntry() {
 
   const gameweeks = Array.from(new Set(bets.map((b) => b.match.gameweek))).sort((a, b) => a - b)
 
+  // Find gameweeks that still have unfinished matches
+  const unfinishedMatches = await prisma.plMatch.findMany({
+    where: { season: "2025/26", gameweek: { in: gameweeks }, status: { notIn: ["FINISHED", "POSTPONED"] } },
+    select: { gameweek: true },
+  })
+  const gwsWithUnfinished = new Set(unfinishedMatches.map((m) => m.gameweek))
+
   // Points scored by each player per gameweek
   const gwPoints: Record<number, Record<string, number>> = {}
   for (const gw of gameweeks) {
@@ -34,14 +41,12 @@ async function recalculateBetsEntry() {
     const gwsUpTo = gameweeks.filter((g) => g <= gw)
 
     for (const player of players) {
-      // games = number of passed gameweeks up to this one
       const games = gwsUpTo.length
-
-      // points = cumulative total up to this GW
       const points = gwsUpTo.reduce((sum, g) => sum + (gwPoints[g][player] ?? 0), 0)
 
-      // wins = GWs where this player scored strictly more than all others
+      // wins = GWs where all matches finished AND this player scored strictly more than all others
       const wins = gwsUpTo.filter((g) => {
+        if (gwsWithUnfinished.has(g)) return false
         const myPts = gwPoints[g][player] ?? 0
         return players.every((p) => p === player || (gwPoints[g][p] ?? 0) < myPts)
       }).length

@@ -129,6 +129,18 @@
   }
 }
 
+/* Blinking apostrophe for live match minutes */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.blink {
+  animation: blink 1s step-end infinite;
+}
+.blink-slow {
+  animation: blink 2s step-end infinite;
+}
+
 /* FIFA Records grid */
 /* Best Win Rate duplicate: visible only at 1024-1249px */
 .records-bwr-r2 { display: none; }

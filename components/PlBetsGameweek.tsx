@@ -50,6 +50,7 @@ function formatKickoff(kickoff: string): string {
   })
 }
 
+
 function betBg(points: number | null): string {
   if (points !== null && points >= 3) return "bg-green-100"
   if (points === 1) return "bg-yellow-100"
@@ -74,7 +75,6 @@ function BetCell({
   const [editing, setEditing] = useState(!bet)
   const [home, setHome] = useState(bet !== undefined ? String(bet.scoreHome) : "")
   const [away, setAway] = useState(bet !== undefined ? String(bet.scoreAway) : "")
-  const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -102,7 +102,6 @@ function BetCell({
     if (res.ok) {
       if (isEmpty) { setHome(""); setAway("") }
       setEditing(isEmpty)
-      setDirty(false)
       onSaved()
     }
   }
@@ -123,11 +122,11 @@ function BetCell({
   // Saved and not editing: show score + Edit button
   if (bet && !editing) {
     return (
-      <div className="flex items-center justify-center gap-1.5 group">
+      <div className="relative flex items-center justify-center group">
         <span className="text-[14px] tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>
         <button
           onClick={() => setEditing(true)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-700"
+          className="absolute left-full ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-700"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -139,14 +138,15 @@ function BetCell({
   }
 
   // Editing or no bet yet: show inputs + Save
+  const showSave = home !== "" || away !== "" || bet !== undefined
   return (
-    <div className="flex items-center gap-1 justify-center">
+    <div className="relative flex items-center justify-center gap-1">
       <input
         type="number"
         min="0"
         max="20"
         value={home}
-        onChange={(e) => { setHome(e.target.value.slice(0, 2)); setDirty(true) }}
+        onChange={(e) => setHome(e.target.value.slice(0, 2))}
         placeholder="—"
         className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
@@ -156,15 +156,15 @@ function BetCell({
         min="0"
         max="20"
         value={away}
-        onChange={(e) => { setAway(e.target.value.slice(0, 2)); setDirty(true) }}
+        onChange={(e) => setAway(e.target.value.slice(0, 2))}
         placeholder="—"
         className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
-      {(home !== "" || away !== "" || bet !== undefined) && (
+      <div className="absolute left-full flex items-center gap-0.5 ml-1">
         <button
           onClick={handleSave}
           disabled={saving || (home !== "" && away === "") || (home === "" && away !== "")}
-          className="text-green-500 hover:text-green-700 disabled:opacity-30 transition-colors"
+          className={`text-green-500 hover:text-green-700 disabled:opacity-30 transition-colors ${showSave ? "" : "invisible"}`}
         >
           {saving ? "…" : (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -173,16 +173,7 @@ function BetCell({
             </svg>
           )}
         </button>
-      )}
-      {bet && (
-        <button onClick={() => { setHome(String(bet.scoreHome)); setAway(String(bet.scoreAway)); setEditing(false); setDirty(false) }} className="text-red-400 hover:text-red-600 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-          </svg>
-        </button>
-      )}
+      </div>
     </div>
   )
 }
@@ -190,10 +181,11 @@ function BetCell({
 export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBetsGameweekProps) {
   const [gameweek, setGameweek] = useState(initialGameweek)
   const [matches, setMatches] = useState<PlMatch[]>(initialMatches)
-  const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const initialLoad = useRef(true)
+  const matchesRef = useRef(matches)
+  matchesRef.current = matches
   const [toast, setToast] = useState("")
 
   const showToast = (msg: string) => {
@@ -216,6 +208,27 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
   useEffect(() => {
     fetchMatches()
   }, [fetchMatches])
+
+  // Live score polling — interval always runs, checks inside using ref for fresh data
+  useEffect(() => {
+    const liveRefresh = async () => {
+      const now = Date.now()
+      const shouldPoll = matchesRef.current.some((m) => {
+        const kickoff = new Date(m.kickoff).getTime()
+        return kickoff <= now + 2 * 60 * 60 * 1000
+          && m.status !== "FINISHED"
+          && m.status !== "POSTPONED"
+      })
+      if (!shouldPoll) return
+      await fetch("/api/pl-live")
+      const res = await fetch(`/api/pl-bets?gameweek=${gameweek}`)
+      const data = await res.json()
+      if (Array.isArray(data)) setMatches(data)
+    }
+    liveRefresh()
+    const interval = setInterval(liveRefresh, 60 * 1000)
+    return () => clearInterval(interval)
+  }, [gameweek])
 
   const handleSync = async () => {
     setSyncing(true)
@@ -276,9 +289,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
 
       {toast && <p className="text-sm text-green-600 mb-3">{toast}</p>}
 
-      {loading ? (
-        <p className="text-sm text-gray-400">Loading...</p>
-      ) : matches.length === 0 ? (
+      {matches.length === 0 ? (
         <p className="text-sm text-gray-400">No fixtures for GW{gameweek}. Click <strong>Sync</strong> to fetch.</p>
       ) : (
         <div className={`overflow-x-auto transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
@@ -305,6 +316,8 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                 const locked = isLocked(match.kickoff)
                 const finished = match.status === "FINISHED"
                 const postponed = match.status === "POSTPONED"
+                const inPlay = match.status === "IN_PLAY" || match.status === "PAUSED"
+                const showScore = (finished || inPlay) && match.scoreHome !== null && match.scoreAway !== null
                 return (
                   <tr key={match.matchId} className="border-b border-gray-200 h-[45px]">
                     <td className="py-2 px-4 w-[130px] text-[12.25px]">{formatKickoff(match.kickoff)}</td>
@@ -315,11 +328,11 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                       </span>
                     </td>
                     <td className="py-2 px-2 text-center whitespace-nowrap tabular-nums">
-                      {finished ? (
+                      {showScore ? (
                         <>
-                          <span className={match.scoreHome! > match.scoreAway! ? "font-bold" : "font-normal"}>{match.scoreHome}</span>
-                          <span className="text-gray-300 mx-0.5">:</span>
-                          <span className={match.scoreAway! > match.scoreHome! ? "font-bold" : "font-normal"}>{match.scoreAway}</span>
+                          <span className={inPlay ? "text-red-400" : finished && match.scoreHome! > match.scoreAway! ? "font-bold" : "font-normal"}>{match.scoreHome}</span>
+                          <span className={`mx-0.5 ${inPlay ? "text-red-400" : "text-gray-300"}`}>:</span>
+                          <span className={inPlay ? "text-red-400" : finished && match.scoreAway! > match.scoreHome! ? "font-bold" : "font-normal"}>{match.scoreAway}</span>
                         </>
                       ) : (
                         <span className="text-gray-300">vs</span>
@@ -336,6 +349,10 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                         <span className="text-[14px] font-medium text-green-600">Finished</span>
                       ) : postponed ? (
                         <span className="text-[14px] font-medium text-gray-400">Postponed</span>
+                      ) : match.status === "PAUSED" && (Date.now() - new Date(match.kickoff).getTime()) < 63 * 60 * 1000 ? (
+                        <span className="text-[14px] font-medium text-red-400">Half Time</span>
+                      ) : inPlay ? (
+                        <span className="text-[14px] font-medium text-red-400">Live</span>
                       ) : locked ? (
                         <span className="text-[14px] font-medium text-red-400">Locked</span>
                       ) : (

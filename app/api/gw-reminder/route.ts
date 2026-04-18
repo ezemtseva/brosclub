@@ -12,20 +12,20 @@ const recipients = [
 export async function GET() {
   // Find the next upcoming gameweek (first match not yet started)
   const now = new Date()
-  const in25h = new Date(now.getTime() + 25 * 60 * 60 * 1000)
+  const in36h = new Date(now.getTime() + 36 * 60 * 60 * 1000)
 
-  // Find the first upcoming match within the next 25 hours
+  // Find the first upcoming match within the next 36 hours
   const match = await prisma.plMatch.findFirst({
     where: {
       season: '2025/26',
       status: { notIn: ['FINISHED', 'POSTPONED'] },
-      kickoff: { lte: in25h },
+      kickoff: { gte: now, lte: in36h },
     },
     orderBy: { kickoff: 'asc' },
   })
 
   if (!match) {
-    return Response.json({ skipped: true, reason: 'No match within 25h' })
+    return Response.json({ skipped: true, reason: 'No match within 36h' })
   }
 
   // Check if we already sent a reminder for this gameweek

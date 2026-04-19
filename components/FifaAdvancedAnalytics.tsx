@@ -45,6 +45,7 @@ interface PlayerStats {
   avgConceded: number
   form: { result: "W" | "D" | "L"; scored: number; conceded: number; opponent: string }[]
   longestWinStreak: number
+  matchResults: { result: "W" | "D" | "L"; createdAt: string }[]
 }
 
 interface H2HRecord {
@@ -163,6 +164,7 @@ function computePlayerStats(matches: MatchRecord[], playerTeams: PlayerTeams): P
       avgConceded: a.played > 0 ? a.ga / a.played : 0,
       form,
       longestWinStreak,
+      matchResults: sorted.map((r) => ({ result: r.result, createdAt: r.createdAt })),
     }
   })
 }
@@ -236,13 +238,12 @@ function computeRecords(matches: MatchRecord[], playerTeams: PlayerTeams, stats:
   const byStreak = [...stats].sort((a, b) => b.longestWinStreak - a.longestWinStreak)[0]
   const byCS = [...stats].sort((a, b) => b.cleanSheets - a.cleanSheets)[0]
 
-  // Longest unbeaten streak per player (W or D only)
+  // Longest unbeaten streak per player (W or D only) — over all matches
   const byUnbeaten = stats.map((s) => {
-    // re-derive from sorted match results
-    const sorted = [...s.form].reverse() // form is newest-first, reverse to oldest-first
+    const sorted = [...s.matchResults].sort((x, y) => x.createdAt.localeCompare(y.createdAt))
     let longest = 0, cur = 0
-    for (const f of sorted) {
-      if (f.result !== "L") { cur++; longest = Math.max(longest, cur) } else cur = 0
+    for (const { result } of sorted) {
+      if (result !== "L") { cur++; longest = Math.max(longest, cur) } else cur = 0
     }
     return { player: s.player, length: longest }
   }).sort((a, b) => b.length - a.length)[0]

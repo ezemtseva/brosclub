@@ -330,6 +330,30 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 3",
     },
     {
+      videoId: "mdKX6GLnuqo",
+      title: "Gakpo",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 14",
+    },
+    {
+      videoId: "j3sGRLO6igY",
+      title: "Martinelli",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 14",
+    },
+    {
+      videoId: "W00HlupUkL0",
+      title: "Trincao",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 14",
+    },
+    {
+      videoId: "LtAPzPM1G0w",
+      title: "Martinelli",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 14",
+    },
+    {
       videoId: "9FBwLvX9_80",
       title: "Saka",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

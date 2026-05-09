@@ -108,13 +108,15 @@ async function getHistoricalSeasonData() {
 }
 
 async function getInitialGameweek(): Promise<number> {
-  // Find the lowest gameweek with active/upcoming matches (ignore POSTPONED)
-  const next = await prisma.plMatch.findFirst({
+  const grouped = await prisma.plMatch.groupBy({
+    by: ["gameweek"],
     where: { season: "2025/26", status: { notIn: ["FINISHED", "POSTPONED"] } },
-    orderBy: { gameweek: "asc" },
-    select: { gameweek: true },
+    _count: { id: true },
   })
-  if (next) return next.gameweek
+
+  // Skip GWs with only 1 rescheduled match — find the lowest active GW with ≥2 non-finished
+  const active = grouped.filter(g => g._count.id >= 2).sort((a, b) => a.gameweek - b.gameweek)
+  if (active.length > 0) return active[0].gameweek
 
   // All finished — return the latest
   const last = await prisma.plMatch.findFirst({

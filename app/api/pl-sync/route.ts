@@ -19,14 +19,21 @@ async function upsertMatch(m: any) {
   const endYear = new Date(m.season.endDate).getFullYear()
   const season = `${startYear}/${String(endYear).slice(2)}`
 
+  const scoreHome = m.score?.fullTime?.home ?? null
+  const scoreAway = m.score?.fullTime?.away ?? null
+
+  // Don't overwrite FINISHED matches that already have a score (API can return stale/wrong data)
+  const existing = await prisma.plMatch.findUnique({ where: { matchId: m.id }, select: { status: true, scoreHome: true } })
+  if (existing?.status === "FINISHED" && existing.scoreHome !== null) return
+
   await prisma.plMatch.upsert({
     where: { matchId: m.id },
     update: {
       status: m.status,
-      scoreHome: m.score.fullTime.home ?? null,
-      scoreAway: m.score.fullTime.away ?? null,
+      kickoff: new Date(m.utcDate),
       homeCrest: m.homeTeam.crest ?? null,
       awayCrest: m.awayTeam.crest ?? null,
+      ...(scoreHome !== null && scoreAway !== null ? { scoreHome, scoreAway } : {}),
     },
     create: {
       matchId: m.id,
@@ -38,8 +45,8 @@ async function upsertMatch(m: any) {
       awayCrest: m.awayTeam.crest ?? null,
       kickoff: new Date(m.utcDate),
       status: m.status,
-      scoreHome: m.score.fullTime.home ?? null,
-      scoreAway: m.score.fullTime.away ?? null,
+      scoreHome,
+      scoreAway,
     },
   })
 }

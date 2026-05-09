@@ -4,13 +4,14 @@ import { settleAndRecalculate } from "@/lib/pl-settle"
 
 const API_KEY = process.env.FOOTBALL_DATA_API_KEY!
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url)
     const now = new Date()
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split("T")[0]
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    const dateFrom = searchParams.get("from") ?? new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    const dateTo = searchParams.get("to") ?? new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
     const res = await fetch(
-      `https://api.football-data.org/v4/matches?competitions=PL&dateFrom=${yesterday}&dateTo=${tomorrow}`,
+      `https://api.football-data.org/v4/matches?competitions=PL&dateFrom=${dateFrom}&dateTo=${dateTo}`,
       { headers: { "X-Auth-Token": API_KEY }, cache: "no-store" }
     )
     if (!res.ok) throw new Error(`football-data API ${res.status}`)
@@ -29,7 +30,11 @@ export async function GET() {
         : { status: m.status }
 
       const result = await prisma.plMatch.updateMany({
-        where: { matchId: m.id },
+        where: {
+          matchId: m.id,
+          // Don't overwrite FINISHED matches that already have a score (may be manually corrected)
+          OR: [{ status: { not: "FINISHED" } }, { scoreHome: null }],
+        },
         data: updateData,
       })
       if (result.count > 0) updated++

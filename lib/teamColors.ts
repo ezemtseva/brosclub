@@ -1,3 +1,19 @@
+const TEAM_SHORT: Record<string, string> = {
+  "Manchester United": "Man. United",
+  "Manchester City": "Man. City",
+  "Borussia Dortmund": "Borussia D.",
+  "Eintracht Frankfurt": "Eintracht F.",
+  "Nottingham Forest": "Not. Forest",
+  "Atletico Madrid": "Atletico M.",
+  "Athletic Bilbao": "Athletic B.",
+  "Bayern Munich": "Bayern M.",
+  "Bayer Leverkusen": "Bayer L.",
+}
+
+export function shortenTeamName(name: string): string {
+  return TEAM_SHORT[name] ?? name
+}
+
 export const PLAYER_COLORS: Record<string, string> = {
   Vanilla: "#FA5053",
   Choco:   "#007FFF",

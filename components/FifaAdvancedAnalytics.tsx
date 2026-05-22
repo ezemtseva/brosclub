@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { PLAYER_COLORS } from "../lib/teamColors"
+import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -551,7 +551,7 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   const trendIcon = (t: TeamProjection["trend"]) =>
     t === "up" ? <span className="text-green-500 text-sm font-bold">↑</span>
     : t === "down" ? <span className="text-red-400 text-sm font-bold">↓</span>
-    : <span className="text-gray-400 text-sm">→</span>
+    : null
 
   return (
     <div className="flex flex-col gap-3">
@@ -632,19 +632,30 @@ function TeamLogoSmall({ team, teamLogos }: { team: string; teamLogos: Record<st
   )
 }
 
+function TeamNameUnderlined({ team, playerTeams, className }: { team: string; playerTeams: PlayerTeams; className?: string }) {
+  const player = getPlayerForTeam(team, playerTeams)
+  const color = player ? PLAYER_COLORS[player] : undefined
+  return (
+    <span className={`relative ${className ?? ""}`}>
+      {shortenTeamName(team)}
+      {color && <span className="absolute bottom-0 left-0 h-[2px] w-[0.85em]" style={{ backgroundColor: color }} />}
+    </span>
+  )
+}
+
 function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsData; playerTeams: PlayerTeams; teamLogos: Record<string, string> }) {
   const bestWinRateContent = records.bestWinRate
     ? <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <TeamLogoSmall team={records.bestWinRate.team} teamLogos={teamLogos} />
-          <span className="text-gray-800 truncate">{records.bestWinRate.team}</span>
+          <TeamNameUnderlined team={records.bestWinRate.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
         </div>
-        <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRate.winRate * 100)}%</div>
+        <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRate.winRate * 100)}%</div>
       </div>
     : <div className="text-gray-400 text-sm">No data</div>
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 records-outer">
       {/* Row 1: team records (5 cards; at 1024-1249px the 5th is hidden and moves to row 2) */}
       <div className="grid records-row-1 gap-3">
         <RecordCard
@@ -653,10 +664,10 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             ? <>
                 <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
                   <TeamLogoSmall team={records.biggestWin.match.teamA} teamLogos={teamLogos} />
-                  <span className="text-gray-800">{records.biggestWin.match.teamA}</span>
+                  <TeamNameUnderlined team={records.biggestWin.match.teamA} playerTeams={playerTeams} className="text-gray-800" />
                   <span className="font-bold text-gray-700">{records.biggestWin.match.scoreA}:{records.biggestWin.match.scoreB}</span>
                   <TeamLogoSmall team={records.biggestWin.match.teamB} teamLogos={teamLogos} />
-                  <span className="text-gray-800">{records.biggestWin.match.teamB}</span>
+                  <TeamNameUnderlined team={records.biggestWin.match.teamB} playerTeams={playerTeams} className="text-gray-800" />
                 </div>
                 <div className="text-[10px] text-gray-400 text-right">+{records.biggestWin.margin} goal margin</div>
               </>
@@ -668,10 +679,10 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             ? <>
                 <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
                   <TeamLogoSmall team={records.highestScoring.match.teamA} teamLogos={teamLogos} />
-                  <span className="text-gray-800">{records.highestScoring.match.teamA}</span>
+                  <TeamNameUnderlined team={records.highestScoring.match.teamA} playerTeams={playerTeams} className="text-gray-800" />
                   <span className="font-bold text-gray-700">{records.highestScoring.match.scoreA}:{records.highestScoring.match.scoreB}</span>
                   <TeamLogoSmall team={records.highestScoring.match.teamB} teamLogos={teamLogos} />
-                  <span className="text-gray-800">{records.highestScoring.match.teamB}</span>
+                  <TeamNameUnderlined team={records.highestScoring.match.teamB} playerTeams={playerTeams} className="text-gray-800" />
                 </div>
                 <div className="text-[10px] text-gray-400 text-right">{records.highestScoring.total} goals total</div>
               </>
@@ -684,9 +695,9 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <TeamLogoSmall team={records.bestAttack.team} teamLogos={teamLogos} />
-                    <span className="text-gray-800 truncate">{records.bestAttack.team}</span>
+                    <TeamNameUnderlined team={records.bestAttack.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestAttack.gf}</div>
+                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestAttack.gf}</div>
                 </div>
                 <div className="text-[10px] text-gray-400 text-right mt-0.5">goals scored</div>
               </>
@@ -699,9 +710,9 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <TeamLogoSmall team={records.bestDefense.team} teamLogos={teamLogos} />
-                    <span className="text-gray-800 truncate">{records.bestDefense.team}</span>
+                    <TeamNameUnderlined team={records.bestDefense.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestDefense.ga}</div>
+                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestDefense.ga}</div>
                 </div>
                 <div className="text-[10px] text-gray-400 text-right mt-0.5">goals conceded</div>
               </>
@@ -718,7 +729,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
           content={records.longestWinStreak
             ? <div className="flex items-start justify-between gap-2">
                 <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.longestWinStreak.player] }}>{records.longestWinStreak.player}</div>
-                <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestWinStreak.length}</div>
+                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestWinStreak.length}</div>
               </div>
             : <div className="text-gray-400 text-sm">No data</div>}
         />
@@ -727,7 +738,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
           content={records.mostCleanSheets
             ? <div className="flex items-start justify-between gap-2">
                 <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.mostCleanSheets.player] }}>{records.mostCleanSheets.player}</div>
-                <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.mostCleanSheets.count}</div>
+                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.mostCleanSheets.count}</div>
               </div>
             : <div className="text-gray-400 text-sm">No data</div>}
         />
@@ -736,7 +747,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
           content={records.longestUnbeaten
             ? <div className="flex items-start justify-between gap-2">
                 <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.longestUnbeaten.player] }}>{records.longestUnbeaten.player}</div>
-                <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestUnbeaten.length}</div>
+                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestUnbeaten.length}</div>
               </div>
             : <div className="text-gray-400 text-sm">No data</div>}
         />
@@ -746,7 +757,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             ? <>
                 <div className="flex items-start justify-between gap-2">
                   <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.bestWinRatePlayer.player] }}>{records.bestWinRatePlayer.player}</div>
-                  <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRatePlayer.winRate * 100)}%</div>
+                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRatePlayer.winRate * 100)}%</div>
                 </div>
                 <div className="text-[10px] text-gray-400 text-right mt-0.5">{records.bestWinRatePlayer.wins}W in {records.bestWinRatePlayer.games} games</div>
               </>
@@ -758,7 +769,7 @@ function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsD
             ? <>
                 <div className="flex items-start justify-between gap-2">
                   <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.bestFormPlayer.player] }}>{records.bestFormPlayer.player}</div>
-                  <div className="text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestFormPlayer.formPPG.toFixed(2)}</div>
+                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestFormPlayer.formPPG.toFixed(2)}</div>
                 </div>
                 <div className="text-[10px] text-gray-400 text-right mt-0.5">PPG last 5</div>
               </>
@@ -844,7 +855,7 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
       </section>
 
       {/* Predictions */}
-      <section>
+      {false && <section>
         <h3 className="text-[16px] font-bold mb-2">Predictions</h3>
         <div className="flex items-baseline gap-3 mb-4">
           <p className="text-xs text-gray-400">Based on H2H record (60%) and last 5 games form (40%)</p>
@@ -863,7 +874,7 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
           })()}
         </div>
         <PredictionSection predictions={predictions} />
-      </section>
+      </section>}
     </div>
   )
 }

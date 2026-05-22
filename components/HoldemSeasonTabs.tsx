@@ -888,12 +888,13 @@ export default function HoldemSeasonTabs({
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <PokerChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
@@ -914,13 +915,25 @@ export default function HoldemSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Panda sets the new record for the longest winning streak – 5 games",
+              "Panda is the first and only player to get second royal flush (and again hearts)",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <PokerChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>
@@ -991,7 +1004,7 @@ export default function HoldemSeasonTabs({
           <div className="bg-gray-100 p-8 rounded-lg text-center">
             <h3 className="text-lg font-medium text-gray-700 mb-4">Season {activeSeason} Archive</h3>
             <p className="text-gray-600">
-              This section will contain the standings, weekly progress chart, and highlights from the {activeSeason}{" "}
+              This section will contain the standings, season progress chart, and highlights from the {activeSeason}{" "}
               Holdem Poker season.
             </p>
           </div>

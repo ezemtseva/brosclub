@@ -10,8 +10,8 @@ const mainNavItems = [
   { href: "/fpl", label: "FPL" },
   { href: "/bets", label: "BETS" },
   { href: "/7oker", label: "7OKER" },
-  { href: "/gg", label: "GG" },
   { href: "/poker", label: "HOLDEM" },
+  { href: "/gg", label: "GG" },
   { href: "/brecords", label: "BRECORDS" },
 ]
 

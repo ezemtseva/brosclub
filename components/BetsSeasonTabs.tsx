@@ -420,8 +420,8 @@ function playerNameFromColor(color: string): string {
 const allTimeColumns = [
   { header: "#", accessor: "position" },
   { header: "Player", accessor: "player" },
-  { header: "Games", accessor: "games" },
-  { header: "Points", accessor: "points" },
+  { header: "G", accessor: "games" },
+  { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
 ]
 
@@ -532,17 +532,24 @@ export default function BetsSeasonTabs({
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            <span className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+              Vanilla guessed 0 match results in an EPL game week - what an idiot..
+            </span>
+          </div>
+
           <section className="mt-12">
             <PlBetsGameweek initialGameweek={initialGameweek} initialMatches={initialMatches} />
           </section>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <BetsChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
@@ -558,12 +565,13 @@ export default function BetsSeasonTabs({
           <DataTable columns={historicalColumns} data={historicalSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <BetsChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>

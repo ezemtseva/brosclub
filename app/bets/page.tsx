@@ -13,9 +13,9 @@ const PieChart = dynamicImport(() => import("../../components/PieChart"), { ssr:
 const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
-  { header: "Games", accessor: "games" },
-  { header: "Wins", accessor: "wins" },
-  { header: "Points", accessor: "points" },
+  { header: "G", accessor: "games" },
+  { header: "W", accessor: "wins" },
+  { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
   { header: "GW%", accessor: "winPercentage" },
   { header: "PS%", accessor: "outcomePercent" },

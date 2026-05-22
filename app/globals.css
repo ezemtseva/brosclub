@@ -154,7 +154,21 @@
   grid-template-columns: repeat(2, 1fr);
 }
 @media (max-width: 767px) {
-  .records-row-1 > *:nth-child(-n+2) { grid-column: span 2; }
+  .records-outer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .records-row-1,
+  .records-row-2 {
+    display: contents;
+  }
+  /* Biggest Win and Highest Scoring — each full width */
+  .records-row-1 > *:nth-child(1),
+  .records-row-1 > *:nth-child(2) { grid-column: span 2; }
+  /* Prevent grid items from overflowing */
+  .records-row-1 > *,
+  .records-row-2 > * { min-width: 0; overflow: hidden; }
 }
 
 /* 768–1023px: 6 cols, 2+3 layout per row */

@@ -112,6 +112,7 @@ export default function SevenOkerChart({
             ticks={Array.from({ length: 16 }, (_, i) => i * 5)}
             allowDecimals={false}
             allowDataOverflow
+            interval={0}
           />
 
           <YAxis

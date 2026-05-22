@@ -157,6 +157,19 @@ export default function SevenOkerSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Vanilla won the first game",
+              "Choco was the first one to win the game by golden round against Panda",
+              "Choco sets the longest winning streak - 5 games in a row",
+              "Vanilla scored the biggest amount of points in a single game - 294",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
           <section className="mt-12">
             <SevenOkerChartToggle entries={historicalSeasonChartData} pieChartData={historicalSeasonPieData} />
           </section>

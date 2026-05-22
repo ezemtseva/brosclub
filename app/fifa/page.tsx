@@ -4,7 +4,7 @@ import prisma from "../../lib/prisma"
 export const dynamic = 'force-dynamic'
 import FifaSeasonTabs from "../../components/FifaSeasonTabs"
 import AutoRefresh from "../../components/AutoRefresh"
-import { PLAYER_COLORS } from "../../lib/teamColors"
+import { PLAYER_COLORS, shortenTeamName } from "../../lib/teamColors"
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -17,6 +17,20 @@ const columns = [
   { header: "GC", accessor: "goalsConceded", width: "83px" },
   { header: "GD", accessor: "goalDifference", width: "83px" },
   { header: "P", accessor: "points", width: "83px" },
+  { header: "Form", accessor: "form", width: "140px" },
+]
+
+const mobileColumns = [
+  { header: "#", accessor: "position" },
+  { header: "Team", accessor: "team", width: "365px" },
+  { header: "G", accessor: "games", width: "83px" },
+  { header: "P", accessor: "points", width: "83px" },
+  { header: "W", accessor: "wins", width: "83px" },
+  { header: "D", accessor: "draws", width: "83px" },
+  { header: "L", accessor: "losses", width: "83px" },
+  { header: "GS", accessor: "goalsScored", width: "83px" },
+  { header: "GC", accessor: "goalsConceded", width: "83px" },
+  { header: "GD", accessor: "goalDifference", width: "83px" },
   { header: "Form", accessor: "form", width: "140px" },
 ]
 
@@ -209,7 +223,8 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
               className="rounded-full"
             />
             <span className="relative">
-              {teamName}
+              <span className="md:hidden">{shortenTeamName(teamName)}</span>
+              <span className="hidden md:inline">{teamName}</span>
               <span
                 className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
                 style={{ backgroundColor: getColor(entry.team) }}
@@ -810,6 +825,7 @@ export default async function FIFAPage() {
         historicalSeasonData={historicalSeasonData}
         historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
+        mobileColumns={mobileColumns}
         teamNames={teamNames}
         playerTeams={playerTeams}
         historicalPlayerTeams={{ Vanilla: teamColors2024.red, Choco: teamColors2024.blue, Panda: teamColors2024.green }}

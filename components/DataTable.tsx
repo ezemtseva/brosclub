@@ -10,6 +10,7 @@ interface Column {
 
 interface DataTableProps {
   columns: Column[]
+  mobileColumns?: Column[]
   data: any[]
   maxHeight?: string
   sortable?: boolean
@@ -17,6 +18,13 @@ interface DataTableProps {
 }
 
 const NON_SORTABLE = new Set(['position', 'team', 'bearo', 'player', 'form'])
+
+function fmtCell(val: any): any {
+  if (typeof val === 'number' && Number.isInteger(val) && Math.abs(val) >= 1000) {
+    return val.toLocaleString('de-DE')
+  }
+  return val
+}
 
 function parseValue(val: any): number {
   if (typeof val === 'number') return val
@@ -27,11 +35,22 @@ function parseValue(val: any): number {
   return 0
 }
 
-export default function DataTable({ columns, data, maxHeight = '400px', sortable = false, sortableColumns }: DataTableProps) {
+export default function DataTable({ columns, mobileColumns, data, maxHeight = '400px', sortable = false, sortableColumns }: DataTableProps) {
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  const [isMobile, setIsMobile] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const activeColumns = mobileColumns && isMobile ? mobileColumns : columns
 
   useEffect(() => {
     const el = scrollRef.current
@@ -77,11 +96,11 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
-            {columns.map((column, index) => (
+            {activeColumns.map((column, index) => (
               <th
                 key={index}
                 style={column.width ? { width: column.width } : undefined}
-                className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'px-4 text-left whitespace-nowrap' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
+                className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}
@@ -103,9 +122,9 @@ export default function DataTable({ columns, data, maxHeight = '400px', sortable
               onMouseEnter={() => setHoveredRow(rowIndex)}
               onMouseLeave={() => setHoveredRow(null)}
             >
-              {columns.map((column, colIndex) => (
-                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'px-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
-                  {row[column.accessor]}
+              {activeColumns.map((column, colIndex) => (
+                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
+                  {fmtCell(row[column.accessor])}
                 </td>
               ))}
             </tr>

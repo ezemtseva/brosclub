@@ -160,7 +160,7 @@ const sections = [
         <strong>✯</strong>{" "}
       </>,
       <>
-      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 11, 2024/25 <strong>✯</strong>{" "}
+      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 12, 2024/25 <strong>✯</strong>{" "}
     </>,
     ],
   },

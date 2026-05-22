@@ -27,10 +27,10 @@ function playerNameFromColor(color: string): string {
 const allTimeColumns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
-  { header: "Games", accessor: "games" },
-  { header: "Wins", accessor: "wins" },
+  { header: "G", accessor: "games" },
+  { header: "W", accessor: "wins" },
   { header: "5K", accessor: "fiveK" },
-  { header: "Points", accessor: "points" },
+  { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
   { header: "W%", accessor: "winPercentage" },
 ]
@@ -139,12 +139,13 @@ export default function GGSeasonTabs({
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <GGChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
@@ -165,13 +166,26 @@ export default function GGSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Vanilla sets the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa)",
+              "Vanilla sets the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa)",
+              "Vanilla struck the most 5Ks in a season - 12",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <GGChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>

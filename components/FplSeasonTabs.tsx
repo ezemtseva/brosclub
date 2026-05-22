@@ -384,8 +384,7 @@ const allTimeColumns = [
   { header: "#", accessor: "position" },
   { header: "Player", accessor: "player" },
   { header: "GW", accessor: "games" },
-  { header: "Wins", accessor: "wins" },
-  { header: "Points", accessor: "points" },
+  { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
 ]
 
@@ -480,12 +479,13 @@ export default function FplSeasonTabs({
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <FplChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
@@ -507,12 +507,13 @@ export default function FplSeasonTabs({
           <DataTable columns={columns} data={historicalSeasonData} />
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Weekly progress</h2>
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
                 <FplChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>

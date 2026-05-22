@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { PLAYER_COLORS, TEAM_ABBR } from "../lib/teamColors"
+import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 
 const TEAM_NAME_MAP: Record<string, string> = {
   "Nottingham Forrest": "Nottingham Forest",
@@ -61,13 +61,12 @@ function TeamCell({ team, playerTeams, teamLogos, align = "left" }: { team: stri
   const normalized = normalizeTeam(team)
   const color = getPlayerColor(team, playerTeams)
   const logo = teamLogos[team] || "/placeholder.svg"
-  const abbr = TEAM_ABBR[normalized]
   return (
-    <div className={`flex items-center space-x-2 whitespace-nowrap w-full ${align === "right" ? "flex-row-reverse space-x-reverse justify-center md:justify-start" : "justify-center md:justify-start"}`}>
+    <div className={`flex items-center space-x-2 whitespace-nowrap w-full ${align === "right" ? "flex-row-reverse space-x-reverse justify-start" : "justify-start"}`}>
       <Image src={logo} alt={normalized} width={24} height={24} className="rounded-full shrink-0" />
       <span className="relative">
         <span className="hidden md:inline">{normalized}</span>
-        <span className="inline md:hidden">{abbr ?? normalized}</span>
+        <span className="inline md:hidden">{shortenTeamName(normalized)}</span>
         <span className="absolute bottom-0 left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: color }} />
       </span>
     </div>

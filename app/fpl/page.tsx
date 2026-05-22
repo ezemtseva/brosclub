@@ -42,8 +42,8 @@ const columns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "player" },
   { header: "GW", accessor: "games" },
-  { header: "Wins", accessor: "wins" },
-  { header: "Points", accessor: "points" },
+  { header: "W", accessor: "wins" },
+  { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
   { header: "W%", accessor: "winPercent" },
 ]
@@ -199,6 +199,8 @@ export default async function FPLPage() {
 
     // Current season highlights (update as new highlights happen)
     const currentSeasonHighlights = [
+      { src: "/imgs/fpl/fpl2526-37.png", alt: "New FPL Season Highlight", caption: "Team of the week 37 - Choco" },
+      { src: "/imgs/fpl/fpl2526-36.png", alt: "New FPL Season Highlight", caption: "Team of the week 36 - Choco" },
       { src: "/imgs/fpl/fpl2526-35.png", alt: "New FPL Season Highlight", caption: "Team of the week 35 - Choco" },
       { src: "/imgs/fpl/fpl2526-34.png", alt: "New FPL Season Highlight", caption: "Team of the week 34 - Panda" },
       { src: "/imgs/fpl/fpl2526-33.png", alt: "New FPL Season Highlight", caption: "Team of the week 33 - Panda" },

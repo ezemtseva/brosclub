@@ -9,7 +9,7 @@ import AddMatchDialog from "./AddMatchDialog"
 import FifaSeasonConfig from "./FifaSeasonConfig"
 import FifaMatchResults from "./FifaMatchResults"
 import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
-import { PLAYER_COLORS } from "../lib/teamColors"
+import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -3452,6 +3452,7 @@ type FifaSeasonTabsProps = {
   historicalSeasonData: any[]
   historicalSeasonHighlights: any[]
   columns: any[]
+  mobileColumns?: any[]
   teamNames: string[]
   playerTeams: PlayerTeams
   historicalPlayerTeams: PlayerTeams
@@ -3467,6 +3468,7 @@ export default function FifaSeasonTabs({
   historicalSeasonData,
   historicalSeasonHighlights,
   columns,
+  mobileColumns,
   teamNames,
   playerTeams: initialPlayerTeams,
   historicalPlayerTeams,
@@ -3514,6 +3516,19 @@ export default function FifaSeasonTabs({
     { header: "P", accessor: "points" },
     { header: "W%", accessor: "winPercentage" },
   ]
+  const allTimeColumnsMobile = [
+    { header: "#", accessor: "position" },
+    { header: "Team", accessor: "team" },
+    { header: "G", accessor: "games" },
+    { header: "P", accessor: "points" },
+    { header: "W", accessor: "wins" },
+    { header: "D", accessor: "draws" },
+    { header: "L", accessor: "losses" },
+    { header: "GS", accessor: "goalsScored" },
+    { header: "GC", accessor: "goalsConceded" },
+    { header: "GD", accessor: "goalDifference" },
+    { header: "W%", accessor: "winPercentage" },
+  ]
 
   const allTimePlayerColumns = [
     { header: "#", accessor: "position" },
@@ -3526,6 +3541,19 @@ export default function FifaSeasonTabs({
     { header: "GC", accessor: "goalsConceded" },
     { header: "GD", accessor: "goalDifference" },
     { header: "P", accessor: "points" },
+    { header: "W%", accessor: "winPercentage" },
+  ]
+  const allTimePlayerColumnsMobile = [
+    { header: "#", accessor: "position" },
+    { header: "Player", accessor: "player" },
+    { header: "G", accessor: "games" },
+    { header: "P", accessor: "points" },
+    { header: "W", accessor: "wins" },
+    { header: "D", accessor: "draws" },
+    { header: "L", accessor: "losses" },
+    { header: "GS", accessor: "goalsScored" },
+    { header: "GC", accessor: "goalsConceded" },
+    { header: "GD", accessor: "goalDifference" },
     { header: "W%", accessor: "winPercentage" },
   ]
 
@@ -3748,7 +3776,10 @@ export default function FifaSeasonTabs({
               height={24}
               className="rounded-full"
             />
-            <span>{entry.teamName}</span>
+            <span>
+              <span className="md:hidden">{shortenTeamName(entry.teamName)}</span>
+              <span className="hidden md:inline">{entry.teamName}</span>
+            </span>
           </div>
         ),
         games: entry.games,
@@ -3785,7 +3816,8 @@ export default function FifaSeasonTabs({
             className="rounded-full"
           />
           <span className="relative">
-            {teamName}
+            <span className="md:hidden">{shortenTeamName(teamName)}</span>
+            <span className="hidden md:inline">{teamName}</span>
             <span
               className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
               style={{ backgroundColor: entry.color || getTeamColor(entry.team) }}
@@ -3835,7 +3867,7 @@ export default function FifaSeasonTabs({
                 </button>
               </div>
               <div className="fifa-standings-table">
-                <DataTable columns={columns} data={currentSeasonData} />
+                <DataTable columns={columns} mobileColumns={mobileColumns} data={currentSeasonData} />
               </div>
             </div>
 
@@ -3850,6 +3882,7 @@ export default function FifaSeasonTabs({
                     value={resultsSearch}
                     onChange={(e) => setResultsSearch(e.target.value)}
                     className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:italic"
+                    style={{ width: "120px", height: "30px" }}
                   />
                   <button
                     onClick={() => setDialogOpen(true)}
@@ -3874,7 +3907,7 @@ export default function FifaSeasonTabs({
               onClick={() => setAnalyticsOpen((v) => !v)}
               className="flex items-center gap-2 w-full text-left mb-6"
             >
-              <h2 className="text-title font-bold">Insights</h2>
+              <h2 className="text-title font-bold">Season Insights</h2>
               <span className="text-gray-400 text-sm">{analyticsOpen ? "▲" : "▼"}</span>
             </button>
             {analyticsOpen && <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />}
@@ -3891,10 +3924,23 @@ export default function FifaSeasonTabs({
     } else if (activeSeason === "2024/25") {
       // For the 2024/25 season, use the historical data from fifaEntry2024
       const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
+      const mobileColumnsWithoutForm = mobileColumns ? mobileColumns.filter((c: any) => c.accessor !== "form") : undefined
       return (
         <>
           <div className="fifa-standings-table">
-            <DataTable columns={columnsWithoutForm} data={historicalSeasonData} />
+            <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={historicalSeasonData} />
+          </div>
+
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Vanilla sets the new highest win rate for a team in a season (Liverpool) – 95.65%",
+              "Liverpool of Vanilla has won the 3rd cup",
+              "Vanilla sets the new highest win rate in a season – 73.21%",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
           </div>
 
           <section className="mt-12">
@@ -3912,12 +3958,12 @@ export default function FifaSeasonTabs({
         <>
           <h2 className="text-title font-bold mb-6">All Time Standings</h2>
           <div className="fifa-standings-table">
-            <DataTable columns={allTimeColumns} data={allTimeData} sortable />
+            <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">All Time by Player</h2>
             <div className="fifa-standings-table">
-              <DataTable columns={allTimePlayerColumns} data={allTimePlayerData} />
+              <DataTable columns={allTimePlayerColumns} mobileColumns={allTimePlayerColumnsMobile} data={allTimePlayerData} />
             </div>
           </section>
         </>
@@ -3929,6 +3975,7 @@ export default function FifaSeasonTabs({
       const seasonDescription = seasonData && "description" in seasonData ? seasonData.description : undefined
       const seasonHighlights = seasonData && "highlights" in seasonData ? seasonData.highlights : undefined
       const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
+      const mobileColumnsWithoutForm = mobileColumns ? mobileColumns.filter((c: any) => c.accessor !== "form") : undefined
 
       return (
         <>
@@ -3936,7 +3983,7 @@ export default function FifaSeasonTabs({
 
           <div className="fifa-standings-table">
             {pastSeasonData.length > 0 ? (
-              <DataTable columns={columnsWithoutForm} data={pastSeasonData} />
+              <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={pastSeasonData} />
             ) : (
               <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
             )}
@@ -3949,7 +3996,7 @@ export default function FifaSeasonTabs({
                 {seasonHighlights.map((highlight, index) => (
                   <div
                     key={index}
-                    className="inline-block bg-amber-50 text-amber-800 px-4 py-2 rounded-full text-sm font-medium border border-amber-100"
+                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
                   >
                     {highlight}
                   </div>

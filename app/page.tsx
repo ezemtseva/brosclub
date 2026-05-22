@@ -34,6 +34,7 @@ const clubMembers = [
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
+  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "-", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -295,7 +296,7 @@ export default async function Home() {
     <>
       {(currentMonth === 12 || currentMonth === 1) && <Snowfall />}
       <div className="max-w-6xl mx-auto px-4 py-4 md:py-8">
-        <section className="mb-6 md:mb-12">
+        <section className="mb-3 md:mb-6">
           <h1 className="text-title font-bold mb-4 relative inline-block">
             Welcome to Bearos Club
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
@@ -353,11 +354,17 @@ export default async function Home() {
                 key={index}
                 className="bg-gray-50 shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
               >
-                <h3 className="text-xl font-semibold mb-2">{summary.title}</h3>
-                <p className="text-gray-600 mb-4">{summary.content}</p>
-                <Link href={summary.link} className="text-blue-500 hover:underline">
-                  Full standings
-                </Link>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-semibold">{summary.title}</h3>
+                  <Link href={summary.link} className="text-blue-500 hover:text-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                  </Link>
+                </div>
+                <p className="text-gray-600">{summary.content}</p>
               </div>
             ))}
           </div>

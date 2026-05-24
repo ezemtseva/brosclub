@@ -23,14 +23,14 @@ const sections = [
     records: [
       "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes, 23-24.09.2017",
       <>
-        Liverpool of <UnderlinedPlayer name="Vanilla"/> has won the cup 3 times – 2020/21, 2021/22, 2024/25 <strong>✯</strong>
+        Liverpool of <UnderlinedPlayer name="Vanilla"/> has won the cup 3 times – 2020/21, 2021/22, 2024/25 
       </>,
       <>
-        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate in a season – 73.21%, 2024/25 <strong>✯</strong>
+        <UnderlinedPlayer name="Vanilla" /> holds the highest win rate in a season – 73.21%, 2024/25 
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the highest win rate for a team in a season (Liverpool) –
-        95.65%, 2024/25 <strong>✯</strong>
+        95.65%, 2024/25
       </>,
       <>
         <UnderlinedPlayer name="Choco" /> is the first to score a goal by a goalkeeper (Atletico Madrid), 2017
@@ -43,7 +43,7 @@ const sections = [
       </>,
       <>
       <UnderlinedPlayer name="Vanilla" /> holds the longest winning streak for a team (Liverpool) – 22 matches,
-      2024/25 <strong>✯</strong>
+      2024/25 
     </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the longest unbeaten streak for a team (Barcelona) – 26 matches,
@@ -72,6 +72,9 @@ const sections = [
     title: "Bets",
     records: [
       <>
+        <UnderlinedPlayer name="Choco" /> and <UnderlinedPlayer name="Panda" /> scored the same number of points in a season – 240, 2025/26 <strong>✯</strong>
+      </>,
+      <>
         <UnderlinedPlayer name="Choco" /> scored the most points in a season – 299, 2023/24
       </>,
       <>
@@ -89,7 +92,7 @@ const sections = [
         2016
       </>,
       <>
-      <UnderlinedPlayer name="Vanilla" /> guessed 0 match results in an EPL game week - what an idiot.., 2025/26{" "}
+      <UnderlinedPlayer name="Vanilla" /> guessed 0 match results in an EPL game week - 2025/26{" "}
       <strong>✯</strong>{" "}
     </>,
     ],
@@ -98,19 +101,19 @@ const sections = [
     title: "7oker",
     records: [
       <>
-        <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 <strong>✯</strong>{" "}
+        <UnderlinedPlayer name="Vanilla" /> won the first game, 29.03.2025 {" "}
       </>,
       <>
-      <UnderlinedPlayer name="Panda" /> won the first season, it took him only 71 games to get 100 points <strong>✯</strong>{" "}
+      <UnderlinedPlayer name="Panda" /> won the first season, it took him only 71 games to get 100 points {" "}
     </>,
     <>
-  <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 <strong>✯</strong>{" "}
+  <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 {" "}
 </>,
   <>
-  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 <strong>✯</strong>{" "}
+  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 {" "}
 </>,
 <>
-  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 <strong>✯</strong>{" "}
+  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 {" "}
 </>,
     ],
   },
@@ -127,7 +130,7 @@ const sections = [
       "The longest poker game lasted 1 hour and 41 minutes, 2015",
       <>
         <UnderlinedPlayer name="Panda" /> holds the record for the longest winning streak – 5 games, 10th season, 2025{" "}
-        <strong>✯</strong>{" "}
+        {" "}
       </>,
       <>
         <UnderlinedPlayer name="Choco" /> is the first player to get a straight flush and four aces
@@ -140,7 +143,7 @@ const sections = [
       </>,
       <>
         <UnderlinedPlayer name="Panda" /> is the first and only player to get second royal flush (again hearts), 2025{" "}
-        <strong>✯</strong>{" "}
+        {" "}
       </>,
     ],
   },
@@ -149,18 +152,18 @@ const sections = [
     records: [
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4
-        m, Plaza Mayor (Arequipa), 2024/25 <strong>✯</strong>{" "}
+        m, Plaza Mayor (Arequipa), 2024/25 {" "}
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was unknown –
-        910 m, Monastery of Santa Catalina (Arequipa), 2024/25 <strong>✯</strong>{" "}
+        910 m, Monastery of Santa Catalina (Arequipa), 2024/25 {" "}
       </>,
       <>
         <UnderlinedPlayer name="Vanilla" /> hits first 5k in the competition - 129 m, Belgrade 2024/25{" "}
-        <strong>✯</strong>{" "}
+        {" "}
       </>,
       <>
-      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 12, 2024/25 <strong>✯</strong>{" "}
+      <UnderlinedPlayer name="Vanilla" /> struck the most 5Ks in a season - 12, 2024/25 {" "}
     </>,
     ],
   },

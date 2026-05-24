@@ -28,12 +28,15 @@ const playerColors: Record<string, string> = PLAYER_COLORS
 function processSeasonData(latestEntries: any[], betStats?: Record<string, { total: number; outcome: number; exact: number }>) {
   const totalWins = latestEntries.reduce((sum: number, entry: any) => sum + entry.wins, 0)
 
-  return latestEntries
-    .sort((a: any, b: any) => b.points - a.points)
-    .map((entry: any, index: number) => {
+  const sorted = [...latestEntries].sort((a: any, b: any) => b.points - a.points)
+  const topPoints = sorted[0]?.points ?? 0
+
+  return sorted.map((entry: any, index: number) => {
       const stats = betStats?.[entry.player]
+      const tied = entry.points === topPoints
+      const rank = tied ? 1 : sorted.filter((e: any) => e.points > entry.points).length + 1
       return {
-        position: index + 1,
+        position: rank,
         player: (
           <span className="relative">
             {entry.player}
@@ -46,7 +49,7 @@ function processSeasonData(latestEntries: any[], betStats?: Record<string, { tot
         games: entry.games,
         wins: entry.wins,
         points: entry.points,
-        difference: index === 0 ? "-" : (latestEntries[index - 1].points - entry.points).toString(),
+        difference: tied ? "-" : (topPoints - entry.points).toString(),
         winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : "0%",
         outcomePercent: stats && stats.total > 0 ? `${((stats.outcome / stats.total) * 100).toFixed(1)}%` : "—",
         exactPercent: stats && stats.total > 0 ? `${((stats.exact / stats.total) * 100).toFixed(1)}%` : "—",

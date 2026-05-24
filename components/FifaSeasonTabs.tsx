@@ -604,8 +604,8 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
     highlights: [
-      "Vanilla holds the highest win rate for a team in a season (Newcastle, Marseille) – 89.29%",
-      "Vanilla holds the longest unbeaten streak for a team (Barcelona) – 26 matches",
+      "Vanilla sets the highest win rate for a team in a season (Newcastle, Marseille) – 89.29%",
+      "Vanilla sets the longest unbeaten streak for a team (Barcelona) – 26 matches",
       "The smallest gap between 1st and 2nd place",
     ],
   },
@@ -1870,7 +1870,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
     highlights: [
-      "Vanilla holds the highest win rate for a season – 70.7%",
+      "Vanilla sets the highest win rate for a season – 70.7%",
       "Choco was the fastest to score 100 goals in a tournament – 23 rounds (Chelsea)",
       "The largest gap between 1st and 2nd place",
     ],

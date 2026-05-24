@@ -345,6 +345,12 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 3",
     },
     {
+      videoId: "dU5Jzo3WXtE",
+      title: "Gyökeres",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 15",
+    },
+    {
       videoId: "mdKX6GLnuqo",
       title: "Gakpo",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

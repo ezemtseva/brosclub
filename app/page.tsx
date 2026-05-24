@@ -20,13 +20,13 @@ const clubMembers = [
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["🏅 FIFA - 2", "🏅 BETS - 2"],
+    achievements: ["🏅 FIFA - 2", "🏅 BETS - 3", "🏅 FPL - 1"],
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["🏅 HOLDEM - 8", "🏅 BETS - 7", "🏅 FPL - 5", "🏅 7OKER - 1"],
+    achievements: ["🏅 HOLDEM - 8", "🏅 BETS - 8", "🏅 FPL - 5", "🏅 7OKER - 1"],
     bgColor: "bg-green-100",
   },
 ]
@@ -34,7 +34,7 @@ const clubMembers = [
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
-  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "-", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -140,26 +140,6 @@ async function getLatest7okerLeader() {
   }
 }
 
-async function getLatestBetsLeader() {
-  try {
-    const latestWeek = await prisma.betsEntry.findFirst({
-      orderBy: { week: "desc" },
-      select: { week: true },
-    })
-
-    if (!latestWeek) return null
-
-    const leader = await prisma.betsEntry.findFirst({
-      where: { week: latestWeek.week },
-      orderBy: { points: "desc" },
-    })
-
-    return leader
-  } catch (error) {
-    console.error("Error fetching Bets leader:", error)
-    return null
-  }
-}
 
 async function getLatestFifaLeader() {
   try {
@@ -202,20 +182,35 @@ const UnderlinedPlayer = ({ name, isFifaTeam = false }: { name: string; isFifaTe
   )
 }
 
+const HistoryCell = ({ value }: { value: string }) => {
+  if (!value.includes(" & ")) return <UnderlinedPlayer name={value} />
+  const parts = value.split(" & ")
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i}>
+          {i > 0 && " & "}
+          <UnderlinedPlayer name={part} />
+        </span>
+      ))}
+    </>
+  )
+}
+
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
   const ggLeader = await getLatestGgLeader()
   const pokerLeader = await getLatestPokerLeader()
   const sevenOkerLeader = await getLatest7okerLeader()
-  const betsLeader = await getLatestBetsLeader()
   const fifaLeader = await getLatestFifaLeader()
 
   const fplSummary = {
     title: "FPL",
+    champion: !!(fplLeader && fplLeader.points > 0),
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={fplLeader.player} /> with {fplLeader.points} points
+          Champion: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -225,10 +220,11 @@ export default async function Home() {
 
   const ggSummary = {
     title: "GeoGuessr",
+    champion: false,
     content:
       ggLeader && ggLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={ggLeader.player} /> with {ggLeader.points} points
+          Leader: <UnderlinedPlayer name={ggLeader.player} /> - {ggLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -238,10 +234,11 @@ export default async function Home() {
 
   const holdemSummary = {
     title: "Holdem",
+    champion: false,
     content:
       pokerLeader && pokerLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> with {pokerLeader.points} points
+          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> - {pokerLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -251,10 +248,11 @@ export default async function Home() {
 
   const sevenOkerSummary = {
     title: "7oker",
+    champion: false,
     content:
       sevenOkerLeader && sevenOkerLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> with {sevenOkerLeader.points} points
+          Leader: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -264,23 +262,22 @@ export default async function Home() {
 
   const betsSummary = {
     title: "Bets",
-    content:
-      betsLeader && betsLeader.points > 0 ? (
-        <>
-          Leader: <UnderlinedPlayer name={betsLeader.player} /> with {betsLeader.points} points
-        </>
-      ) : (
-        "Will be started soon"
-      ),
+    champion: true,
+    content: (
+      <>
+        Champions: <UnderlinedPlayer name="Choco" /> & <UnderlinedPlayer name="Panda" /> - 240 points
+      </>
+    ),
     link: "/bets",
   }
 
   const fifaSummary = {
     title: "FIFA",
+    champion: false,
     content:
       fifaLeader && fifaLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> with {fifaLeader.points} points
+          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> - {fifaLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -323,7 +320,6 @@ export default async function Home() {
                       </div>
                       <div className="flex flex-col items-center mt-auto">
                         <h2 className="text-[17.5px] md:text-title font-semibold mb-2">{member.name}</h2>
-                        <p className="text-sm text-gray-300 italic">Click to see cups</p>
                       </div>
                     </div>
                   }
@@ -337,7 +333,6 @@ export default async function Home() {
                           </li>
                         ))}
                       </ul>
-                      <p className="text-sm text-gray-300 mt-3 md:mt-6 italic">Click to flip back</p>
                     </>
                   }
                 />
@@ -352,7 +347,7 @@ export default async function Home() {
             {summaries.map((summary, index) => (
               <div
                 key={index}
-                className="bg-gray-50 shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
+                className={`shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${summary.champion ? "bg-amber-50" : "bg-gray-50"}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-semibold">{summary.title}</h3>
@@ -373,19 +368,24 @@ export default async function Home() {
         <section className="mb-12">
           <h2 className="text-title font-bold mb-6">History</h2>
           <div className="history-table overflow-x-auto">
-            <table className="min-w-full bg-white shadow-md rounded-lg">
+            <table className="min-w-full bg-white shadow-md rounded-lg table-fixed">
+              <colgroup>
+                <col className="w-[100px]" />
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+              </colgroup>
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Year</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FIFA</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FPL</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Bets</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
-                    Holdem
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
-                    7oker
-                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Holdem</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">7oker</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">GG</th>
                 </tr>
               </thead>
@@ -397,22 +397,22 @@ export default async function Home() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.fifa} />
+                      <HistoryCell value={row.fifa} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.fpl} />
+                      <HistoryCell value={row.fpl} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.bets} />
+                      <HistoryCell value={row.bets} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.poker} />
+                      <HistoryCell value={row.poker} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.sevenOker} />
+                      <HistoryCell value={row.sevenOker} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <UnderlinedPlayer name={row.gg} />
+                      <HistoryCell value={row.gg} />
                     </td>
                   </tr>
                 ))}

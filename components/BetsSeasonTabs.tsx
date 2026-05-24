@@ -533,9 +533,14 @@ export default function BetsSeasonTabs({
           <DataTable columns={columns} data={currentSeasonData} />
 
           <div className="flex flex-wrap gap-3 mt-6">
-            <span className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-              Vanilla guessed 0 match results in an EPL game week - what an idiot..
-            </span>
+            {[
+              "Choco and Panda scored the same number of points in the season",
+              "Vanilla guessed 0 match results in an EPL game week",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
           </div>
 
           <section className="mt-12">

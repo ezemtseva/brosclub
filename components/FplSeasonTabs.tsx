@@ -478,6 +478,12 @@ export default function FplSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={currentSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            <span className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+              Choco has won the first title
+            </span>
+          </div>
+
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">

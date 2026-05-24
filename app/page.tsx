@@ -20,13 +20,13 @@ const clubMembers = [
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["🏅 FIFA - 2", "🏅 BETS - 3", "🏅 FPL - 1"],
+    achievements: ["🏅 FIFA - 2", "🏅 FPL - 1", "🏅 BETS - 3"],
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["🏅 HOLDEM - 8", "🏅 BETS - 8", "🏅 FPL - 5", "🏅 7OKER - 1"],
+    achievements: ["🏅 HOLDEM - 8", "🏅 FPL - 5", "🏅 BETS - 8", "🏅 7OKER - 1"],
     bgColor: "bg-green-100",
   },
 ]
@@ -304,11 +304,11 @@ export default async function Home() {
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {clubMembers.map((member, index) => (
-              <div key={index} className="h-[210px] md:h-[300px]">
+              <div key={index} className="h-[210px] md:h-[270px]">
                 <FlippableCard
                   bgColor={member.bgColor}
                   frontContent={
-                    <div className="flex flex-col justify-between h-full w-full">
+                    <div className="card-front-inner flex flex-col h-full w-full">
                       <div className="flex flex-col items-center">
                         <Image
                           src={member.image || "/placeholder.svg"}
@@ -318,14 +318,14 @@ export default async function Home() {
                           className="rounded-full object-cover w-32 h-32 md:w-48 md:h-48"
                         />
                       </div>
-                      <div className="flex flex-col items-center mt-auto">
+                      <div className="card-front-name flex flex-col items-center">
                         <h2 className="text-[17.5px] md:text-title font-semibold mb-2">{member.name}</h2>
                       </div>
                     </div>
                   }
                   backContent={
-                    <>
-                      <h2 className="text-xl font-semibold mb-3 md:mb-6">Cups of {member.name}:</h2>
+                    <div className="w-full md:h-[190px] flex flex-col items-center">
+                      <h2 className="text-xl font-semibold mb-3 md:mb-6">{member.achievements.reduce((sum, a) => sum + (parseInt(a.split("- ")[1]) || 0), 0)} cups of {member.name}:</h2>
                       <ul className="list-none pl-0 text-sm text-gray-600">
                         {member.achievements.map((achievement, i) => (
                           <li key={i} className="mb-1 md:mb-2 text-sm md:text-base">
@@ -333,7 +333,7 @@ export default async function Home() {
                           </li>
                         ))}
                       </ul>
-                    </>
+                    </div>
                   }
                 />
               </div>
@@ -368,9 +368,9 @@ export default async function Home() {
         <section className="mb-12">
           <h2 className="text-title font-bold mb-6">History</h2>
           <div className="history-table overflow-x-auto">
-            <table className="min-w-full bg-white shadow-md rounded-lg table-fixed">
+            <table className="history-table-inner min-w-full bg-white shadow-md rounded-lg table-fixed">
               <colgroup>
-                <col className="w-[100px]" />
+                <col className="w-[14%]" />
                 <col className="w-[14%]" />
                 <col className="w-[14%]" />
                 <col className="w-[14%]" />

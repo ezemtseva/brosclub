@@ -236,3 +236,20 @@
   transform: rotateY(180deg);
 }
 
+.card-front-inner {
+  justify-content: space-between;
+}
+
+.card-front-name {
+  margin-top: auto;
+}
+
+@media (min-width: 768px) {
+  .card-front-inner {
+    justify-content: flex-start;
+  }
+  .card-front-name {
+    margin-top: 1rem;
+  }
+}
+

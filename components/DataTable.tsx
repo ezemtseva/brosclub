@@ -92,8 +92,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
     : data
 
   return (
-    <div className="rounded-lg overflow-hidden">
-    <div ref={scrollRef} className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div ref={scrollRef} className="overflow-x-auto rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
@@ -132,7 +131,6 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
           ))}
         </tbody>
       </table>
-    </div>
     </div>
   )
 }

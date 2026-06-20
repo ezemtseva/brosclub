@@ -292,8 +292,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
       {matches.length === 0 ? (
         <p className="text-sm text-gray-400">No fixtures for GW{gameweek}. Click <strong>Sync</strong> to fetch.</p>
       ) : (
-        <div className="rounded-lg overflow-hidden">
-        <div className={`overflow-x-auto transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
+        <div className={`overflow-x-auto rounded-lg transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
           <table className="min-w-max w-full bg-white">
             <thead>
               <tr className="bg-gray-200 text-gray-600 uppercase text-[12.25px] leading-normal h-[45px]">
@@ -377,7 +376,6 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
               })}
             </tbody>
           </table>
-        </div>
         </div>
       )}
     </div>

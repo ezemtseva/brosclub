@@ -367,7 +367,8 @@ export default async function Home() {
 
         <section className="mb-12">
           <h2 className="text-title font-bold mb-6">History</h2>
-          <div className="history-table overflow-x-auto">
+          <div className="history-table rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
             <table className="history-table-inner min-w-full bg-white shadow-md rounded-lg table-fixed">
               <colgroup>
                 <col className="w-[14%]" />
@@ -418,6 +419,7 @@ export default async function Home() {
                 ))}
               </tbody>
             </table>
+          </div>
           </div>
         </section>
       </div>

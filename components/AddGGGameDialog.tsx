@@ -12,7 +12,7 @@ interface AddGGGameDialogProps {
 
 export default function AddGGGameDialog({ onSuccess, onClose }: AddGGGameDialogProps) {
   const [points, setPoints] = useState<Record<Player, string>>({ Panda: "", Choco: "", Vanilla: "" })
-  const [fiveK, setFiveK] = useState<Record<Player, string>>({ Panda: "", Choco: "", Vanilla: "" })
+  const [fiveK, setFiveK] = useState<Record<Player, string>>({ Panda: "0", Choco: "0", Vanilla: "0" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
 

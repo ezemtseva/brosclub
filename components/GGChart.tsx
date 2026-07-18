@@ -69,8 +69,8 @@ export default function GGChart({ entries }: GGChartProps) {
           />
           <YAxis 
             type="number"
-            domain={[0, 375]}
-            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375]}
+            domain={[0, 75]}
+            ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]}
             interval={0}
             width={40}
           />

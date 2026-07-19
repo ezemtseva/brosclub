@@ -58,14 +58,26 @@ async function getLatestFplLeader() {
       select: { week: true },
     })
 
-    if (!latestWeek) return null
+    if (latestWeek) {
+      const leader = await prisma.fplEntry.findFirst({
+        where: { week: latestWeek.week },
+        orderBy: { points: "desc" },
+      })
+      if (leader) return { ...leader, isArchive: false }
+    }
 
-    const leader = await prisma.fplEntry.findFirst({
-      where: { week: latestWeek.week },
+    // Fallback: show 2025/26 champion from archive
+    const latestArchiveWeek = await (prisma as any).fplEntry2526.findFirst({
+      orderBy: { week: "desc" },
+      select: { week: true },
+    })
+    if (!latestArchiveWeek) return null
+
+    const archiveLeader = await (prisma as any).fplEntry2526.findFirst({
+      where: { week: latestArchiveWeek.week },
       orderBy: { points: "desc" },
     })
-
-    return leader
+    return archiveLeader ? { ...archiveLeader, isArchive: true } : null
   } catch (error) {
     console.error("Error fetching FPL leader:", error)
     return null
@@ -210,7 +222,7 @@ export default async function Home() {
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
+          {fplLeader.isArchive ? "2025/26 Champion" : "Champion"}: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"

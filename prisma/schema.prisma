@@ -79,6 +79,18 @@ model BetsEntry {
   @@unique([week, player])
 }
 
+model BetsEntry2526 {
+  id     Int    @id @default(autoincrement())
+  week   Int
+  player String
+  games  Int
+  wins   Int
+  points Int
+
+  @@unique([week, player])
+  @@map("betsEntry2526")
+}
+
 model BetsEntry2024 {
   id     Int    @id @default(autoincrement())
   week   Int

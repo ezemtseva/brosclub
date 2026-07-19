@@ -481,7 +481,11 @@ export default function FplSeasonTabs({
   // Render content based on active tab
   const renderContent = () => {
     if (activeSeason === "2026/27") {
-      // Current season — live data from fplEntry
+      if (currentSeasonData.length === 0 || currentSeasonData.every(r => r.games === 0)) {
+        return (
+          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August 21</p>
+        )
+      }
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>

@@ -15,6 +15,7 @@ const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
 // Define the seasons array with all the required seasons - added 2025/26 as first tabs
 const seasons = [
+  "2026/27",
   "2025/26",
   "2024/25",
   "2023/24",
@@ -403,6 +404,9 @@ type BetsSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
+  season2526Data: any[]
+  season2526ChartData: any[]
+  season2526PieData: any[]
   historicalSeasonData: any[]
   historicalSeasonChartData: any[]
   historicalSeasonPieData: any[]
@@ -440,6 +444,9 @@ export default function BetsSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
+  season2526Data,
+  season2526ChartData,
+  season2526PieData,
   historicalSeasonData,
   historicalSeasonChartData,
   historicalSeasonPieData,
@@ -447,7 +454,7 @@ export default function BetsSeasonTabs({
   initialGameweek,
   initialMatches,
 }: BetsSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -465,6 +472,7 @@ export default function BetsSeasonTabs({
     // From DB seasons: max games/points per player from chart data, wins from standings
     const dbSets = [
       { chartData: currentSeasonChartData, standings: currentSeasonData },
+      { chartData: season2526ChartData, standings: season2526Data },
       { chartData: historicalSeasonChartData, standings: historicalSeasonData },
     ]
     for (const { chartData, standings } of dbSets) {
@@ -523,25 +531,18 @@ export default function BetsSeasonTabs({
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2025/26") {
-      // For the current season (2025/26), use the live data from betsEntry
+    if (activeSeason === "2026/27") {
+      if (currentSeasonData.length === 0 || currentSeasonData.every(r => r.games === 0)) {
+        return (
+          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August 21</p>
+        )
+      }
       return (
         <>
           <div className="mb-6">
             <h2 className="text-title font-bold">Standings</h2>
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Choco and Panda scored the same number of points in the season",
-              "Vanilla guessed 0 match results in an EPL game week",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
 
           <section className="mt-12">
             <PlBetsGameweek initialGameweek={initialGameweek} initialMatches={initialMatches} />
@@ -561,8 +562,39 @@ export default function BetsSeasonTabs({
           </section>
         </>
       )
+    } else if (activeSeason === "2025/26") {
+      const columns2526 = columns.filter((col) => col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns2526} data={season2526Data} />
+
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Choco and Panda scored the same number of points in the season",
+              "Vanilla guessed 0 match results in an EPL game week",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
+          <section className="mt-12">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <BetsChart entries={season2526ChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <PieChart data={season2526PieData} />
+              </div>
+            </div>
+          </section>
+        </>
+      )
     } else if (activeSeason === "2024/25") {
-      // For the 2024/25 season, use the historical data from betsEntry2024
       const historicalColumns = columns.filter((col) => col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
       return (
         <>

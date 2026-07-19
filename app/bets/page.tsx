@@ -93,16 +93,27 @@ async function getCurrentSeasonData() {
   return { entries, latestEntries }
 }
 
+async function getSeason2526Data() {
+  try {
+    const entries = await (prisma as any).betsEntry2526.findMany({
+      orderBy: [{ week: "asc" }, { player: "asc" }],
+    })
+    const latestWeek = entries.length > 0 ? Math.max(...entries.map((entry: any) => entry.week)) : 0
+    const latestEntries = entries.filter((entry: any) => entry.week === latestWeek)
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching 2025/26 bets data:", error)
+    return { entries: [], latestEntries: [] }
+  }
+}
+
 async function getHistoricalSeasonData() {
   try {
-    // Use dynamic access to the model
     const entries = await (prisma as any).betsEntry2024.findMany({
       orderBy: [{ week: "asc" }, { player: "asc" }],
     })
-
     const latestWeek = entries.length > 0 ? Math.max(...entries.map((entry: any) => entry.week)) : 0
     const latestEntries = entries.filter((entry: any) => entry.week === latestWeek)
-
     return { entries, latestEntries }
   } catch (error) {
     console.error("Error fetching historical bets data:", error)
@@ -113,17 +124,15 @@ async function getHistoricalSeasonData() {
 async function getInitialGameweek(): Promise<number> {
   const grouped = await prisma.plMatch.groupBy({
     by: ["gameweek"],
-    where: { season: "2025/26", status: { notIn: ["FINISHED", "POSTPONED"] } },
+    where: { season: "2026/27", status: { notIn: ["FINISHED", "POSTPONED"] } },
     _count: { id: true },
   })
 
-  // Skip GWs with only 1 rescheduled match — find the lowest active GW with ≥2 non-finished
   const active = grouped.filter(g => g._count.id >= 2).sort((a, b) => a.gameweek - b.gameweek)
   if (active.length > 0) return active[0].gameweek
 
-  // All finished — return the latest
   const last = await prisma.plMatch.findFirst({
-    where: { season: "2025/26" },
+    where: { season: "2026/27" },
     orderBy: { gameweek: "desc" },
     select: { gameweek: true },
   })
@@ -131,27 +140,25 @@ async function getInitialGameweek(): Promise<number> {
 }
 
 export default async function BetsPage() {
-  // Fetch current season data (2025/26)
   const { entries: currentEntries, latestEntries: currentLatestEntries } = await getCurrentSeasonData()
-
-  // Fetch historical season data (2024/25)
+  const { entries: season2526Entries, latestEntries: season2526LatestEntries } = await getSeason2526Data()
   const { entries: historicalEntries, latestEntries: historicalLatestEntries } = await getHistoricalSeasonData()
 
-  // Fetch bet stats for 2025/26
   const betStats = await getBetStats()
 
-  // Process current season data
   const currentSeasonData = processSeasonData(currentLatestEntries, betStats)
   const currentSeasonPieData = createPieChartData(currentLatestEntries)
 
-  // Process historical season data
+  const season2526Data = processSeasonData(season2526LatestEntries)
+  const season2526PieData = createPieChartData(season2526LatestEntries)
+
   const historicalSeasonData = processSeasonData(historicalLatestEntries)
   const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
 
   const initialGameweek = await getInitialGameweek()
 
   const initialMatches = await prisma.plMatch.findMany({
-    where: { season: "2025/26", gameweek: initialGameweek },
+    where: { season: "2026/27", gameweek: initialGameweek },
     include: { bets: true },
     orderBy: { kickoff: "asc" },
   })
@@ -164,13 +171,16 @@ export default async function BetsPage() {
       <AutoRefresh intervalMs={30000} />
       <h1 className="text-title font-bold mb-4">Bets Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        XIII season of boring betting on top football leagues. Currently only English Premier League matches.
+        XIV season of boring betting on top football leagues. Only English Premier League matches since 2019.
       </p>
 
       <BetsSeasonTabs
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}
+        season2526Data={season2526Data}
+        season2526ChartData={season2526Entries}
+        season2526PieData={season2526PieData}
         historicalSeasonData={historicalSeasonData}
         historicalSeasonChartData={historicalEntries}
         historicalSeasonPieData={historicalSeasonPieData}

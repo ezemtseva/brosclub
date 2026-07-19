@@ -11,8 +11,8 @@ import { PLAYER_COLORS } from "../lib/teamColors"
 const FplChart = dynamicImport(() => import("./FplChart"), { ssr: false })
 const PieChart = dynamicImport(() => import("./PieChart"), { ssr: false })
 
-// Define the seasons array with all the required seasons - added 2025/26 as first tab
 const seasons = [
+  "2026/27",
   "2025/26",
   "2024/25",
   "2023/24",
@@ -371,6 +371,10 @@ type FplSeasonTabsProps = {
   historicalSeasonChartData: any[]
   historicalSeasonPieData: any[]
   historicalSeasonHighlights: any[]
+  season2425Data: any[]
+  season2425ChartData: any[]
+  season2425PieData: any[]
+  season2425Highlights: any[]
   columns: any[]
 }
 
@@ -397,9 +401,13 @@ export default function FplSeasonTabs({
   historicalSeasonChartData,
   historicalSeasonPieData,
   historicalSeasonHighlights,
+  season2425Data,
+  season2425ChartData,
+  season2425PieData,
+  season2425Highlights,
   columns,
 }: FplSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
@@ -415,6 +423,7 @@ export default function FplSeasonTabs({
     const dbChartSets = [
       { chartData: currentSeasonChartData, standings: currentSeasonData },
       { chartData: historicalSeasonChartData, standings: historicalSeasonData },
+      { chartData: season2425ChartData, standings: season2425Data },
     ]
     for (const { chartData, standings } of dbChartSets) {
       const maxGames: Record<string, number> = {}
@@ -471,46 +480,48 @@ export default function FplSeasonTabs({
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2025/26") {
-      // For the current season (2025/26), use the live data from fplEntry
+    if (activeSeason === "2026/27") {
+      // Current season — live data from fplEntry
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={currentSeasonData} />
+
+          {currentSeasonChartData.length > 0 && (
+            <section className="mt-12">
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="w-full md:w-2/3">
+                  <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                  <FplChart entries={currentSeasonChartData} />
+                </div>
+                <div className="w-full md:w-1/3">
+                  <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                  <PieChart data={currentSeasonPieData} />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {currentSeasonHighlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <ImageCarousel images={currentSeasonHighlights} />
+            </section>
+          )}
+        </>
+      )
+    } else if (activeSeason === "2025/26") {
+      // 2025/26 season — archived data from fplEntry2526
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={historicalSeasonData} />
 
           <div className="flex flex-wrap gap-3 mt-6">
             <span className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
               Choco has won the first title
             </span>
           </div>
-
-          <section className="mt-12">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
-                <FplChart entries={currentSeasonChartData} />
-              </div>
-              <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
-                <PieChart data={currentSeasonPieData} />
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="">
-              <ImageCarousel images={currentSeasonHighlights} />
-            </div>
-          </section>
-        </>
-      )
-    } else if (activeSeason === "2024/25") {
-      // For the 2024/25 season, use the historical data from fplEntry2024
-      return (
-        <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={historicalSeasonData} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
@@ -527,9 +538,32 @@ export default function FplSeasonTabs({
 
           <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="">
-              <ImageCarousel images={historicalSeasonHighlights} />
+            <ImageCarousel images={historicalSeasonHighlights} />
+          </section>
+        </>
+      )
+    } else if (activeSeason === "2024/25") {
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={season2425Data} />
+
+          <section className="mt-12">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <FplChart entries={season2425ChartData} />
+              </div>
+              <div className="w-full md:w-1/3">
+                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <PieChart data={season2425PieData} />
+              </div>
             </div>
+          </section>
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <ImageCarousel images={season2425Highlights} />
           </section>
         </>
       )

@@ -20,12 +20,24 @@ model FplEntry {
   @@unique([week, player])
 }
 
+model FplEntry2526 {
+  id     Int    @id @default(autoincrement())
+  week   Int
+  player String
+  points Int
+  games  Int
+  teamId String @default("")
+
+  @@unique([week, player])
+  @@map("fplEntry2526")
+}
+
 model FplEntry2024 {
   id     Int    @id @default(autoincrement())
   week   Int
   player String
-  games  Int
   points Int
+  games  Int
 
   @@map("fplEntry2024")
 }
@@ -102,14 +114,14 @@ model PokerEntry2024 {
 }
 
 model SevenOkerEntry {
-  id        Int      @id @default(autoincrement())
-  week      Int
-  bearo     String
-  games     Int
-  wins      Int
-  points    Int
-  gamepoints Int     @default(0)
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  week       Int
+  bearo      String
+  games      Int
+  wins       Int
+  points     Int
+  createdAt  DateTime @default(now())
+  gamepoints Int      @default(0)
 
   @@unique([week, bearo])
 }
@@ -121,8 +133,8 @@ model SevenOkerEntry2024 {
   games      Int
   wins       Int
   points     Int
-  gamepoints Int?
   createdAt  DateTime @default(now())
+  gamepoints Int?
 
   @@map("sevenOkerEntry2024")
 }
@@ -142,15 +154,15 @@ model FifaEntry {
 }
 
 model FifaEntry2024 {
-  id             Int    @id @default(autoincrement())
-  team           String
-  logo           String
-  games          Int
-  wins           Int
-  draws          Int
-  losses         Int
-  goalsScored    Int
-  goalsConceded  Int
+  id            Int    @id @default(autoincrement())
+  team          String
+  logo          String
+  games         Int
+  wins          Int
+  draws         Int
+  losses        Int
+  goalsScored   Int
+  goalsConceded Int
 
   @@map("fifaEntry2024")
 }
@@ -171,26 +183,26 @@ model FifaMatch {
   scoreA     Int
   teamB      String
   scoreB     Int
-  prediction String?
   createdAt  DateTime @default(now())
+  prediction String?
 }
 
 model PlMatch {
-  id         Int      @id @default(autoincrement())
-  matchId    Int      @unique
-  season     String
-  gameweek   Int
-  homeTeam   String
-  awayTeam   String
-  homeCrest  String?
-  awayCrest  String?
-  kickoff    DateTime
-  status     String
-  scoreHome  Int?
-  scoreAway  Int?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  bets       PlBet[]
+  id        Int      @id @default(autoincrement())
+  matchId   Int      @unique
+  season    String
+  gameweek  Int
+  homeTeam  String
+  awayTeam  String
+  kickoff   DateTime
+  status    String
+  scoreHome Int?
+  scoreAway Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  awayCrest String?
+  homeCrest String?
+  bets      PlBet[]
 }
 
 model PlBet {
@@ -208,7 +220,7 @@ model PlBet {
 }
 
 model PlGwReminder {
-  id        Int      @id @default(autoincrement())
-  gameweek  Int      @unique
-  sentAt    DateTime @default(now())
+  id       Int      @id @default(autoincrement())
+  gameweek Int      @unique
+  sentAt   DateTime @default(now())
 }

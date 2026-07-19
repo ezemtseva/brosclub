@@ -113,7 +113,7 @@ const sections = [
   <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 {" "}
 </>,
 <>
-  <UnderlinedPlayer name="Vanilla" /> scored the biggest amount of points in a single game - 294, 2024/25 {" "}
+  <UnderlinedPlayer name="Panda" /> scored the biggest amount of points in a single game - 298, 2025/26 ✯{" "}
 </>,
     ],
   },

@@ -138,6 +138,17 @@ export default function SevenOkerSeasonTabs({
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Panda sets the new record for the most points in a single game – 298",
+              "Vanilla matches Choco's record with 5 consecutive wins",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
           <section className="mt-12">
             <SevenOkerChartToggle entries={currentSeasonChartData} pieChartData={currentSeasonPieData} />
           </section>
@@ -159,7 +170,8 @@ export default function SevenOkerSeasonTabs({
 
           <div className="flex flex-wrap gap-3 mt-6">
             {[
-              "Vanilla won the first game",
+              "Vanilla won the first ever game",
+              "Panda won the first cup",
               "Choco was the first one to win the game by golden round against Panda",
               "Choco sets the longest winning streak - 5 games in a row",
               "Vanilla scored the biggest amount of points in a single game - 294",

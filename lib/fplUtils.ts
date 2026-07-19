@@ -28,7 +28,20 @@ export async function updateFplData() {
     try {
       const fplData = await fetchFplData(player.teamId)
       console.log(`Received data for ${player.name}:`, JSON.stringify(fplData, null, 2))
+      if (!fplData.current || fplData.current.length === 0) {
+        console.log(`No current season data for ${player.name}, skipping`)
+        continue
+      }
       const latestEntry = fplData.current[fplData.current.length - 1]
+
+      // Skip if this GW already exists in last season's archive — it's old data
+      const existsInArchive = await (prisma as any).fplEntry2526.findFirst({
+        where: { player: player.name, week: latestEntry.event }
+      })
+      if (existsInArchive) {
+        console.log(`Week ${latestEntry.event} for ${player.name} is from 2025/26, skipping`)
+        continue
+      }
 
       const dbEntry = await prisma.fplEntry.findFirst({
         where: {

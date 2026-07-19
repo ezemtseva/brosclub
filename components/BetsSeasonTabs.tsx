@@ -378,6 +378,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: createPlayerElement("Panda"),
+        games: "?",
         points: 220,
         difference: "-",
         hoverColor: playerColors.Panda,
@@ -385,6 +386,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: createPlayerElement("Vanilla"),
+        games: "?",
         points: 206,
         difference: "14",
         hoverColor: playerColors.Vanilla,
@@ -392,6 +394,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: createPlayerElement("Choco"),
+        games: "?",
         points: 194,
         difference: "12",
         hoverColor: playerColors.Chocolate,

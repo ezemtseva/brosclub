@@ -295,7 +295,7 @@ export default async function FPLPage() {
       <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
         <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
         <p className="text-base text-gray-600 mb-8">
-          XI season of no-names turning our teams into a shit joke.
+          X anniversary season of no-names turning our teams into a shit joke.
         </p>
         <AutoRefresh intervalMs={30000} />
 

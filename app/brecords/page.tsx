@@ -110,15 +110,18 @@ const sections = [
   <UnderlinedPlayer name="Choco" /> was the first one to win the game by golden round against <UnderlinedPlayer name="Panda" />, 2024/25 {" "}
 </>,
   <>
-  <UnderlinedPlayer name="Choco" /> has the longest winning streak - 5 games in a row, 2024/25 {" "}
+  <UnderlinedPlayer name="Vanilla" /> and <UnderlinedPlayer name="Choco" /> have the longest winning streak - 5 games in a row, 2024/25 and 2025/26 ✯{" "}
 </>,
 <>
   <UnderlinedPlayer name="Panda" /> scored the biggest amount of points in a single game - 298, 2025/26 ✯{" "}
 </>,
+<>
+  <UnderlinedPlayer name="Panda" /> holds the record for the most gamepoints in a season - 10.645, 2025/26 ✯{" "}
+</>,
     ],
   },
   {
-    title: "Texas Holdem",
+    title: "Holdem",
     records: [
       <>
         <UnderlinedPlayer name="Panda" /> won the first game, 06.09.2012
@@ -148,7 +151,7 @@ const sections = [
     ],
   },
   {
-    title: "GeoGuessr",
+    title: "GG",
     records: [
       <>
         <UnderlinedPlayer name="Vanilla" /> holds the record for the most accurate guess when the location was known – 4

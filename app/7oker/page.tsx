@@ -102,7 +102,27 @@ async function getCurrentSeasonData() {
   }
 }
 
-async function getHistoricalSeasonData() {
+async function getSeason2526Data() {
+  try {
+    const entries = (await (prisma as any).sevenOkerEntry2526.findMany({
+      orderBy: [{ week: "asc" }, { bearo: "asc" }],
+    })) as SevenOkerEntry[]
+
+    if (entries.length === 0) {
+      return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+    }
+
+    const latestWeek = Math.max(...entries.map((entry) => entry.week))
+    const latestEntries = entries.filter((entry: SevenOkerEntry) => entry.week === latestWeek)
+
+    return { entries, latestEntries }
+  } catch (error) {
+    console.error("Error fetching 2025/26 season 7oker data:", error)
+    return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
+  }
+}
+
+async function getSeason2425Data() {
   try {
     // Use dynamic access to the model
     const entries = (await (prisma as any).sevenOkerEntry2024.findMany({
@@ -118,37 +138,48 @@ async function getHistoricalSeasonData() {
 
     return { entries, latestEntries }
   } catch (error) {
-    console.error("Error fetching historical season 7oker data:", error)
+    console.error("Error fetching 2024/25 season 7oker data:", error)
     return { entries: [] as SevenOkerEntry[], latestEntries: [] as SevenOkerEntry[] }
   }
 }
 
 export default async function SevenOkerPage() {
-  // Fetch current season data (2025/26)
+  // Fetch current season data (2026/27)
   const { entries: currentEntries, latestEntries: currentLatestEntries } = await getCurrentSeasonData()
 
-  // Fetch historical season data (2024/25)
-  const { entries: historicalEntries, latestEntries: historicalLatestEntries } = await getHistoricalSeasonData()
+  // Fetch archived season data (2025/26)
+  const { entries: season2526Entries, latestEntries: season2526LatestEntries } = await getSeason2526Data()
+
+  // Fetch archived season data (2024/25)
+  const { entries: season2425Entries, latestEntries: season2425LatestEntries } = await getSeason2425Data()
 
   // Process current season data
   const currentSeasonData = processSeasonData(currentLatestEntries)
   const currentSeasonPieData = createPieChartData(currentLatestEntries)
   const currentSeasonChartData = serializeEntries(currentEntries)
 
-  // Process historical season data
-  const historicalSeasonData = processSeasonData(historicalLatestEntries)
-  const historicalSeasonPieData = createPieChartData(historicalLatestEntries)
-  const historicalSeasonChartData = serializeEntries(historicalEntries)
+  // Process 2025/26 season data
+  const historicalSeasonData = processSeasonData(season2526LatestEntries)
+  const historicalSeasonPieData = createPieChartData(season2526LatestEntries)
+  const historicalSeasonChartData = serializeEntries(season2526Entries)
 
-  // Current season highlights (update as new highlights happen)
-  const currentSeasonHighlights = [
-    { src: "/imgs/7oker/2526game65.png", alt: "New season highlight", caption: "Crazy last round win for Choco" },
-    { src: "/imgs/7oker/2526game4.png", alt: "New season highlight", caption: "Brand-new game, same old pain" },
-    // Add more current season images as they happen
+  // Process 2024/25 season data
+  const season2425Data = processSeasonData(season2425LatestEntries)
+  const season2425PieData = createPieChartData(season2425LatestEntries)
+  const season2425ChartData = serializeEntries(season2425Entries)
+
+  // Current season highlights (2026/27) — add as new highlights happen
+  const currentSeasonHighlights: { src: string; alt: string; caption: string }[] = []
+
+  // 2025/26 highlights
+  const historicalSeasonHighlights = [
+    { src: "/imgs/7oker/2526game72.png", alt: "7oker Season Highlight", caption: "What an end of the season!" },
+    { src: "/imgs/7oker/2526game65.png", alt: "7oker Season Highlight", caption: "Crazy last round win for Choco" },
+    { src: "/imgs/7oker/2526game4.png", alt: "7oker Season Highlight", caption: "Brand-new game, same old pain" },
   ]
 
-  // Historical season highlights (2024/25)
-  const historicalSeasonHighlights = [
+  // 2024/25 highlights
+  const season2425Highlights = [
     { src: "/imgs/7oker/game61.png", alt: "7oker Season Highlight", caption: "Был туз крестовый на руке..." },
     { src: "/imgs/7oker/game51.png", alt: "7oker Season Highlight", caption: "Close call win by Choco!" },
     { src: "/imgs/7oker/game42.png", alt: "7oker Season Highlight", caption: "The ultimate setup for Andrei Bubin 2!" },
@@ -187,7 +218,7 @@ export default async function SevenOkerPage() {
       <AutoRefresh intervalMs={30000} />
       <h1 className="text-title font-bold mb-4">7oker Cup</h1>
       <p className="text-base text-gray-600 mb-8">
-        II season of loosing solid games in the last round. {" "}
+        III season of loosing solid games in the last round. {" "}
         <Link
           href="https://bearos-poker.vercel.app/"
           className="text-blue-500 hover:underline"
@@ -208,6 +239,10 @@ export default async function SevenOkerPage() {
         historicalSeasonChartData={historicalSeasonChartData}
         historicalSeasonPieData={historicalSeasonPieData}
         historicalSeasonHighlights={historicalSeasonHighlights}
+        season2425Data={season2425Data}
+        season2425ChartData={season2425ChartData}
+        season2425PieData={season2425PieData}
+        season2425Highlights={season2425Highlights}
         columns={columns}
       />
     </div>

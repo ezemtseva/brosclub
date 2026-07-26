@@ -14,7 +14,7 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    achievements: ["🏅 FIFA - 6", "🏅 FPL - 3", "🏅 BETS - 3", "🏅 GG - 1"],
+    achievements: ["🏅 FIFA - 6", "🏅 FPL - 3", "🏅 BETS - 3", "🏅 7OKER - 1", "🏅 GG - 1"],
     bgColor: "bg-red-100",
   },
   {
@@ -34,7 +34,7 @@ const clubMembers = [
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
-  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "-", gg: "-" },
+  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla", gg: "-" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
@@ -129,23 +129,33 @@ async function getLatestPokerLeader() {
 
 async function getLatest7okerLeader() {
   try {
-    // Use dynamic property access to avoid TypeScript errors
-    const modelName = "sevenOkerEntry"
-
-    const latestWeek = await (prisma as any)[modelName].findFirst({
+    const latestWeek = await (prisma as any).sevenOkerEntry.findFirst({
       orderBy: { week: "desc" },
       select: { week: true },
     })
 
-    if (!latestWeek) return null
+    if (latestWeek) {
+      const leader = await (prisma as any).sevenOkerEntry.findFirst({
+        where: { week: latestWeek.week },
+        orderBy: { points: "desc" },
+        select: { bearo: true, points: true },
+      })
+      if (leader) return leader
+    }
 
-    const leader = await (prisma as any)[modelName].findFirst({
-      where: { week: latestWeek.week },
+    // Fallback: show 2025/26 champion from archive
+    const latestArchiveWeek = await (prisma as any).sevenOkerEntry2526.findFirst({
+      orderBy: { week: "desc" },
+      select: { week: true },
+    })
+    if (!latestArchiveWeek) return null
+
+    const archiveLeader = await (prisma as any).sevenOkerEntry2526.findFirst({
+      where: { week: latestArchiveWeek.week },
       orderBy: { points: "desc" },
       select: { bearo: true, points: true },
     })
-
-    return leader
+    return archiveLeader
   } catch (error) {
     console.error("Error fetching 7oker leader:", error)
     return null
@@ -222,7 +232,7 @@ export default async function Home() {
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          {fplLeader.isArchive ? "2025/26 Champion" : "Champion"}: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
+          Champion: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -260,11 +270,11 @@ export default async function Home() {
 
   const sevenOkerSummary = {
     title: "7oker",
-    champion: false,
+    champion: !!(sevenOkerLeader && sevenOkerLeader.points > 0),
     content:
       sevenOkerLeader && sevenOkerLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
+          Champion: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -396,8 +406,8 @@ export default async function Home() {
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FIFA</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">FPL</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Bets</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Holdem</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">7oker</th>
+                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Holdem</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">GG</th>
                 </tr>
               </thead>
@@ -418,10 +428,10 @@ export default async function Home() {
                       <HistoryCell value={row.bets} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <HistoryCell value={row.poker} />
+                      <HistoryCell value={row.sevenOker} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <HistoryCell value={row.sevenOker} />
+                      <HistoryCell value={row.poker} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <HistoryCell value={row.gg} />

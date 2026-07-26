@@ -9,7 +9,7 @@ import AddGameDialog from "./AddGameDialog"
 import { PLAYER_COLORS } from "../lib/teamColors"
 
 // Define the seasons array
-const seasons = ["2025/26", "2024/25", "All Time"] as const
+const seasons = ["2026/27", "2025/26", "2024/25", "All Time"] as const
 type Season = (typeof seasons)[number]
 
 // Player colors for consistent styling
@@ -42,6 +42,10 @@ type SevenOkerSeasonTabsProps = {
   historicalSeasonChartData: any[]
   historicalSeasonPieData: any[]
   historicalSeasonHighlights: any[]
+  season2425Data: any[]
+  season2425ChartData: any[]
+  season2425PieData: any[]
+  season2425Highlights: any[]
   columns: any[]
 }
 
@@ -54,9 +58,13 @@ export default function SevenOkerSeasonTabs({
   historicalSeasonChartData,
   historicalSeasonPieData,
   historicalSeasonHighlights,
+  season2425Data,
+  season2425ChartData,
+  season2425PieData,
+  season2425Highlights,
   columns,
 }: SevenOkerSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -71,7 +79,7 @@ export default function SevenOkerSeasonTabs({
       }
     }
 
-    for (const chartData of [currentSeasonChartData, historicalSeasonChartData]) {
+    for (const chartData of [currentSeasonChartData, historicalSeasonChartData, season2425ChartData]) {
       const maxGames: Record<string, number> = {}
       const maxPoints: Record<string, number> = {}
       const maxWins: Record<string, number> = {}
@@ -123,8 +131,13 @@ export default function SevenOkerSeasonTabs({
 
   // Render content based on active tab
   const renderContent = () => {
-    if (activeSeason === "2025/26") {
-      // For the current season, use the live data from sevenOkerEntry
+    if (activeSeason === "2026/27") {
+      // Current season — live data from sevenOkerEntry
+      if (currentSeasonData.length === 0) {
+        return (
+          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August</p>
+        )
+      }
       return (
         <>
           <div className="flex items-center justify-between mb-6">
@@ -138,31 +151,22 @@ export default function SevenOkerSeasonTabs({
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Panda sets the new record for the most points in a single game – 298",
-              "Vanilla matches Choco's record with 5 consecutive wins",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
-
           <section className="mt-12">
             <SevenOkerChartToggle entries={currentSeasonChartData} pieChartData={currentSeasonPieData} />
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
-            <div className="">
-              <ImageCarousel images={currentSeasonHighlights} />
-            </div>
-          </section>
+          {currentSeasonHighlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <div className="">
+                <ImageCarousel images={currentSeasonHighlights} />
+              </div>
+            </section>
+          )}
         </>
       )
-    } else if (activeSeason === "2024/25") {
-      // For the 2024/25 season, use the historical data from sevenOkerEntry2024
+    } else if (activeSeason === "2025/26") {
+      // 2025/26 season — archived data from sevenOkerEntry2526
       return (
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
@@ -170,11 +174,9 @@ export default function SevenOkerSeasonTabs({
 
           <div className="flex flex-wrap gap-3 mt-6">
             {[
-              "Vanilla won the first ever game",
-              "Panda won the first cup",
-              "Choco was the first one to win the game by golden round against Panda",
-              "Choco sets the longest winning streak - 5 games in a row",
-              "Vanilla scored the biggest amount of points in a single game - 294",
+              "Panda sets the new record for the most points in a single game – 298",
+              "Vanilla matches Choco's record with 5 consecutive wins",
+              "Panda breaks his own record for the most gamepoints in a season – 10.645",
             ].map((text, i) => (
               <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
                 {text}
@@ -190,6 +192,40 @@ export default function SevenOkerSeasonTabs({
             <h2 className="text-title font-bold mb-6">Highlights</h2>
             <div className="">
               <ImageCarousel images={historicalSeasonHighlights} />
+            </div>
+          </section>
+        </>
+      )
+    } else if (activeSeason === "2024/25") {
+      // For the 2024/25 season, use the archived data from sevenOkerEntry2024
+      return (
+        <>
+          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <DataTable columns={columns} data={season2425Data} />
+
+          <div className="flex flex-wrap gap-3 mt-6">
+            {[
+              "Vanilla won the first ever game",
+              "Panda won the first cup",
+              "Choco was the first one to win the game by golden round against Panda",
+              "Choco sets the longest winning streak - 5 games in a row",
+              "Vanilla scored the biggest amount of points in a single game - 294",
+              "Panda scored the biggest amount of gamepoints in a season - 10.422",
+            ].map((text, i) => (
+              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
+                {text}
+              </span>
+            ))}
+          </div>
+
+          <section className="mt-12">
+            <SevenOkerChartToggle entries={season2425ChartData} pieChartData={season2425PieData} />
+          </section>
+
+          <section className="mt-12">
+            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <div className="">
+              <ImageCarousel images={season2425Highlights} />
             </div>
           </section>
         </>

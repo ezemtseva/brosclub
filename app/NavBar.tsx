@@ -12,7 +12,6 @@ const mainNavItems = [
   { href: "/7oker", label: "7OKER" },
   { href: "/poker", label: "HOLDEM" },
   { href: "/gg", label: "GG" },
-  { href: "/brecords", label: "BRECORDS" },
 ]
 
 export default function NavBar() {
@@ -36,9 +35,9 @@ export default function NavBar() {
   return (
     <nav className="bg-gray-800 text-white">
       {/* Desktop / top bar */}
-      <div className="container mx-auto flex items-center px-4 py-3">
+      <div className="container mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
         {/* Logo */}
-        <div className="flex-none">
+        <div className="justify-self-start">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold">
             <Image src="/imgs/logo.png" alt="Bearos Club logo" width={36} height={36} className="rounded-full" />
             <span className="hidden sm:inline">Bearos Club</span>
@@ -46,29 +45,28 @@ export default function NavBar() {
         </div>
 
         {/* Desktop nav — hidden on mobile */}
-        <div className="hidden md:flex flex-1 justify-center space-x-1">
-          {mainNavItems.slice(0, 6).map((item) => renderNavLink(item.href, item.label))}
-        </div>
-        <div className="hidden md:flex flex-none">
-          {renderNavLink("/brecords", "BRECORDS")}
+        <div className="hidden md:flex space-x-1">
+          {mainNavItems.map((item) => renderNavLink(item.href, item.label))}
         </div>
 
         {/* Hamburger button — visible on mobile */}
-        <button
-          className="md:hidden ml-auto p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
+        <div className="justify-self-end">
+          <button
+            className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile dropdown menu */}

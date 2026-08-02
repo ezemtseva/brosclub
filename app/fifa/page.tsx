@@ -822,10 +822,10 @@ export default async function FIFAPage() {
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <AutoRefresh intervalMs={30000} />
-      <h1 className="text-title font-bold mb-4">EA FC Cup</h1>
-      <p className="text-basic text-gray-600 mb-8">X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually.</p>
 
       <FifaSeasonTabs
+        title="EA FC Cup"
+        description="X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually."
         currentSeasonData={currentSeasonData}
         currentSeasonHighlights={currentSeasonHighlights}
         historicalSeasonData={historicalSeasonData}

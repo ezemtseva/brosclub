@@ -27,6 +27,81 @@ const seasons = [
 ] as const
 type Season = (typeof seasons)[number]
 
+const PLAYER_AVATARS: Record<string, string> = {
+  Vanilla: "/imgs/vanilla.png",
+  Choco: "/imgs/choco.png",
+  Panda: "/imgs/panda.png",
+}
+
+type FifaRecordCard = {
+  value?: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+const fifaRecordCards: FifaRecordCard[] = [
+  { value: "8 h 18 m", description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
+  { value: "x3", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020/21, 2021/22, 2024/25)" },
+  { value: "73.21%", player: "Vanilla", description: "Vanilla holds the highest win rate in a season (2024/25)" },
+  { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team in a season (2024/25)" },
+  { player: "Choco", description: "Choco is the first to score a goal by a goalkeeper, Atletico Madrid (2017)" },
+  { player: "Vanilla", description: "Vanilla is the first to score a goal from their own half (empty net), Napoli (2017)" },
+  { player: "Vanilla", description: "Vanilla is the first to score an Olympic goal directly from a corner, Lille (2021/22)" },
+  { value: "22", player: "Vanilla", description: "Vanilla holds the longest winning streak for a team, Liverpool (2024/25)" },
+  { value: "26", player: "Vanilla", description: "Vanilla holds the longest unbeaten streak for a team, Barcelona (2023/24)" },
+]
+
+type SeasonHighlightCard = {
+  value?: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+// Season-specific highlights, shown on the Insights tab for the selected season
+const seasonHighlightCards: Partial<Record<Season, SeasonHighlightCard[]>> = {
+  "2023/24": [
+    { value: "89.29%", player: "Vanilla", description: "Vanilla, Newcastle & Marseille — highest win rate for a team this season" },
+    { value: "26", player: "Vanilla", description: "Vanilla, Barcelona — longest unbeaten streak for a team (matches)" },
+    { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
+  ],
+  "2024/25": [
+    { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team this season" },
+    { value: "3", player: "Vanilla", description: "Liverpool of Vanilla have won the cup three times" },
+    { value: "73.21%", player: "Vanilla", description: "Vanilla — highest win rate this season" },
+  ],
+  "2020/21": [
+    { value: "70.7%", player: "Vanilla", description: "Vanilla — highest win rate this season" },
+    { value: "23", player: "Choco", description: "Choco, Chelsea — fastest to score 100 goals in a tournament (rounds)" },
+    { value: "10", description: "Largest gap between 1st and 2nd place this season" },
+  ],
+  "2019/20": [
+    { player: "Vanilla", description: "Vanilla, Lille — first to score an Olympic goal direct from a corner" },
+  ],
+  "2017/18": [
+    { value: "8 h 18 m", description: "Longest FIFA Night of the season — 22 matches" },
+    { player: "Choco", description: "Choco, Atletico Madrid — first to score a goal with a goalkeeper" },
+    { player: "Vanilla", description: "Vanilla, Napoli — first to score from their own half into an empty net" },
+  ],
+  "2015/16": [
+    { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
+  ],
+}
+
+function SeasonHighlightCardTile({ card }: { card: SeasonHighlightCard }) {
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="h-14 flex items-center">
+        {card.value ? (
+          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
+        ) : card.player ? (
+          <Image src={PLAYER_AVATARS[card.player]} alt={card.player} width={56} height={56} className="rounded-full object-cover w-14 h-14" />
+        ) : null}
+      </div>
+      <p className="text-sm text-gray-600">{card.description}</p>
+    </div>
+  )
+}
+
 // Define types for season data
 type TeamStanding = {
   team: string
@@ -602,11 +677,6 @@ const pastSeasonsData: PastSeasonsData = {
         points: 4,
         color: PLAYER_COLORS.Panda,
       },
-    ],
-    highlights: [
-      "Vanilla sets the highest win rate for a team in a season (Newcastle, Marseille) – 89.29%",
-      "Vanilla sets the longest unbeaten streak for a team (Barcelona) – 26 matches",
-      "The smallest gap between 1st and 2nd place",
     ],
   },
   "2022/23": {
@@ -1869,11 +1939,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
     ],
-    highlights: [
-      "Vanilla sets the highest win rate for a season – 70.7%",
-      "Choco was the fastest to score 100 goals in a tournament – 23 rounds (Chelsea)",
-      "The largest gap between 1st and 2nd place",
-    ],
   },
   "2019/20": {
     standings: [
@@ -2190,7 +2255,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
     ],
-    highlights: ["Vanilla was the first to score an Olympic goal (directly from a corner) against an opponent (Lille)"],
   },
   "2017/18": {
     description: "This season was not completed due to a suspension. No winner was determined.",
@@ -2663,11 +2727,6 @@ const pastSeasonsData: PastSeasonsData = {
         points: 31,
         color: PLAYER_COLORS.Panda,
       },
-    ],
-    highlights: [
-      "The longest FIFA Night (22 matches) lasted 8 hours and 18 minutes",
-      "Choco was the first to score a goal with a goalkeeper (Atletico Madrid)",
-      "Vanilla was the first to score a goal (into an empty net) from its own half (Napoli)",
     ],
   },
   "2016/17": {
@@ -3379,7 +3438,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
     ],
-    highlights: ["The smallest gap between 1st and 2nd place"],
   },
 }
 
@@ -3447,6 +3505,8 @@ interface MatchRecord {
 }
 
 type FifaSeasonTabsProps = {
+  title: string
+  description: string
   currentSeasonData: any[]
   currentSeasonHighlights: any[]
   historicalSeasonData: any[]
@@ -3462,7 +3522,12 @@ type FifaSeasonTabsProps = {
   historicalRawEntries: any[]
 }
 
+const pageTabs = ["Standings", "Insights", "Brecords"] as const
+type PageTab = (typeof pageTabs)[number]
+
 export default function FifaSeasonTabs({
+  title,
+  description,
   currentSeasonData,
   currentSeasonHighlights,
   historicalSeasonData,
@@ -3478,13 +3543,13 @@ export default function FifaSeasonTabs({
   historicalRawEntries,
 }: FifaSeasonTabsProps) {
   const [activeSeason, setActiveSeason]   = useState<Season>(seasons[0])
+  const [activeTab, setActiveTab]         = useState<PageTab>("Standings")
   const [dialogOpen, setDialogOpen]       = useState(false)
   const [configOpen, setConfigOpen]       = useState(false)
   const [showToast, setShowToast]         = useState(false)
   const [playerTeams, setPlayerTeams]     = useState<PlayerTeams>(initialPlayerTeams)
   const [matches, setMatches]             = useState<MatchRecord[]>(initialMatches)
   const [resultsSearch, setResultsSearch] = useState("")
-  const [analyticsOpen, setAnalyticsOpen] = useState(true)
   const router = useRouter()
 
   const handleMatchSuccess = async () => {
@@ -3839,7 +3904,7 @@ export default function FifaSeasonTabs({
   }
 
   // Render content based on active tab
-  const renderContent = () => {
+  const renderStandingsContent = () => {
     if (activeSeason === "2025/26") {
       // For the current season (2025/26), use the live data from fifaEntry
       return (
@@ -3903,17 +3968,6 @@ export default function FifaSeasonTabs({
           </div>
 
           <section className="mt-12">
-            <button
-              onClick={() => setAnalyticsOpen((v) => !v)}
-              className="flex items-center gap-2 w-full text-left mb-6"
-            >
-              <h2 className="text-title font-bold">Season Insights</h2>
-              <span className="text-gray-400 text-sm">{analyticsOpen ? "▲" : "▼"}</span>
-            </button>
-            {analyticsOpen && <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />}
-          </section>
-
-          <section className="mt-12">
             <h2 className="text-title font-bold mb-6">Highlights</h2>
             <div className="">
               <VideoCarousel videos={currentSeasonHighlights} />
@@ -3929,18 +3983,6 @@ export default function FifaSeasonTabs({
         <>
           <div className="fifa-standings-table">
             <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={historicalSeasonData} />
-          </div>
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Vanilla sets the new highest win rate for a team in a season (Liverpool) – 95.65%",
-              "Liverpool of Vanilla has won the 3rd cup",
-              "Vanilla sets the new highest win rate in a season – 73.21%",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
           </div>
 
           <section className="mt-12">
@@ -3973,7 +4015,6 @@ export default function FifaSeasonTabs({
       const pastSeasonData = getPastSeasonTableData(activeSeason)
       const seasonData = pastSeasonsData[activeSeason as keyof typeof pastSeasonsData]
       const seasonDescription = seasonData && "description" in seasonData ? seasonData.description : undefined
-      const seasonHighlights = seasonData && "highlights" in seasonData ? seasonData.highlights : undefined
       const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
       const mobileColumnsWithoutForm = mobileColumns ? mobileColumns.filter((c: any) => c.accessor !== "form") : undefined
 
@@ -3988,51 +4029,79 @@ export default function FifaSeasonTabs({
               <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
             )}
           </div>
-
-          {seasonHighlights && seasonHighlights.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-title font-bold mb-6">Highlights</h2>
-              <div className="flex flex-wrap gap-3">
-                {seasonHighlights.map((highlight, index) => (
-                  <div
-                    key={index}
-                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
-                  >
-                    {highlight}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
         </>
       )
     }
   }
 
+  const renderInsightsContent = () => {
+    if (activeSeason === "2025/26") {
+      return <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />
+    }
+    const highlights = seasonHighlightCards[activeSeason]
+    if (highlights && highlights.length > 0) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {highlights.map((card, i) => <SeasonHighlightCardTile key={i} card={card} />)}
+        </div>
+      )
+    }
+    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+  }
+
+  const renderBrecordsContent = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {fifaRecordCards.map((record, i) => <SeasonHighlightCardTile key={i} card={record} />)}
+    </div>
+  )
+
   return (
     <>
-      {/* Season tabs */}
+      {/* Page header + season dropdown */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-title font-bold mb-4">{title}</h1>
+          <p className="text-basic text-gray-600">{description}</p>
+        </div>
+        <select
+          value={activeSeason}
+          onChange={(e) => {
+            const season = e.target.value as Season
+            setActiveSeason(season)
+            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+          }}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
+        >
+          {seasons.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Page tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {seasons.map((season) => (
+            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
               <button
-                key={season}
-                onClick={() => setActiveSeason(season)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeSeason === season
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
+                  activeTab === tab
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {season}
+                {tab}
               </button>
             ))}
           </nav>
         </div>
       </div>
 
-      {activeSeason !== "2025/26" && activeSeason !== "All Time" && (
+      {activeTab === "Standings" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-title font-bold">Standings</h2>
         </div>
@@ -4064,8 +4133,10 @@ export default function FifaSeasonTabs({
         </div>
       )}
 
-      {/* Render content based on active tab */}
-      {renderContent()}
+      {/* Render content based on active page tab */}
+      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Insights" && renderInsightsContent()}
+      {activeTab === "Brecords" && renderBrecordsContent()}
     </>
   )
 }

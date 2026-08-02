@@ -4,7 +4,6 @@ import prisma from "../lib/prisma"
 import { getTeamColor, PLAYER_COLORS } from "../lib/teamColors"
 import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
-import FlippableCard from "../components/FlippableCard"
 
 export const dynamic = 'force-dynamic'
 
@@ -14,23 +13,31 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    achievements: ["🏅 FIFA - 6", "🏅 FPL - 3", "🏅 BETS - 3", "🏅 7OKER - 1", "🏅 GG - 1"],
+    cups: { fifa: 6, fpl: 3, bets: 3, sevenOker: 1, holdem: 0, gg: 1 },
     bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    achievements: ["🏅 FIFA - 2", "🏅 FPL - 1", "🏅 BETS - 3"],
+    cups: { fifa: 2, fpl: 1, bets: 3, sevenOker: 0, holdem: 0, gg: 0 },
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    achievements: ["🏅 HOLDEM - 8", "🏅 FPL - 5", "🏅 BETS - 8", "🏅 7OKER - 1"],
+    cups: { fifa: 0, fpl: 5, bets: 8, sevenOker: 1, holdem: 8, gg: 0 },
     bgColor: "bg-green-100",
   },
 ]
 
+const cupCategories = [
+  { key: "fifa", label: "FIFA" },
+  { key: "fpl", label: "FPL" },
+  { key: "bets", label: "BETS" },
+  { key: "sevenOker", label: "7P" },
+  { key: "holdem", label: "TH" },
+  { key: "gg", label: "GG" },
+] as const
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
@@ -105,28 +112,6 @@ async function getLatestGgLeader() {
   }
 }
 
-async function getLatestPokerLeader() {
-  try {
-    const latestWeek = await prisma.pokerEntry.findFirst({
-      orderBy: { week: "desc" },
-      select: { week: true },
-    })
-
-    if (!latestWeek) return null
-
-    const leader = await prisma.pokerEntry.findFirst({
-      where: { week: latestWeek.week },
-      orderBy: { points: "desc" },
-      select: { bearo: true, points: true },
-    })
-
-    return leader
-  } catch (error) {
-    console.error("Error fetching Poker leader:", error)
-    return null
-  }
-}
-
 async function getLatest7okerLeader() {
   try {
     const latestWeek = await (prisma as any).sevenOkerEntry.findFirst({
@@ -188,6 +173,17 @@ async function getLatestFifaLeader() {
   }
 }
 
+function countSundaysSince(startDate: Date) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const daysUntilFirstSunday = (7 - startDate.getDay()) % 7
+  const firstSunday = new Date(startDate)
+  firstSunday.setDate(firstSunday.getDate() + daysUntilFirstSunday)
+  if (firstSunday > today) return 0
+  const msPerDay = 24 * 60 * 60 * 1000
+  return Math.floor((today.getTime() - firstSunday.getTime()) / (7 * msPerDay)) + 1
+}
+
 const UnderlinedPlayer = ({ name, isFifaTeam = false }: { name: string; isFifaTeam?: boolean }) => {
   if (name === "-" || name === "DNF" || name === "DSQ") {
     return <span>{name}</span>
@@ -222,7 +218,6 @@ const HistoryCell = ({ value }: { value: string }) => {
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
   const ggLeader = await getLatestGgLeader()
-  const pokerLeader = await getLatestPokerLeader()
   const sevenOkerLeader = await getLatest7okerLeader()
   const fifaLeader = await getLatestFifaLeader()
 
@@ -241,7 +236,7 @@ export default async function Home() {
   }
 
   const ggSummary = {
-    title: "GeoGuessr",
+    title: "GG",
     champion: false,
     content:
       ggLeader && ggLeader.points > 0 ? (
@@ -257,14 +252,8 @@ export default async function Home() {
   const holdemSummary = {
     title: "Holdem",
     champion: false,
-    content:
-      pokerLeader && pokerLeader.points > 0 ? (
-        <>
-          Leader: <UnderlinedPlayer name={pokerLeader.bearo} /> - {pokerLeader.points} points
-        </>
-      ) : (
-        "Will be started soon"
-      ),
+    suspended: true,
+    content: "Currently suspended",
     link: "/poker",
   }
 
@@ -307,7 +296,7 @@ export default async function Home() {
     link: "/fifa",
   }
 
-  const summaries = [fifaSummary, fplSummary, betsSummary, sevenOkerSummary, ggSummary] // holdemSummary to get back the card
+  const summaries = [fifaSummary, fplSummary, betsSummary, sevenOkerSummary, ggSummary]
 
   const currentMonth = new Date().getMonth() + 1 // getMonth() returns 0-11
 
@@ -320,46 +309,44 @@ export default async function Home() {
             Welcome to Bearos Club
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
           </h1>
-          <p className="text-basic text-gray-600">Here is always Sunday since 06.09.2012.</p>
+          <p className="text-basic text-gray-600">Here is always Sunday since 06.09.2012 · {countSundaysSince(new Date(2012, 8, 6))} Sundays</p>
         </section>
 
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {clubMembers.map((member, index) => (
-              <div key={index} className="h-[210px] md:h-[270px]">
-                <FlippableCard
-                  bgColor={member.bgColor}
-                  frontContent={
-                    <div className="card-front-inner flex flex-col h-full w-full">
-                      <div className="flex flex-col items-center">
-                        <Image
-                          src={member.image || "/placeholder.svg"}
-                          alt={member.name}
-                          width={200}
-                          height={200}
-                          className="rounded-full object-cover w-32 h-32 md:w-48 md:h-48"
-                        />
-                      </div>
-                      <div className="card-front-name flex flex-col items-center">
-                        <h2 className="text-[17.5px] md:text-title font-semibold mb-2">{member.name}</h2>
-                      </div>
+            {[...clubMembers]
+              .sort((a, b) => Object.values(b.cups).reduce((sum, n) => sum + n, 0) - Object.values(a.cups).reduce((sum, n) => sum + n, 0))
+              .map((member, index) => {
+              const totalCups = Object.values(member.cups).reduce((sum, n) => sum + n, 0)
+              return (
+                <div key={index} className={`shadow-md rounded-lg p-6 ${member.bgColor}`}>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={member.image || "/placeholder.svg"}
+                        alt={member.name}
+                        width={64}
+                        height={64}
+                        className="rounded-full object-cover w-16 h-16"
+                      />
+                      <h2 className="text-xl font-semibold">{member.name}</h2>
                     </div>
-                  }
-                  backContent={
-                    <div className="w-full md:h-[190px] flex flex-col items-center">
-                      <h2 className="text-xl font-semibold mb-3 md:mb-6">{member.achievements.reduce((sum, a) => sum + (parseInt(a.split("- ")[1]) || 0), 0)} cups of {member.name}:</h2>
-                      <ul className="list-none pl-0 text-sm text-gray-600">
-                        {member.achievements.map((achievement, i) => (
-                          <li key={i} className="mb-1 md:mb-2 text-sm md:text-base">
-                            {achievement}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-gray-900">{totalCups}</div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wide">Cups</div>
                     </div>
-                  }
-                />
-              </div>
-            ))}
+                  </div>
+                  <div className="grid grid-cols-6 gap-1.5">
+                    {cupCategories.map((category) => (
+                      <div key={category.key} className="bg-white border border-gray-200 rounded-lg p-1.5 text-center">
+                        <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5 truncate">{category.label}</div>
+                        <div className="text-base font-semibold text-gray-800">{member.cups[category.key]}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </section>
 
@@ -369,7 +356,11 @@ export default async function Home() {
             {summaries.map((summary, index) => (
               <div
                 key={index}
-                className={`shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${summary.champion ? "bg-amber-50" : "bg-gray-50"}`}
+                className={`shadow-md rounded-lg p-6 transition-all duration-300 ease-in-out ${
+                  "suspended" in summary && summary.suspended
+                    ? "bg-gray-100 opacity-60"
+                    : `hover:shadow-xl hover:scale-105 ${summary.champion ? "bg-amber-50" : "bg-gray-50"}`
+                }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-semibold">{summary.title}</h3>
@@ -381,7 +372,7 @@ export default async function Home() {
                     </svg>
                   </Link>
                 </div>
-                <p className="text-gray-600">{summary.content}</p>
+                <p className={`text-gray-600 ${"suspended" in summary && summary.suspended ? "italic" : ""}`}>{summary.content}</p>
               </div>
             ))}
           </div>

@@ -153,12 +153,10 @@ export default async function PokerPage() {
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <AutoRefresh intervalMs={30000} />
-      <h1 className="text-title font-bold mb-4">Texas Holdem Cup</h1>
-      <p className="text-base text-gray-600 mb-8">
-        XI season is currently suspended - we have all had enough of Vladimir Vladimirovich reign...
-      </p>
 
       <HoldemSeasonTabs
+        title="Texas Holdem Cup"
+        description="XI season is currently suspended - we have all had enough of Vladimir Vladimirovich reign..."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}

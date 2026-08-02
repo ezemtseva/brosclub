@@ -169,12 +169,10 @@ export default async function BetsPage() {
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <AutoRefresh intervalMs={30000} />
-      <h1 className="text-title font-bold mb-4">Bets Cup</h1>
-      <p className="text-base text-gray-600 mb-8">
-        XIV season of boring betting on top football leagues. Only English Premier League matches since 2019.
-      </p>
 
       <BetsSeasonTabs
+        title="Bets Cup"
+        description="XIV season of boring betting on top football leagues. Only English Premier League matches since 2019."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}

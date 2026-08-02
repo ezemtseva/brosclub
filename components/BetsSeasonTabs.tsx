@@ -33,6 +33,65 @@ const seasons = [
 ] as const
 type Season = (typeof seasons)[number]
 
+const pageTabs = ["Standings", "Insights", "Brecords"] as const
+type PageTab = (typeof pageTabs)[number]
+
+type StatCard = {
+  value: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+const betsRecordCards: StatCard[] = [
+  { value: "240", description: "Choco and Panda scored the same number of points in a season (2025/26)" },
+  { value: "299", player: "Choco", description: "Choco scored the most points in a season (2023/24)" },
+  { value: "38", player: "Panda", description: "Panda held first place for 38 consecutive rounds (2022/23)" },
+  { value: "x3", description: "Panda and Vanilla have won the cup three times in a row (2012–14, 2020–23, 2015–18)" },
+  { value: "56.67%", player: "Vanilla", description: "Vanilla scored the most points in a round — 17/30 (2021)" },
+  { value: "4/5", player: "Vanilla", description: "Vanilla holds the record for most correctly predicted scores in a day (2016)" },
+]
+
+// Season-specific highlights, shown on the Insights tab for the selected season
+const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
+  "2025/26": [
+    { value: "240", description: "Choco and Panda tied for the season with the same points total" },
+    { value: "0", player: "Vanilla", description: "Vanilla guessed 0 correct match results in an EPL game week" },
+  ],
+  "2023/24": [
+    { value: "299", player: "Choco", description: "Choco scored the most points in a season" },
+  ],
+  "2022/23": [
+    { value: "38", player: "Panda", description: "Panda held first place for 38 consecutive rounds (whole season)" },
+    { value: "x3", player: "Panda", description: "Panda won his 3rd cup in a row — his second three-peat" },
+  ],
+  "2020/21": [
+    { value: "17/30", player: "Vanilla", description: "Vanilla scored the most points in a round" },
+  ],
+  "2019/20": [
+    { value: "4", description: "Smallest gap between 1st and 2nd place this season" },
+  ],
+  "2016": [
+    { value: "4/5", player: "Vanilla", description: "Vanilla set the record for most correctly predicted scores in a day" },
+  ],
+  "2015": [
+    { value: "68", description: "Largest gap between 1st and 2nd place this season" },
+  ],
+  "2014": [
+    { value: "x3", player: "Panda", description: "Panda won his 3rd cup in a row" },
+  ],
+}
+
+function StatCardTile({ card }: { card: StatCard }) {
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="h-14 flex items-center">
+        <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
+      </div>
+      <p className="text-sm text-gray-600">{card.description}</p>
+    </div>
+  )
+}
+
 // Define types for the standings data
 type StandingsData = {
   position: number
@@ -110,7 +169,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Vanilla,
       },
     ],
-    highlights: ["Choco scored the most points in a season"],
   },
   "2022/23": {
     standings: [
@@ -138,10 +196,6 @@ const pastSeasonsData: PastSeasonsData = {
         difference: "15",
         hoverColor: playerColors.Chocolate,
       },
-    ],
-    highlights: [
-      "Panda held first place for 38 consecutive rounds (whole season)",
-      "Panda won his 3rd cup in a row.. for the second time!",
     ],
   },
   "2021/22": {
@@ -199,7 +253,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
-    highlights: ["Vanilla scored the most points in a round – 17/30"],
   },
   "2019/20": {
     standings: [
@@ -228,7 +281,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Panda,
       },
     ],
-    highlights: ["The smallest gap between 1st and 2nd place"],
   },
   "2017": {
     standings: [
@@ -285,7 +337,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
-    highlights: ["Vanilla set the record for most correctly predicted scores in a day – 4/5"],
   },
   "2015": {
     standings: [
@@ -314,7 +365,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
-    highlights: ["The largest gap between 1st and 2nd place"],
   },
   "2014": {
     standings: [
@@ -343,7 +393,6 @@ const pastSeasonsData: PastSeasonsData = {
         hoverColor: playerColors.Chocolate,
       },
     ],
-    highlights: ["Panda won his 3rd cup in a row"],
   },
   "2013": {
     standings: [
@@ -404,6 +453,8 @@ const pastSeasonsData: PastSeasonsData = {
 }
 
 type BetsSeasonTabsProps = {
+  title: string
+  description: string
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
@@ -444,6 +495,8 @@ const createAllTimePlayerElement = (name: string) => {
 }
 
 export default function BetsSeasonTabs({
+  title,
+  description,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -458,6 +511,7 @@ export default function BetsSeasonTabs({
   initialMatches,
 }: BetsSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
+  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -533,7 +587,7 @@ export default function BetsSeasonTabs({
   }
 
   // Render content based on active tab
-  const renderContent = () => {
+  const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
       if (currentSeasonData.length === 0 || currentSeasonData.every(r => r.games === 0)) {
         return (
@@ -571,17 +625,6 @@ export default function BetsSeasonTabs({
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns2526} data={season2526Data} />
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Choco and Panda scored the same number of points in the season",
-              "Vanilla guessed 0 match results in an EPL game week",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
@@ -635,22 +678,6 @@ export default function BetsSeasonTabs({
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={seasonColumns} data={seasonData.standings} />
-
-          {seasonData.highlights && seasonData.highlights.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-title font-bold mb-6">Highlights</h2>
-              <div className="flex flex-wrap gap-3">
-                {seasonData.highlights.map((highlight, index) => (
-                  <div
-                    key={index}
-                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
-                  >
-                    {highlight}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
         </>
       )
     } else if (activeSeason === "All Time") {
@@ -679,23 +706,64 @@ export default function BetsSeasonTabs({
     }
   }
 
+  const renderInsightsContent = () => {
+    const highlights = seasonHighlightCards[activeSeason]
+    if (highlights && highlights.length > 0) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
+        </div>
+      )
+    }
+    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+  }
+
+  const renderBrecordsContent = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {betsRecordCards.map((card, i) => <StatCardTile key={i} card={card} />)}
+    </div>
+  )
+
   return (
     <>
-      {/* Season tabs */}
+      {/* Page header + season dropdown */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-title font-bold mb-4">{title}</h1>
+          <p className="text-basic text-gray-600">{description}</p>
+        </div>
+        <select
+          value={activeSeason}
+          onChange={(e) => {
+            const season = e.target.value as Season
+            setActiveSeason(season)
+            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+          }}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
+        >
+          {seasons.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Page tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {seasons.map((season) => (
+            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
               <button
-                key={season}
-                onClick={() => setActiveSeason(season)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeSeason === season
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
+                  activeTab === tab
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {season}
+                {tab}
               </button>
             ))}
           </nav>
@@ -716,8 +784,10 @@ export default function BetsSeasonTabs({
         </div>
       )}
 
-      {/* Render content based on active tab */}
-      {renderContent()}
+      {/* Render content based on active page tab */}
+      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Insights" && renderInsightsContent()}
+      {activeTab === "Brecords" && renderBrecordsContent()}
     </>
   )
 }

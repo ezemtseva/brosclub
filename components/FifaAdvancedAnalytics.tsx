@@ -1,7 +1,14 @@
 "use client"
 
 import React from "react"
+import Image from "next/image"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
+
+const PLAYER_AVATARS: Record<string, string> = {
+  Vanilla: "/imgs/vanilla.png",
+  Choco: "/imgs/choco.png",
+  Panda: "/imgs/panda.png",
+}
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -441,7 +448,7 @@ function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" |
   const hasTooltip = scored !== undefined && conceded !== undefined && opponent
   return (
     <span className="relative group">
-      <span className={`w-6 h-6 inline-flex items-center justify-center rounded text-white text-[11px] font-bold leading-none ${cls}`}>
+      <span className={`w-6 h-6 text-[11px] font-bold inline-flex items-center justify-center rounded text-white leading-none ${cls}`}>
         {result}
       </span>
       {hasTooltip && (
@@ -457,43 +464,63 @@ function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" |
 }
 
 function PlayerStatsCard({ s }: { s: PlayerStats }) {
+  const winRate = s.played > 0 ? s.wins / s.played : 0
+  const drawRate = s.played > 0 ? s.draws / s.played : 0
+  const goalShare = s.gf + s.ga > 0 ? s.gf / (s.gf + s.ga) : 0
+  const last5 = s.form.slice(0, 5)
+  const last5Pts = last5.reduce((acc, f) => acc + (f.result === "W" ? 3 : f.result === "D" ? 1 : 0), 0)
+  const formPPG = last5.length > 0 ? (last5Pts / last5.length).toFixed(2) : "0.00"
+
   return (
-    <div className="bg-gray-50 rounded-lg p-4 flex flex-col gap-3 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="flex items-center justify-center">
-        <span className="font-bold" style={{ color: s.color }}>{s.player}</span>
-      </div>
-
-      <div className="grid grid-cols-5 gap-1 text-center">
-        {[
-          ["GP", s.played],
-          ["W", s.wins],
-          ["D", s.draws],
-          ["L", s.losses],
-          ["PTS", s.pts],
-        ].map(([label, val]) => (
-          <div key={label as string}>
-            <div className="text-lg font-bold text-gray-800 leading-tight">{val}</div>
-            <div className="text-[10px] text-gray-400 uppercase">{label}</div>
+    <div className="rounded-2xl p-5 flex flex-col gap-4 shadow-sm border bg-gray-50 border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <Image
+            src={PLAYER_AVATARS[s.player]}
+            alt={s.player}
+            width={56}
+            height={56}
+            className="rounded-full object-cover w-14 h-14"
+          />
+          <div>
+            <div className="font-bold text-xl text-gray-900">{s.player}</div>
+            <div className="text-xs text-gray-500 mt-1">{formPPG} PPG</div>
           </div>
-        ))}
+        </div>
+        <div className="text-right">
+          <div className="text-4xl font-bold leading-none" style={{ color: s.color }}>{s.pts}</div>
+          <div className="text-[11px] text-gray-400 uppercase mt-1.5">Points in {s.played} games</div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-1 text-center">
-        {[
-          ["GS", s.gf],
-          ["GSA", s.avgScored.toFixed(2)],
-          ["GC", s.ga],
-          ["GCA", s.avgConceded.toFixed(2)],
-          ["GD", (s.gd > 0 ? "+" : "") + s.gd],
-        ].map(([label, val]) => (
-          <div key={label as string}>
-            <div className="text-lg font-bold text-gray-800 leading-tight">{val}</div>
-            <div className="text-[10px] text-gray-400 uppercase">{label}</div>
-          </div>
-        ))}
+      <div>
+        <div className="h-2 rounded-full bg-gray-200 overflow-hidden flex">
+          <div className="h-full" style={{ width: `${winRate * 100}%`, backgroundColor: s.color }} />
+          <div className="h-full bg-gray-400" style={{ width: `${drawRate * 100}%` }} />
+        </div>
+        <div className="relative text-xs mt-1 h-4">
+          <span className="absolute left-0" style={{ color: s.color }}>{s.wins}W</span>
+          <span
+            className="absolute -translate-x-1/2 text-gray-400"
+            style={{ left: `${(winRate + drawRate / 2) * 100}%` }}
+          >
+            {s.draws}D
+          </span>
+          <span className="absolute right-0 text-gray-700">{s.losses}L</span>
+        </div>
       </div>
 
-      <div className="flex gap-1 justify-center">
+      <div>
+        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+          <div className="h-full rounded-full" style={{ width: `${goalShare * 100}%`, backgroundColor: s.color }} />
+        </div>
+        <div className="flex items-center justify-between text-xs mt-1">
+          <span style={{ color: s.color }}>{s.gf}GS</span>
+          <span className="text-gray-700">{s.ga}GC</span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between">
         {s.form.map((f, i) => <FormBadge key={i} result={f.result} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />)}
         {Array.from({ length: 10 - s.form.length }).map((_, i) => (
           <span key={"pad" + i} className="w-6 h-6 rounded bg-gray-100" />
@@ -514,19 +541,25 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
         return (
           <div key={pA + pB} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
             <div className="flex items-center justify-between mb-3">
-              <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pA] }}>{pA}</span>
+              <div className="flex items-center gap-2">
+                <Image src={PLAYER_AVATARS[pA]} alt={pA} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
+                <span className="font-bold text-base text-gray-900">{pA}</span>
+              </div>
               <span className="text-gray-400">{total} games</span>
-              <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pB] }}>{pB}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-base text-gray-900">{pB}</span>
+                <Image src={PLAYER_AVATARS[pB]} alt={pB} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
+              </div>
             </div>
 
             {total > 0 && (
               <>
-                <div className="flex text-lg font-bold mb-1">
-                  <div className="text-left" style={{ width: `${(r.wins / total) * 100}%`, color: PLAYER_COLORS[pA] }}>{r.wins}</div>
-                  <div className="text-center text-gray-400" style={{ width: `${(r.draws / total) * 100}%` }}>{r.draws}</div>
-                  <div className="text-right" style={{ width: `${(r.losses / total) * 100}%`, color: PLAYER_COLORS[pB] }}>{r.losses}</div>
+                <div className="flex text-lg mb-1">
+                  <div className="text-left" style={{ width: `${(r.wins / total) * 100}%`, color: PLAYER_COLORS[pA] }}>{r.wins}W</div>
+                  <div className="text-center text-gray-400" style={{ width: `${(r.draws / total) * 100}%` }}>{r.draws}D</div>
+                  <div className="text-right" style={{ width: `${(r.losses / total) * 100}%`, color: PLAYER_COLORS[pB] }}>{r.losses}W</div>
                 </div>
-                <div className="flex rounded-full overflow-hidden h-1.5 mb-2">
+                <div className="flex rounded-full overflow-hidden h-2 mb-2">
                   <div style={{ width: `${(r.wins / total) * 100}%`, backgroundColor: PLAYER_COLORS[pA] }} />
                   <div style={{ width: `${(r.draws / total) * 100}%` }} className="bg-gray-200" />
                   <div style={{ width: `${(r.losses / total) * 100}%`, backgroundColor: PLAYER_COLORS[pB] }} />
@@ -534,9 +567,9 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
               </>
             )}
 
-            <div className="flex justify-between text-[10px] text-gray-400">
-              <span>{r.gf} goals</span>
-              <span>{r.ga} goals</span>
+            <div className="flex justify-between text-[10px]">
+              <span style={{ color: PLAYER_COLORS[pA] }}>{r.gf}GS</span>
+              <span style={{ color: PLAYER_COLORS[pB] }}>{r.ga}GS</span>
             </div>
           </div>
         )
@@ -608,26 +641,19 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   )
 }
 
-function RecordCard({ label, content, className = "" }: { label: string; content: React.ReactNode; className?: string }) {
+function StatCard({
+  value,
+  valueColor,
+  description,
+}: {
+  value: React.ReactNode
+  valueColor?: string
+  description: React.ReactNode
+}) {
   return (
-    <div className={`bg-gray-50 rounded-lg p-3 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 ${className}`}>
-      <div className="text-[10px] text-gray-400 uppercase font-medium mb-2">{label}</div>
-      {content}
-    </div>
-  )
-}
-
-function TeamLogoSmall({ team, teamLogos }: { team: string; teamLogos: Record<string, string> }) {
-  return (
-    <div className="w-6 h-6 shrink-0 flex items-center justify-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={teamLogos[team] || "/placeholder.svg"}
-        alt={team}
-        width={24}
-        height={24}
-        className={`object-contain ${team === "Atletico Madrid" ? "w-5 h-5" : "w-6 h-6"}`}
-      />
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="text-3xl font-bold leading-none" style={{ color: valueColor ?? "#1f2937" }}>{value}</div>
+      <p className="text-sm text-gray-600">{description}</p>
     </div>
   )
 }
@@ -636,148 +662,147 @@ function TeamNameUnderlined({ team, playerTeams, className }: { team: string; pl
   const player = getPlayerForTeam(team, playerTeams)
   const color = player ? PLAYER_COLORS[player] : undefined
   return (
-    <span className={`relative ${className ?? ""}`}>
+    <span className={`relative whitespace-nowrap text-sm ${className ?? ""}`}>
       {shortenTeamName(team)}
       {color && <span className="absolute bottom-0 left-0 h-[2px] w-[0.85em]" style={{ backgroundColor: color }} />}
     </span>
   )
 }
 
-function RecordsSection({ records, playerTeams, teamLogos }: { records: RecordsData; playerTeams: PlayerTeams; teamLogos: Record<string, string> }) {
-  const bestWinRateContent = records.bestWinRate
-    ? <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <TeamLogoSmall team={records.bestWinRate.team} teamLogos={teamLogos} />
-          <TeamNameUnderlined team={records.bestWinRate.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
-        </div>
-        <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRate.winRate * 100)}%</div>
-      </div>
-    : <div className="text-gray-400 text-sm">No data</div>
+function RecordsSection({ records, playerTeams }: { records: RecordsData; playerTeams: PlayerTeams }) {
+  const cards: React.ReactNode[] = []
+
+  if (records.highestScoring) {
+    const { match, total } = records.highestScoring
+    cards.push(
+      <StatCard
+        key="highestScoring"
+        value={total}
+        description={
+          <>
+            <span className="block text-sm">Highest-scoring game</span>
+            <span className="block text-sm"><TeamNameUnderlined team={match.teamA} playerTeams={playerTeams} /> {match.scoreA}:{match.scoreB} <TeamNameUnderlined team={match.teamB} playerTeams={playerTeams} /></span>
+          </>
+        }
+      />
+    )
+  }
+
+  if (records.biggestWin) {
+    const { match, margin } = records.biggestWin
+    cards.push(
+      <StatCard
+        key="biggestWin"
+        value={margin}
+        description={
+          <>
+            <span className="block text-sm">Biggest win</span>
+            <span className="block text-sm"><TeamNameUnderlined team={match.teamA} playerTeams={playerTeams} /> {match.scoreA}:{match.scoreB} <TeamNameUnderlined team={match.teamB} playerTeams={playerTeams} /></span>
+          </>
+        }
+      />
+    )
+  }
+
+  if (records.bestAttack) {
+    const player = getPlayerForTeam(records.bestAttack.team, playerTeams)
+    cards.push(
+      <StatCard
+        key="bestAttack"
+        value={records.bestAttack.gf}
+        valueColor={player ? PLAYER_COLORS[player] : undefined}
+        description={<>{shortenTeamName(records.bestAttack.team)} have scored the most goals</>}
+      />
+    )
+  }
+
+  if (records.bestDefense) {
+    const player = getPlayerForTeam(records.bestDefense.team, playerTeams)
+    cards.push(
+      <StatCard
+        key="bestDefense"
+        value={records.bestDefense.ga}
+        valueColor={player ? PLAYER_COLORS[player] : undefined}
+        description={<>{shortenTeamName(records.bestDefense.team)} have conceded the fewest goals</>}
+      />
+    )
+  }
+
+  if (records.bestWinRate) {
+    const player = getPlayerForTeam(records.bestWinRate.team, playerTeams)
+    cards.push(
+      <StatCard
+        key="bestWinRateTeam"
+        value={`${Math.round(records.bestWinRate.winRate * 100)}%`}
+        valueColor={player ? PLAYER_COLORS[player] : undefined}
+        description={<>{shortenTeamName(records.bestWinRate.team)} have the best win rate</>}
+      />
+    )
+  }
+
+  if (records.longestWinStreak) {
+    const { player, length } = records.longestWinStreak
+    cards.push(
+      <StatCard
+        key="winStreak"
+        value={length}
+        valueColor={PLAYER_COLORS[player]}
+        description={<>{player}'s longest winning streak</>}
+      />
+    )
+  }
+
+  if (records.mostCleanSheets) {
+    const { player, count } = records.mostCleanSheets
+    cards.push(
+      <StatCard
+        key="cleanSheets"
+        value={count}
+        valueColor={PLAYER_COLORS[player]}
+        description={<>{player} has kept the most clean sheets</>}
+      />
+    )
+  }
+
+  if (records.longestUnbeaten) {
+    const { player, length } = records.longestUnbeaten
+    cards.push(
+      <StatCard
+        key="unbeaten"
+        value={length}
+        valueColor={PLAYER_COLORS[player]}
+        description={<>{player}'s longest unbeaten run</>}
+      />
+    )
+  }
+
+  if (records.bestWinRatePlayer) {
+    const { player, winRate } = records.bestWinRatePlayer
+    cards.push(
+      <StatCard
+        key="winRatePlayer"
+        value={`${Math.round(winRate * 100)}%`}
+        valueColor={PLAYER_COLORS[player]}
+        description={<>{player} has the best win rate</>}
+      />
+    )
+  }
+
+  if (records.bestFormPlayer) {
+    const { player, formPPG } = records.bestFormPlayer
+    cards.push(
+      <StatCard
+        key="bestForm"
+        value={formPPG.toFixed(2)}
+        valueColor={PLAYER_COLORS[player]}
+        description={<>{player} is in the best current form</>}
+      />
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-3 records-outer">
-      {/* Row 1: team records (5 cards; at 1024-1249px the 5th is hidden and moves to row 2) */}
-      <div className="grid records-row-1 gap-3">
-        <RecordCard
-          label="Biggest Win"
-          content={records.biggestWin
-            ? <>
-                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
-                  <TeamLogoSmall team={records.biggestWin.match.teamA} teamLogos={teamLogos} />
-                  <TeamNameUnderlined team={records.biggestWin.match.teamA} playerTeams={playerTeams} className="text-gray-800" />
-                  <span className="font-bold text-gray-700">{records.biggestWin.match.scoreA}:{records.biggestWin.match.scoreB}</span>
-                  <TeamLogoSmall team={records.biggestWin.match.teamB} teamLogos={teamLogos} />
-                  <TeamNameUnderlined team={records.biggestWin.match.teamB} playerTeams={playerTeams} className="text-gray-800" />
-                </div>
-                <div className="text-[10px] text-gray-400 text-right">+{records.biggestWin.margin} goal margin</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Highest Scoring"
-          content={records.highestScoring
-            ? <>
-                <div className="flex items-center gap-1.5 mb-1 whitespace-nowrap">
-                  <TeamLogoSmall team={records.highestScoring.match.teamA} teamLogos={teamLogos} />
-                  <TeamNameUnderlined team={records.highestScoring.match.teamA} playerTeams={playerTeams} className="text-gray-800" />
-                  <span className="font-bold text-gray-700">{records.highestScoring.match.scoreA}:{records.highestScoring.match.scoreB}</span>
-                  <TeamLogoSmall team={records.highestScoring.match.teamB} teamLogos={teamLogos} />
-                  <TeamNameUnderlined team={records.highestScoring.match.teamB} playerTeams={playerTeams} className="text-gray-800" />
-                </div>
-                <div className="text-[10px] text-gray-400 text-right">{records.highestScoring.total} goals total</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Best Attack"
-          content={records.bestAttack
-            ? <>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <TeamLogoSmall team={records.bestAttack.team} teamLogos={teamLogos} />
-                    <TeamNameUnderlined team={records.bestAttack.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
-                  </div>
-                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestAttack.gf}</div>
-                </div>
-                <div className="text-[10px] text-gray-400 text-right mt-0.5">goals scored</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Best Defense"
-          content={records.bestDefense
-            ? <>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <TeamLogoSmall team={records.bestDefense.team} teamLogos={teamLogos} />
-                    <TeamNameUnderlined team={records.bestDefense.team} playerTeams={playerTeams} className="text-gray-800 truncate" />
-                  </div>
-                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestDefense.ga}</div>
-                </div>
-                <div className="text-[10px] text-gray-400 text-right mt-0.5">goals conceded</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        {/* Hidden at 1024-1249px — duplicate shown in row 2 instead */}
-        <RecordCard className="records-bwr-r1" label="Best Win Rate" content={bestWinRateContent} />
-      </div>
-
-      {/* Row 2: player records + Best Win Rate duplicate (shown only at 1024-1249px) */}
-      <div className="grid records-row-2 gap-3">
-        <RecordCard
-          label="Win Streak"
-          content={records.longestWinStreak
-            ? <div className="flex items-start justify-between gap-2">
-                <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.longestWinStreak.player] }}>{records.longestWinStreak.player}</div>
-                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestWinStreak.length}</div>
-              </div>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Clean Sheets"
-          content={records.mostCleanSheets
-            ? <div className="flex items-start justify-between gap-2">
-                <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.mostCleanSheets.player] }}>{records.mostCleanSheets.player}</div>
-                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.mostCleanSheets.count}</div>
-              </div>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Unbeaten Streak"
-          content={records.longestUnbeaten
-            ? <div className="flex items-start justify-between gap-2">
-                <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.longestUnbeaten.player] }}>{records.longestUnbeaten.player}</div>
-                <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.longestUnbeaten.length}</div>
-              </div>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Win Rate"
-          content={records.bestWinRatePlayer
-            ? <>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.bestWinRatePlayer.player] }}>{records.bestWinRatePlayer.player}</div>
-                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{Math.round(records.bestWinRatePlayer.winRate * 100)}%</div>
-                </div>
-                <div className="text-[10px] text-gray-400 text-right mt-0.5">{records.bestWinRatePlayer.wins}W in {records.bestWinRatePlayer.games} games</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        <RecordCard
-          label="Best Form"
-          content={records.bestFormPlayer
-            ? <>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="font-bold text-base" style={{ color: PLAYER_COLORS[records.bestFormPlayer.player] }}>{records.bestFormPlayer.player}</div>
-                  <div className="text-[20px] md:text-2xl font-bold text-gray-800 leading-none shrink-0">{records.bestFormPlayer.formPPG.toFixed(2)}</div>
-                </div>
-                <div className="text-[10px] text-gray-400 text-right mt-0.5">PPG last 5</div>
-              </>
-            : <div className="text-gray-400 text-sm">No data</div>}
-        />
-        {/* Duplicate of Best Win Rate — shown only at 1024-1249px */}
-        <RecordCard className="records-bwr-r2" label="Best Win Rate" content={bestWinRateContent} />
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {cards}
     </div>
   )
 }
@@ -851,7 +876,7 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
       {/* Records */}
       <section>
         <h3 className="text-[16px] font-bold mb-4">Records</h3>
-        <RecordsSection records={records} playerTeams={playerTeams} teamLogos={teamLogos} />
+        <RecordsSection records={records} playerTeams={playerTeams} />
       </section>
 
       {/* Predictions */}

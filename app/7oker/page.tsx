@@ -216,21 +216,23 @@ export default async function SevenOkerPage() {
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <AutoRefresh intervalMs={30000} />
-      <h1 className="text-title font-bold mb-4">7oker Cup</h1>
-      <p className="text-base text-gray-600 mb-8">
-        III season of loosing solid games in the last round. {" "}
-        <Link
-          href="https://bearos-poker.vercel.app/"
-          className="text-blue-500 hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          You should try it
-        </Link>
-        .
-      </p>
 
       <SevenOkerSeasonTabs
+        title="7oker Cup"
+        description={
+          <>
+            III season of loosing solid games in the last round. {" "}
+            <Link
+              href="https://bearos-poker.vercel.app/"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              You should try it
+            </Link>
+            .
+          </>
+        }
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentSeasonChartData}
         currentSeasonPieData={currentSeasonPieData}

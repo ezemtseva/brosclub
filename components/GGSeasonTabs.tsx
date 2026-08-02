@@ -23,6 +23,42 @@ function playerNameFromColor(color: string): string {
   return Object.entries(playerColors).find(([, c]) => c === color)?.[0] ?? ""
 }
 
+const pageTabs = ["Standings", "Insights", "Brecords"] as const
+type PageTab = (typeof pageTabs)[number]
+
+type StatCard = {
+  value: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+const ggRecordCards: StatCard[] = [
+  { value: "4m", player: "Vanilla", description: "Vanilla holds the record for the most accurate guess when the location was known — Plaza Mayor, Arequipa (2024/25)" },
+  { value: "910m", player: "Vanilla", description: "Vanilla holds the record for the most accurate guess when the location was unknown — Monastery of Santa Catalina, Arequipa (2024/25)" },
+  { value: "129m", player: "Vanilla", description: "Vanilla hit the first 5K in the competition — Belgrade (2024/25)" },
+  { value: "12", player: "Vanilla", description: "Vanilla struck the most 5Ks in a season (2024/25)" },
+]
+
+// Season-specific highlights, shown on the Insights tab for the selected season
+const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
+  "2024/25": [
+    { value: "4m", player: "Vanilla", description: "Vanilla set the record for the most accurate guess when the location was known (Plaza Mayor, Arequipa)" },
+    { value: "910m", player: "Vanilla", description: "Vanilla set the record for the most accurate guess when the location was unknown (Monastery of Santa Catalina, Arequipa)" },
+    { value: "12", player: "Vanilla", description: "Vanilla struck the most 5Ks in a season" },
+  ],
+}
+
+function StatCardTile({ card }: { card: StatCard }) {
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="h-14 flex items-center">
+        <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
+      </div>
+      <p className="text-sm text-gray-600">{card.description}</p>
+    </div>
+  )
+}
+
 // All Time columns
 const allTimeColumns = [
   { header: "#", accessor: "position" },
@@ -36,6 +72,8 @@ const allTimeColumns = [
 ]
 
 type GGSeasonTabsProps = {
+  title: string
+  description: string
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
@@ -48,6 +86,8 @@ type GGSeasonTabsProps = {
 }
 
 export default function GGSeasonTabs({
+  title,
+  description,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -59,6 +99,7 @@ export default function GGSeasonTabs({
   columns,
 }: GGSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2025/26")
+  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -122,7 +163,7 @@ export default function GGSeasonTabs({
   }
 
   // Render content based on active tab
-  const renderContent = () => {
+  const renderStandingsContent = () => {
     if (activeSeason === "2025/26") {
       // For the current season, use the live data from ggEntry
       return (
@@ -166,18 +207,6 @@ export default function GGSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Vanilla sets the record for the most accurate guess when the location was known – 4 m, Plaza Mayor (Arequipa)",
-              "Vanilla sets the record for the most accurate guess when the location was unknown – 910 m, Monastery of Santa Catalina (Arequipa)",
-              "Vanilla struck the most 5Ks in a season - 12",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
-
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
@@ -210,23 +239,64 @@ export default function GGSeasonTabs({
     }
   }
 
+  const renderInsightsContent = () => {
+    const highlights = seasonHighlightCards[activeSeason]
+    if (highlights && highlights.length > 0) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
+        </div>
+      )
+    }
+    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+  }
+
+  const renderBrecordsContent = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {ggRecordCards.map((card, i) => <StatCardTile key={i} card={card} />)}
+    </div>
+  )
+
   return (
     <>
-      {/* Season tabs */}
+      {/* Page header + season dropdown */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-title font-bold mb-4">{title}</h1>
+          <p className="text-basic text-gray-600">{description}</p>
+        </div>
+        <select
+          value={activeSeason}
+          onChange={(e) => {
+            const season = e.target.value as Season
+            setActiveSeason(season)
+            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+          }}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
+        >
+          {seasons.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Page tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {seasons.map((season) => (
+            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
               <button
-                key={season}
-                onClick={() => setActiveSeason(season)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeSeason === season
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
+                  activeTab === tab
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {season}
+                {tab}
               </button>
             ))}
           </nav>
@@ -246,8 +316,10 @@ export default function GGSeasonTabs({
         </div>
       )}
 
-      {/* Render content based on active tab */}
-      {renderContent()}
+      {/* Render content based on active page tab */}
+      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Insights" && renderInsightsContent()}
+      {activeTab === "Brecords" && renderBrecordsContent()}
     </>
   )
 }

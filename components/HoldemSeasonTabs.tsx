@@ -7,6 +7,13 @@ import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamic from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import Image from "next/image"
+
+const PLAYER_AVATARS: Record<keyof typeof PLAYER_COLORS, string> = {
+  Vanilla: "/imgs/vanilla.png",
+  Choco: "/imgs/choco.png",
+  Panda: "/imgs/panda.png",
+}
 
 const PokerChart = dynamic(() => import("./PokerChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -16,6 +23,68 @@ const seasons = ["XXXX/XX", "2024/25", "2020", "2019", "2018", "2017", "2016", "
 type Season = (typeof seasons)[number]
 
 const visibleSeasons = seasons.filter((season) => season !== "XXXX/XX")
+
+const pageTabs = ["Standings", "Insights", "Brecords"] as const
+type PageTab = (typeof pageTabs)[number]
+
+type StatCard = {
+  value?: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+const holdemRecordCards: StatCard[] = [
+  { player: "Panda", description: "Panda won the first game (06.09.2012)" },
+  { value: "263", player: "Panda", description: "Panda was the first to win 100 games — it took him 263 games (09.06.2017)" },
+  { value: "1h 41m", description: "The longest poker game (2015)" },
+  { value: "5", player: "Panda", description: "Panda holds the record for the longest winning streak — 5 games (10th season, 2025)" },
+  { player: "Choco", description: "Choco is the first player to get a straight flush and four aces" },
+  { player: "Vanilla", description: "Vanilla is the first player to get a six- and seven-card straight flush" },
+  { player: "Panda", description: "Panda is the first and only player to get a royal flush (hearts) — first in 2014, then again in 2025" },
+]
+
+// Season-specific highlights, shown on the Insights tab for the selected season
+const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
+  "2024/25": [
+    { value: "5", player: "Panda", description: "Panda set the new record for the longest winning streak" },
+    { player: "Panda", description: "Panda got his second royal flush, again hearts" },
+  ],
+  "2018": [
+    { value: "50%", player: "Panda", description: "Panda set the biggest win rate in a season" },
+  ],
+  "2017": [
+    { value: "23", description: "Largest gap between 1st and 2nd place this season" },
+  ],
+  "2015": [
+    { value: "1h 41m", description: "The longest poker game" },
+  ],
+  "2014": [
+    { player: "Vanilla", description: "Vanilla is the first player to get a six- and seven-card straight flush" },
+    { player: "Panda", description: "Panda is the first and only player to get a royal flush (hearts)" },
+  ],
+  "2013": [
+    { player: "Choco", description: "Choco is the first player to get a straight flush and four aces" },
+  ],
+  "2012": [
+    { player: "Panda", description: "Panda won the first club game" },
+    { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
+  ],
+}
+
+function StatCardTile({ card }: { card: StatCard }) {
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="h-14 flex items-center">
+        {card.value ? (
+          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
+        ) : card.player ? (
+          <Image src={PLAYER_AVATARS[card.player]} alt={card.player} width={56} height={56} className="rounded-full object-cover w-14 h-14" />
+        ) : null}
+      </div>
+      <p className="text-sm text-gray-600">{card.description}</p>
+    </div>
+  )
+}
 
 // Define types for the standings data
 type StandingsData = {
@@ -277,7 +346,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
     ],
-    highlights: ["Panda set the biggest win rate in a season"],
   },
   "2017": {
     standings: [
@@ -359,7 +427,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
     ],
-    highlights: ["The largest gap between 1st and 2nd place"],
   },
   "2016": {
     standings: [
@@ -522,7 +589,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
     ],
-    highlights: ["The longest poker game lasted 1 hour and 41 minutes"],
   },
   "2014": {
     standings: [
@@ -603,10 +669,6 @@ const pastSeasonsData: PastSeasonsData = {
         value: 13,
         color: "#cccccc",
       },
-    ],
-    highlights: [
-      "Vanilla is the first player to get a six- and seven-card straight flush",
-      "Panda is the first and only player to get a royal flush (hearts)",
     ],
   },
   "2013": {
@@ -689,7 +751,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
     ],
-    highlights: ["Choco is the first player to get a straight flush and four aces"],
   },
   "2012": {
     standings: [
@@ -771,7 +832,6 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
     ],
-    highlights: ["Panda won the first club game", "The smallest gap between 1st and 2nd place"],
   },
 }
 
@@ -792,6 +852,8 @@ const allTimeColumns = [
 ]
 
 type HoldemSeasonTabsProps = {
+  title: string
+  description: string
   currentSeasonData: StandingsData[]
   currentSeasonChartData: any[]
   currentSeasonPieData: PieChartData[]
@@ -804,6 +866,8 @@ type HoldemSeasonTabsProps = {
 }
 
 export default function HoldemSeasonTabs({
+  title,
+  description,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -815,6 +879,7 @@ export default function HoldemSeasonTabs({
   columns,
 }: HoldemSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2024/25") // Update to return 2025-26
+  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
@@ -879,7 +944,7 @@ export default function HoldemSeasonTabs({
   }
 
   // Render content based on active tab
-  const renderContent = () => {
+  const renderStandingsContent = () => {
     if (activeSeason === "XXXX/XX") {
       // For the current season (2025/26), use the live data from pokerEntry
       return (
@@ -915,17 +980,6 @@ export default function HoldemSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Panda sets the new record for the longest winning streak – 5 games",
-              "Panda is the first and only player to get second royal flush (and again hearts)",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
-
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
@@ -960,29 +1014,6 @@ export default function HoldemSeasonTabs({
             <p className="text-gray-500 italic mb-8">
               Standings data for the {activeSeason} season will be added soon.
             </p>
-          )}
-
-          {/* Only show Highlights section if there are highlights */}
-          {seasonData.highlights && seasonData.highlights.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-title font-bold mb-6">Highlights</h2>
-              <div className="flex flex-wrap gap-3 mb-8">
-                {seasonData.highlights.map((highlight, index) => (
-                  <div
-                    key={index}
-                    className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100"
-                  >
-                    {highlight}
-                  </div>
-                ))}
-              </div>
-              {/* Pie chart is kept in code but hidden with CSS */}
-              {seasonData.pieChartData && (
-                <div className="hidden">
-                  <PieChart data={seasonData.pieChartData} />
-                </div>
-              )}
-            </section>
           )}
         </>
       )
@@ -1024,31 +1055,74 @@ export default function HoldemSeasonTabs({
     }
   }
 
+  const renderInsightsContent = () => {
+    const highlights = seasonHighlightCards[activeSeason]
+    if (highlights && highlights.length > 0) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
+        </div>
+      )
+    }
+    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+  }
+
+  const renderBrecordsContent = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {holdemRecordCards.map((card, i) => <StatCardTile key={i} card={card} />)}
+    </div>
+  )
+
   return (
     <>
-      {/* Season tabs */}
+      {/* Page header + season dropdown */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-title font-bold mb-4">{title}</h1>
+          <p className="text-basic text-gray-600">{description}</p>
+        </div>
+        <select
+          value={activeSeason}
+          onChange={(e) => {
+            const season = e.target.value as Season
+            setActiveSeason(season)
+            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+          }}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
+        >
+          {visibleSeasons.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Page tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {visibleSeasons.map((season) => (
+            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
               <button
-                key={season}
-                onClick={() => setActiveSeason(season)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeSeason === season
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
+                  activeTab === tab
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {season}
+                {tab}
               </button>
             ))}
           </nav>
         </div>
       </div>
 
-      {/* Render content based on active tab */}
-      {renderContent()}
+      {/* Render content based on active page tab */}
+      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Insights" && renderInsightsContent()}
+      {activeTab === "Brecords" && renderBrecordsContent()}
     </>
   )
 }

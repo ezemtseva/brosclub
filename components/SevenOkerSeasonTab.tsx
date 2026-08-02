@@ -1,7 +1,9 @@
 "use client"
 
+import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import SevenOkerChartToggle from "./SevenOkerChartToggle"
@@ -20,6 +22,68 @@ function playerNameFromColor(color: string): string {
   return Object.entries(playerColors).find(([, c]) => c === color)?.[0] ?? ""
 }
 
+const pageTabs = ["Standings", "Insights", "Brecords"] as const
+type PageTab = (typeof pageTabs)[number]
+
+const PLAYER_AVATARS: Record<string, string> = {
+  Vanilla: "/imgs/vanilla.png",
+  Choco: "/imgs/choco.png",
+  Panda: "/imgs/panda.png",
+}
+
+type StatCard = {
+  value?: string
+  player?: keyof typeof PLAYER_COLORS
+  description: string
+}
+
+const sevenOkerRecordCards: StatCard[] = [
+  { player: "Vanilla", description: "Vanilla won the first ever 7oker game (29.03.2025)" },
+  { value: "71", player: "Panda", description: "Panda won the first season — took him 71 games to reach 100 points" },
+  { player: "Choco", description: "Choco was the first to win a game by golden round against Panda (2024/25)" },
+  { value: "5", description: "Vanilla and Choco share the longest winning streak — 5 games (2024/25 and 2025/26)" },
+  { value: "298", player: "Panda", description: "Panda scored the biggest amount of points in a single game (2025/26)" },
+  { value: "10.645", player: "Panda", description: "Panda holds the record for the most gamepoints in a season (2025/26)" },
+]
+
+// Season-specific highlights, shown on the Insights tab for the selected season
+const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
+  "2025/26": [
+    { value: "298", player: "Panda", description: "Panda set the new record for the most points in a single game" },
+    { value: "5", player: "Vanilla", description: "Vanilla matched Choco's record with 5 consecutive wins" },
+    { value: "10.645", player: "Panda", description: "Panda broke his own record for the most gamepoints in a season" },
+  ],
+  "2024/25": [
+    { player: "Vanilla", description: "Vanilla won the first ever game" },
+    { player: "Panda", description: "Panda won the first cup" },
+    { player: "Choco", description: "Choco was the first one to win the game by golden round against Panda" },
+    { value: "5", player: "Choco", description: "Choco set the longest winning streak — 5 games in a row" },
+    { value: "294", player: "Vanilla", description: "Vanilla scored the biggest amount of points in a single game" },
+    { value: "10.422", player: "Panda", description: "Panda scored the biggest amount of gamepoints in a season" },
+  ],
+}
+
+function StatCardTile({ card }: { card: StatCard }) {
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="h-14 flex items-center">
+        {card.value ? (
+          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
+        ) : card.player ? (
+          <Image
+            src={PLAYER_AVATARS[card.player]}
+            alt={card.player}
+            width={56}
+            height={56}
+            className="rounded-full object-cover w-14 h-14"
+          />
+        ) : null}
+      </div>
+      <p className="text-sm text-gray-600">{card.description}</p>
+    </div>
+  )
+}
+
 // All Time columns
 const allTimeColumns = [
   { header: "#", accessor: "position" },
@@ -34,6 +98,8 @@ const allTimeColumns = [
 ]
 
 type SevenOkerSeasonTabsProps = {
+  title: string
+  description: React.ReactNode
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
@@ -50,6 +116,8 @@ type SevenOkerSeasonTabsProps = {
 }
 
 export default function SevenOkerSeasonTabs({
+  title,
+  description,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -65,6 +133,7 @@ export default function SevenOkerSeasonTabs({
   columns,
 }: SevenOkerSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
+  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -130,7 +199,7 @@ export default function SevenOkerSeasonTabs({
   }
 
   // Render content based on active tab
-  const renderContent = () => {
+  const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
       if (currentSeasonData.length === 0) {
@@ -172,18 +241,6 @@ export default function SevenOkerSeasonTabs({
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Panda sets the new record for the most points in a single game – 298",
-              "Vanilla matches Choco's record with 5 consecutive wins",
-              "Panda breaks his own record for the most gamepoints in a season – 10.645",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
-
           <section className="mt-12">
             <SevenOkerChartToggle entries={historicalSeasonChartData} pieChartData={historicalSeasonPieData} />
           </section>
@@ -202,21 +259,6 @@ export default function SevenOkerSeasonTabs({
         <>
           <h2 className="text-title font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={season2425Data} />
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            {[
-              "Vanilla won the first ever game",
-              "Panda won the first cup",
-              "Choco was the first one to win the game by golden round against Panda",
-              "Choco sets the longest winning streak - 5 games in a row",
-              "Vanilla scored the biggest amount of points in a single game - 294",
-              "Panda scored the biggest amount of gamepoints in a season - 10.422",
-            ].map((text, i) => (
-              <span key={i} className="inline-block bg-amber-200 text-black-800 px-4 py-2 rounded-full text-sm font-small border border-amber-100">
-                {text}
-              </span>
-            ))}
-          </div>
 
           <section className="mt-12">
             <SevenOkerChartToggle entries={season2425ChartData} pieChartData={season2425PieData} />
@@ -241,23 +283,64 @@ export default function SevenOkerSeasonTabs({
     }
   }
 
+  const renderInsightsContent = () => {
+    const highlights = seasonHighlightCards[activeSeason]
+    if (highlights && highlights.length > 0) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
+        </div>
+      )
+    }
+    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+  }
+
+  const renderBrecordsContent = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {sevenOkerRecordCards.map((card, i) => <StatCardTile key={i} card={card} />)}
+    </div>
+  )
+
   return (
     <>
-      {/* Season tabs */}
+      {/* Page header + season dropdown */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-title font-bold mb-4">{title}</h1>
+          <p className="text-basic text-gray-600">{description}</p>
+        </div>
+        <select
+          value={activeSeason}
+          onChange={(e) => {
+            const season = e.target.value as Season
+            setActiveSeason(season)
+            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+          }}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
+        >
+          {seasons.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Page tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {seasons.map((season) => (
+            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
               <button
-                key={season}
-                onClick={() => setActiveSeason(season)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                  activeSeason === season
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
+                  activeTab === tab
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {season}
+                {tab}
               </button>
             ))}
           </nav>
@@ -278,8 +361,10 @@ export default function SevenOkerSeasonTabs({
         </div>
       )}
 
-      {/* Render content based on active tab */}
-      {renderContent()}
+      {/* Render content based on active page tab */}
+      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Insights" && renderInsightsContent()}
+      {activeTab === "Brecords" && renderBrecordsContent()}
     </>
   )
 }

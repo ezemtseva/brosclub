@@ -134,13 +134,10 @@ export default async function GGPage() {
   return (
     <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
       <AutoRefresh intervalMs={30000} />
-      <h1 className="text-title font-bold mb-4">GeoGuessr Cup</h1>
-      <p className="text-base text-gray-600 mb-8">
-        II season of pretending we all enjoy it. Each game includes three rounds: move, no move and panorama. The player
-        that hits 5K gets an additional point.
-      </p>
 
       <GGSeasonTabs
+        title="GeoGuessr Cup"
+        description="II season of pretending we all enjoy it. Each game includes three rounds: move, no move and panorama. The player that hits 5K gets an additional point."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}

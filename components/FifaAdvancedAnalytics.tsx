@@ -747,7 +747,7 @@ function RecordsSection({ records, playerTeams }: { records: RecordsData; player
         key="winStreak"
         value={length}
         valueColor={PLAYER_COLORS[player]}
-        description={<>{player}'s longest winning streak</>}
+        description={<>{player}&apos;s longest winning streak</>}
       />
     )
   }
@@ -771,7 +771,7 @@ function RecordsSection({ records, playerTeams }: { records: RecordsData; player
         key="unbeaten"
         value={length}
         valueColor={PLAYER_COLORS[player]}
-        description={<>{player}'s longest unbeaten run</>}
+        description={<>{player}&apos;s longest unbeaten run</>}
       />
     )
   }

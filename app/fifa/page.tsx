@@ -345,6 +345,36 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 3",
     },
     {
+      videoId: "MF8tN4Fklbk/",
+      title: "Dominguez",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 19",
+    },
+    {
+      videoId: "bToeoWwFC6w",
+      title: "Gyökeres",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 18",
+    },
+    {
+      videoId: "9mRwnwAIHpw",
+      title: "Onana",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 18",
+    },
+    {
+      videoId: "ei7pF-MVR-U",
+      title: "Dovbyk",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 17",
+    },
+    {
+      videoId: "bTwvOq62MC8",
+      title: "Dybala",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 17",
+    },
+    {
       videoId: "dU5Jzo3WXtE",
       title: "Gyökeres",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

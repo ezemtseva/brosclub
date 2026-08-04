@@ -651,8 +651,8 @@ function StatCard({
   description: React.ReactNode
 }) {
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="text-3xl font-bold leading-none" style={{ color: valueColor ?? "#1f2937" }}>{value}</div>
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-row-reverse items-center justify-between gap-3 sm:flex-col sm:items-start sm:justify-start sm:gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+      <div className="text-3xl font-bold leading-none shrink-0" style={{ color: valueColor ?? "#1f2937" }}>{value}</div>
       <p className="text-sm text-gray-600">{description}</p>
     </div>
   )

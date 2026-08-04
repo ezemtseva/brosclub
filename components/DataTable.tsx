@@ -111,7 +111,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
             ))}
           </tr>
         </thead>
-        <tbody className="text-gray-600 text-xs md:text-sm font-light">
+        <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
           {sortedData.map((row, rowIndex) => (
             <tr
               key={rowIndex}

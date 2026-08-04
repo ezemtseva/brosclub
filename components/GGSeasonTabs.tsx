@@ -169,7 +169,7 @@ export default function GGSeasonTabs({
       return (
         <>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-title font-bold">Standings</h2>
+            <h2 className="text-[16px] font-bold">Standings</h2>
             <button
               onClick={() => setDialogOpen(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
@@ -182,18 +182,18 @@ export default function GGSeasonTabs({
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <GGChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <div className="">
               <ImageCarousel images={currentSeasonHighlights} />
             </div>
@@ -204,24 +204,24 @@ export default function GGSeasonTabs({
       // For the 2024/25 season, use the historical data from ggEntry2024
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <GGChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <div className="">
               <ImageCarousel images={historicalSeasonHighlights} />
             </div>
@@ -232,7 +232,7 @@ export default function GGSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <>
-          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
           <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
@@ -260,26 +260,26 @@ export default function GGSeasonTabs({
   return (
     <>
       {/* Page header + season dropdown */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-title font-bold mb-4">{title}</h1>
-          <p className="text-basic text-gray-600">{description}</p>
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-title font-bold">{title}</h1>
+          <select
+            value={activeSeason}
+            onChange={(e) => {
+              const season = e.target.value as Season
+              setActiveSeason(season)
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+            }}
+            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={activeSeason}
-          onChange={(e) => {
-            const season = e.target.value as Season
-            setActiveSeason(season)
-            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
-          }}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
-        >
-          {seasons.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
+        <p className="text-basic text-gray-600 mt-4">{description}</p>
       </div>
 
       {/* Page tabs */}

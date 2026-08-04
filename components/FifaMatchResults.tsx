@@ -84,7 +84,7 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
             <th className="py-2 px-4 text-center w-[45%] whitespace-nowrap">Away</th>
           </tr>
         </thead>
-        <tbody className="text-gray-600 text-xs md:text-sm font-light">
+        <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
           {matches.length === 0 ? (
             <tr>
               <td colSpan={3} className="py-8 text-center text-gray-400">No matches played yet</td>

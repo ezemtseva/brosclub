@@ -597,7 +597,7 @@ export default function BetsSeasonTabs({
       return (
         <>
           <div className="mb-6">
-            <h2 className="text-title font-bold">Standings</h2>
+            <h2 className="text-[16px] font-bold">Standings</h2>
           </div>
           <DataTable columns={columns} data={currentSeasonData} />
 
@@ -608,11 +608,11 @@ export default function BetsSeasonTabs({
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <BetsChart entries={currentSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={currentSeasonPieData} />
               </div>
             </div>
@@ -623,17 +623,17 @@ export default function BetsSeasonTabs({
       const columns2526 = columns.filter((col) => col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns2526} data={season2526Data} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <BetsChart entries={season2526ChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={season2526PieData} />
               </div>
             </div>
@@ -644,17 +644,17 @@ export default function BetsSeasonTabs({
       const historicalColumns = columns.filter((col) => col.accessor !== "outcomePercent" && col.accessor !== "exactPercent")
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={historicalColumns} data={historicalSeasonData} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <BetsChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>
@@ -676,7 +676,7 @@ export default function BetsSeasonTabs({
 
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={seasonColumns} data={seasonData.standings} />
         </>
       )
@@ -684,7 +684,7 @@ export default function BetsSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <>
-          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
           <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
@@ -692,7 +692,7 @@ export default function BetsSeasonTabs({
       // For other past seasons, show placeholder content that will be replaced with static data later
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <p className="text-gray-500 italic mb-8">Historical data for the {activeSeason} season will be added soon.</p>
 
           <div className="bg-gray-100 p-8 rounded-lg text-center">
@@ -727,26 +727,26 @@ export default function BetsSeasonTabs({
   return (
     <>
       {/* Page header + season dropdown */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-title font-bold mb-4">{title}</h1>
-          <p className="text-basic text-gray-600">{description}</p>
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-title font-bold">{title}</h1>
+          <select
+            value={activeSeason}
+            onChange={(e) => {
+              const season = e.target.value as Season
+              setActiveSeason(season)
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+            }}
+            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={activeSeason}
-          onChange={(e) => {
-            const season = e.target.value as Season
-            setActiveSeason(season)
-            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
-          }}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
-        >
-          {seasons.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
+        <p className="text-basic text-gray-600 mt-4">{description}</p>
       </div>
 
       {/* Page tabs */}

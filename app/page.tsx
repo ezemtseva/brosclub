@@ -173,17 +173,6 @@ async function getLatestFifaLeader() {
   }
 }
 
-function countSundaysSince(startDate: Date) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const daysUntilFirstSunday = (7 - startDate.getDay()) % 7
-  const firstSunday = new Date(startDate)
-  firstSunday.setDate(firstSunday.getDate() + daysUntilFirstSunday)
-  if (firstSunday > today) return 0
-  const msPerDay = 24 * 60 * 60 * 1000
-  return Math.floor((today.getTime() - firstSunday.getTime()) / (7 * msPerDay)) + 1
-}
-
 const UnderlinedPlayer = ({ name, isFifaTeam = false }: { name: string; isFifaTeam?: boolean }) => {
   if (name === "-" || name === "DNF" || name === "DSQ") {
     return <span>{name}</span>
@@ -309,7 +298,7 @@ export default async function Home() {
             Welcome to Bearos Club
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
           </h1>
-          <p className="text-basic text-gray-600">Here is always Sunday since 06.09.2012 · {countSundaysSince(new Date(2012, 8, 6))} Sundays</p>
+          <p className="text-basic text-gray-600">Here is always Sunday since 06.09.2012</p>
         </section>
 
         <section className="mb-12">

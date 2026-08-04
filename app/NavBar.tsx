@@ -50,7 +50,7 @@ export default function NavBar() {
         </div>
 
         {/* Hamburger button — visible on mobile */}
-        <div className="justify-self-end">
+        <div className="col-start-3 justify-self-end">
           <button
             className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
             onClick={() => setMenuOpen((prev) => !prev)}

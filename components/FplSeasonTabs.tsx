@@ -412,7 +412,7 @@ const pastSeasonsData: PastSeasonsData = {
 }
 
 type FplSeasonTabsProps = {
-  title: string
+  title: React.ReactNode
   description: string
   currentSeasonData: any[]
   currentSeasonChartData: any[]
@@ -542,18 +542,18 @@ export default function FplSeasonTabs({
       }
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={currentSeasonData} />
 
           {currentSeasonChartData.length > 0 && (
             <section className="mt-12">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-full md:w-2/3">
-                  <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                  <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                   <FplChart entries={currentSeasonChartData} />
                 </div>
                 <div className="w-full md:w-1/3">
-                  <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                  <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                   <PieChart data={currentSeasonPieData} />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export default function FplSeasonTabs({
 
           {currentSeasonHighlights.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-title font-bold mb-6">Highlights</h2>
+              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
               <ImageCarousel images={currentSeasonHighlights} />
             </section>
           )}
@@ -572,24 +572,24 @@ export default function FplSeasonTabs({
       // 2025/26 season — archived data from fplEntry2526
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={historicalSeasonData} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <FplChart entries={historicalSeasonChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={historicalSeasonPieData} />
               </div>
             </div>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <ImageCarousel images={historicalSeasonHighlights} />
           </section>
         </>
@@ -597,24 +597,24 @@ export default function FplSeasonTabs({
     } else if (activeSeason === "2024/25") {
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={season2425Data} />
 
           <section className="mt-12">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">
-                <h2 className="text-title font-bold mb-6">Season Progress</h2>
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
                 <FplChart entries={season2425ChartData} />
               </div>
               <div className="w-full md:w-1/3">
-                <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
                 <PieChart data={season2425PieData} />
               </div>
             </div>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <ImageCarousel images={season2425Highlights} />
           </section>
         </>
@@ -625,7 +625,7 @@ export default function FplSeasonTabs({
       const pastColumns = columns.filter((col) => col.accessor !== "wins" && col.accessor !== "winPercent")
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={pastColumns} data={seasonData.standings} />
         </>
       )
@@ -633,7 +633,7 @@ export default function FplSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <>
-          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
           <DataTable columns={allTimeColumns} data={allTimeData} />
         </>
       )
@@ -641,7 +641,7 @@ export default function FplSeasonTabs({
       // For other past seasons, show placeholder content that will be replaced with static data later
       return (
         <>
-          <h2 className="text-title font-bold mb-6">Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <p className="text-gray-500 italic mb-8">Historical data for the {activeSeason} season will be added soon.</p>
 
           <div className="bg-gray-100 p-8 rounded-lg text-center">
@@ -674,26 +674,26 @@ export default function FplSeasonTabs({
   return (
     <>
       {/* Page header + season dropdown */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-title font-bold mb-4">{title}</h1>
-          <p className="text-basic text-gray-600">{description}</p>
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-title font-bold">{title}</h1>
+          <select
+            value={activeSeason}
+            onChange={(e) => {
+              const season = e.target.value as Season
+              setActiveSeason(season)
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+            }}
+            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={activeSeason}
-          onChange={(e) => {
-            const season = e.target.value as Season
-            setActiveSeason(season)
-            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
-          }}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
-        >
-          {seasons.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
+        <p className="text-basic text-gray-600 mt-4">{description}</p>
       </div>
 
       {/* Page tabs */}

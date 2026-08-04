@@ -129,6 +129,17 @@
   }
 }
 
+/* Season dropdown: the native arrow sits flush against the right border and
+   padding-right can't move it, so draw our own instead. */
+.season-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  background-size: 11px 11px;
+}
+
 /* Blinking apostrophe for live match minutes */
 @keyframes blink {
   0%, 100% { opacity: 1; }

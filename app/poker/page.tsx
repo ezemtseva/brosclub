@@ -155,7 +155,12 @@ export default async function PokerPage() {
       <AutoRefresh intervalMs={30000} />
 
       <HoldemSeasonTabs
-        title="Texas Holdem Cup"
+        title={
+          <>
+            <span className="sm:hidden text-title">Holdem Cup</span>
+            <span className="hidden sm:inline text-title">Texas Holdem Cup</span>
+          </>
+        }
         description="XI season is currently suspended - we have all had enough of Vladimir Vladimirovich reign..."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}

@@ -3913,7 +3913,7 @@ export default function FifaSeasonTabs({
             {/* Standings column */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-title font-bold leading-none m-0">Standings</h2>
+                <h2 className="text-[16px] font-bold leading-none m-0">Standings</h2>
                 {/* Desktop: gear icon */}
                 <button
                   onClick={() => setConfigOpen(true)}
@@ -3939,7 +3939,7 @@ export default function FifaSeasonTabs({
             {/* Results column */}
             <div className="w-full lg:shrink-0 lg:w-[480px]">
               <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-title font-bold leading-none m-0">Results</h2>
+                <h2 className="text-[16px] font-bold leading-none m-0">Results</h2>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -3968,7 +3968,7 @@ export default function FifaSeasonTabs({
           </div>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <div className="">
               <VideoCarousel videos={currentSeasonHighlights} />
             </div>
@@ -3986,7 +3986,7 @@ export default function FifaSeasonTabs({
           </div>
 
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">Highlights</h2>
+            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
             <div className="">
               <VideoCarousel videos={historicalSeasonHighlights} />
             </div>
@@ -3998,12 +3998,12 @@ export default function FifaSeasonTabs({
       const allTimePlayerData = computeAllTimePlayerStandings()
       return (
         <>
-          <h2 className="text-title font-bold mb-6">All Time Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
           <div className="fifa-standings-table">
             <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
-            <h2 className="text-title font-bold mb-6">All Time by Player</h2>
+            <h2 className="text-[16px] font-bold mb-6">All Time by Player</h2>
             <div className="fifa-standings-table">
               <DataTable columns={allTimePlayerColumns} mobileColumns={allTimePlayerColumnsMobile} data={allTimePlayerData} />
             </div>
@@ -4058,26 +4058,26 @@ export default function FifaSeasonTabs({
   return (
     <>
       {/* Page header + season dropdown */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-title font-bold mb-4">{title}</h1>
-          <p className="text-basic text-gray-600">{description}</p>
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-title font-bold">{title}</h1>
+          <select
+            value={activeSeason}
+            onChange={(e) => {
+              const season = e.target.value as Season
+              setActiveSeason(season)
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+            }}
+            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={activeSeason}
-          onChange={(e) => {
-            const season = e.target.value as Season
-            setActiveSeason(season)
-            if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
-          }}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 self-start"
-        >
-          {seasons.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
+        <p className="text-basic text-gray-600 mt-4">{description}</p>
       </div>
 
       {/* Page tabs */}
@@ -4103,7 +4103,7 @@ export default function FifaSeasonTabs({
 
       {activeTab === "Standings" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-title font-bold">Standings</h2>
+          <h2 className="text-[16px] font-bold">Standings</h2>
         </div>
       )}
 

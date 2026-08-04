@@ -296,7 +296,12 @@ export default async function FPLPage() {
         <AutoRefresh intervalMs={30000} />
 
         <FplSeasonTabs
-          title="Fantasy Premier League Cup"
+          title={
+            <>
+              <span className="sm:hidden text-title">FPL</span>
+              <span className="hidden sm:inline text-title">Fantasy Premier League Cup</span>
+            </>
+          }
           description="X anniversary season of no-names turning our teams into a shit joke."
           currentSeasonData={currentSeasonData}
           currentSeasonChartData={currentSeasonChartData}

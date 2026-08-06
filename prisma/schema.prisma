@@ -194,10 +194,13 @@ model FifaEntry2024 {
 }
 
 model FifaPlayerTeam {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   season String
   player String
   team   String
+  // Round 2 is a subset of the round 1 teams (same owner) — it does not affect
+  // standings, only which teams Add Game offers.
+  round2 Boolean @default(false)
 
   @@unique([season, team])
 }

@@ -21,6 +21,8 @@ interface MatchRecord {
 interface AddMatchDialogProps {
   teams: string[]
   playerTeams: PlayerTeams
+  /** Round 2 teams — a subset of playerTeams. When set, these replace the team options. */
+  round2Teams?: PlayerTeams
   playedMatches: MatchRecord[]
   onSuccess: () => void
   onClose: () => void
@@ -185,6 +187,7 @@ function getPlayer(team: string, playerTeams: PlayerTeams): string | null {
 export default function AddMatchDialog({
   teams,
   playerTeams,
+  round2Teams,
   playedMatches,
   onSuccess,
   onClose,
@@ -196,7 +199,11 @@ export default function AddMatchDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
 
-  const configured = Object.values(playerTeams).some((arr) => arr.length > 0)
+  // Once round 2 is configured its teams drive the dropdowns; otherwise round 1 does.
+  const round2Configured = !!round2Teams && Object.values(round2Teams).some((arr) => arr.length > 0)
+  const optionTeams = round2Configured ? (round2Teams as PlayerTeams) : playerTeams
+
+  const configured = Object.values(optionTeams).some((arr) => arr.length > 0)
   const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches) : null
   const accuracy = computePredictionAccuracy(playedMatches)
 
@@ -212,7 +219,7 @@ export default function AddMatchDialog({
   // Build available options for team A: all teams (or just configured ones)
   const teamsForA: { team: string; matchCount: number }[] = (
     configured
-      ? Object.values(playerTeams).flat()
+      ? Object.values(optionTeams).flat()
       : teams.filter((t) => t !== teamB)
   )
     .filter((t) => t !== teamB)
@@ -221,10 +228,10 @@ export default function AddMatchDialog({
   // Build available options for team B given team A selection
   const getTeamsForB = (): { team: string; matchCount: number }[] => {
     if (!teamA) return []
-    const playerA = getPlayer(teamA, playerTeams)
+    const playerA = getPlayer(teamA, optionTeams)
 
     const candidates = configured
-      ? Object.entries(playerTeams)
+      ? Object.entries(optionTeams)
           .filter(([player]) => player !== playerA)
           .flatMap(([, ts]) => ts)
       : teams.filter((t) => t !== teamA)

@@ -3515,6 +3515,7 @@ type FifaSeasonTabsProps = {
   mobileColumns?: any[]
   teamNames: string[]
   playerTeams: PlayerTeams
+  round2Teams: PlayerTeams
   historicalPlayerTeams: PlayerTeams
   matches: MatchRecord[]
   teamLogos: Record<string, string>
@@ -3536,6 +3537,7 @@ export default function FifaSeasonTabs({
   mobileColumns,
   teamNames,
   playerTeams: initialPlayerTeams,
+  round2Teams: initialRound2Teams,
   historicalPlayerTeams,
   matches: initialMatches,
   teamLogos,
@@ -3548,6 +3550,7 @@ export default function FifaSeasonTabs({
   const [configOpen, setConfigOpen]       = useState(false)
   const [showToast, setShowToast]         = useState(false)
   const [playerTeams, setPlayerTeams]     = useState<PlayerTeams>(initialPlayerTeams)
+  const [round2Teams, setRound2Teams]     = useState<PlayerTeams>(initialRound2Teams)
   const [matches, setMatches]             = useState<MatchRecord[]>(initialMatches)
   const [resultsSearch, setResultsSearch] = useState("")
   const router = useRouter()
@@ -3563,7 +3566,11 @@ export default function FifaSeasonTabs({
 
   const handleConfigSaved = async () => {
     const res = await fetch("/api/fifa-season-config?season=2025/26")
-    if (res.ok) setPlayerTeams(await res.json())
+    if (res.ok) {
+      const { round1, round2 } = await res.json()
+      setPlayerTeams(round1)
+      setRound2Teams(round2)
+    }
     router.refresh()
   }
 
@@ -4111,6 +4118,7 @@ export default function FifaSeasonTabs({
         <AddMatchDialog
           teams={teamNames}
           playerTeams={playerTeams}
+          round2Teams={round2Teams}
           playedMatches={matches}
           onSuccess={handleMatchSuccess}
           onClose={() => setDialogOpen(false)}
@@ -4121,6 +4129,7 @@ export default function FifaSeasonTabs({
         <FifaSeasonConfig
           season="2025/26"
           initialPlayerTeams={playerTeams}
+          initialRound2Teams={round2Teams}
           allTeams={teamNames}
           onClose={() => setConfigOpen(false)}
           onSaved={handleConfigSaved}

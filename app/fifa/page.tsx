@@ -308,11 +308,15 @@ async function getHistoricalSeasonData() {
 
 async function getPlayerTeams(season: string) {
   const rows = await prisma.fifaPlayerTeam.findMany({ where: { season } })
-  const result: Record<string, string[]> = { Vanilla: [], Choco: [], Panda: [] }
+  const round1: Record<string, string[]> = { Vanilla: [], Choco: [], Panda: [] }
+  const round2: Record<string, string[]> = { Vanilla: [], Choco: [], Panda: [] }
   for (const row of rows) {
-    if (result[row.player]) result[row.player].push(row.team)
+    if (!round1[row.player]) continue
+    round1[row.player].push(row.team)
+    if (row.round2) round2[row.player].push(row.team)
   }
-  return result as { Vanilla: string[]; Choco: string[]; Panda: string[] }
+  type Teams = { Vanilla: string[]; Choco: string[]; Panda: string[] }
+  return { round1: round1 as Teams, round2: round2 as Teams }
 }
 
 async function getMatches(season: string) {
@@ -321,7 +325,7 @@ async function getMatches(season: string) {
 
 export default async function FIFAPage() {
   // Fetch current season data (2025/26)
-  const [currentEntries, historicalEntries, playerTeams, matches] = await Promise.all([
+  const [currentEntries, historicalEntries, seasonTeams, matches] = await Promise.all([
     getCurrentSeasonData(),
     getHistoricalSeasonData(),
     getPlayerTeams("2025/26"),
@@ -332,6 +336,8 @@ export default async function FIFAPage() {
   const teamLogos: Record<string, string> = Object.fromEntries(
     currentEntries.map((e: { team: string; logo: string }) => [e.team, e.logo || "/placeholder.svg"])
   )
+  const playerTeams = seasonTeams.round1
+  const round2Teams = seasonTeams.round2
   const positionMovements = computePositionMovements(currentEntries, matches)
   const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches, positionMovements)
   const historicalSeasonData = processFifaData2024(historicalEntries)
@@ -864,6 +870,7 @@ export default async function FIFAPage() {
         mobileColumns={mobileColumns}
         teamNames={teamNames}
         playerTeams={playerTeams}
+        round2Teams={round2Teams}
         historicalPlayerTeams={{ Vanilla: teamColors2024.red, Choco: teamColors2024.blue, Panda: teamColors2024.green }}
         matches={matches.map((m: { id: number; season: string; teamA: string; scoreA: number; teamB: string; scoreB: number; createdAt: Date }) => ({ ...m, createdAt: m.createdAt.toISOString() }))}
         teamLogos={teamLogos}

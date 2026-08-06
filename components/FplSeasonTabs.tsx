@@ -535,30 +535,23 @@ export default function FplSeasonTabs({
   // Render content based on active tab
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
-      if (currentSeasonData.length === 0 || currentSeasonData.every(r => r.games === 0)) {
-        return (
-          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August 21</p>
-        )
-      }
       return (
         <>
           <h2 className="text-[16px] font-bold mb-6">Standings</h2>
           <DataTable columns={columns} data={currentSeasonData} />
 
-          {currentSeasonChartData.length > 0 && (
-            <section className="mt-12">
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-2/3">
-                  <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
-                  <FplChart entries={currentSeasonChartData} />
-                </div>
-                <div className="w-full md:w-1/3">
-                  <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
-                  <PieChart data={currentSeasonPieData} />
-                </div>
+          <section className="mt-12">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-2/3">
+                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
+                <FplChart entries={currentSeasonChartData} />
               </div>
-            </section>
-          )}
+              <div className="w-full md:w-1/3">
+                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
+                <PieChart data={currentSeasonPieData} />
+              </div>
+            </div>
+          </section>
 
           {currentSeasonHighlights.length > 0 && (
             <section className="mt-12">

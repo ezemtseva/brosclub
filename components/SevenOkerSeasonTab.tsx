@@ -202,11 +202,6 @@ export default function SevenOkerSeasonTabs({
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
-      if (currentSeasonData.length === 0) {
-        return (
-          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August</p>
-        )
-      }
       return (
         <>
           <div className="flex items-center justify-between mb-6">

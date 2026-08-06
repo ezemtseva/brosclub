@@ -32,6 +32,18 @@ type SevenOkerEntry = {
   createdAt?: Date
 }
 
+// Placeholder entries for a season that has not had its first game yet
+function emptySeasonEntries(): SevenOkerEntry[] {
+  return ["Vanilla", "Choco", "Panda"].map((bearo) => ({
+    week: 0,
+    bearo,
+    games: 0,
+    wins: 0,
+    points: 0,
+    gamepoints: 0,
+  }))
+}
+
 // Helper function to process data for display
 function processSeasonData(latestEntries: SevenOkerEntry[]) {
   return latestEntries
@@ -153,8 +165,11 @@ export default async function SevenOkerPage() {
   // Fetch archived season data (2024/25)
   const { entries: season2425Entries, latestEntries: season2425LatestEntries } = await getSeason2425Data()
 
-  // Process current season data
-  const currentSeasonData = processSeasonData(currentLatestEntries)
+  // Process current season data. Before the first game of a season there are no
+  // entries yet — show the three bearos on zeros instead of an empty table.
+  const currentSeasonData = processSeasonData(
+    currentLatestEntries.length > 0 ? currentLatestEntries : emptySeasonEntries()
+  )
   const currentSeasonPieData = createPieChartData(currentLatestEntries)
   const currentSeasonChartData = serializeEntries(currentEntries)
 

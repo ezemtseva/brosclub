@@ -47,9 +47,9 @@ const columns = [
 ]
 
 const players = [
-  { name: "Vanilla", teamId: "1546526", color: PLAYER_COLORS.Vanilla },
-  { name: "Choco", teamId: "3214199", color: PLAYER_COLORS.Choco },
-  { name: "Panda", teamId: "5663", color: PLAYER_COLORS.Panda },
+  { name: "Vanilla", teamId: "1334964", color: PLAYER_COLORS.Vanilla },
+  { name: "Choco", teamId: "530378", color: PLAYER_COLORS.Choco },
+  { name: "Panda", teamId: "8724", color: PLAYER_COLORS.Panda },
 ]
 
 function calculateWins(playersData: PlayerData[]): Record<string, number> {

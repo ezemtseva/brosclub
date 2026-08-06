@@ -43,6 +43,15 @@ export default function SevenOkerChart({
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([])
 
   useEffect(() => {
+    // Y axis config depends only on the toggle, so set it even with no data yet
+    if (dataKey === "points") {
+      setYAxisDomain([0, 100])
+      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 10))
+    } else {
+      setYAxisDomain([0, 11000])
+      setYAxisTicks(Array.from({ length: 12 }, (_, i) => i * 1000))
+    }
+
     if (!entries || entries.length === 0) {
       setChartData([])
       return
@@ -84,15 +93,6 @@ export default function SevenOkerChart({
     })
 
     setChartData(nextChartData)
-
-    // 5) Y axis config
-    if (dataKey === "points") {
-      setYAxisDomain([0, 100])
-      setYAxisTicks(Array.from({ length: 11 }, (_, i) => i * 10))
-    } else {
-      setYAxisDomain([0, 11000])
-      setYAxisTicks(Array.from({ length: 12 }, (_, i) => i * 1000))
-    }
   }, [entries, dataKey])
 
   return (

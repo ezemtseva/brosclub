@@ -47,6 +47,7 @@ const fifaRecordCards: FifaRecordCard[] = [
   { player: "Choco", description: "Choco is the first to score a goal by a goalkeeper, Atletico Madrid (2017)" },
   { player: "Vanilla", description: "Vanilla is the first to score a goal from their own half (empty net), Napoli (2017)" },
   { player: "Vanilla", description: "Vanilla is the first to score an Olympic goal directly from a corner, Lille (2021/22)" },
+  { value: "5 min", player: "Vanilla", description: "Vanilla, Liverpool — fastest four goals (2025/26)" },
   { value: "22", player: "Vanilla", description: "Vanilla holds the longest winning streak for a team, Liverpool (2024/25)" },
   { value: "26", player: "Vanilla", description: "Vanilla holds the longest unbeaten streak for a team, Barcelona (2023/24)" },
 ]

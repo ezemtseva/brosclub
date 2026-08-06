@@ -3523,7 +3523,7 @@ type FifaSeasonTabsProps = {
   historicalRawEntries: any[]
 }
 
-const pageTabs = ["Standings", "Insights", "Brecords"] as const
+const pageTabs = ["Summary", "Insights", "Brecords"] as const
 type PageTab = (typeof pageTabs)[number]
 
 export default function FifaSeasonTabs({
@@ -3545,7 +3545,7 @@ export default function FifaSeasonTabs({
   historicalRawEntries,
 }: FifaSeasonTabsProps) {
   const [activeSeason, setActiveSeason]   = useState<Season>(seasons[0])
-  const [activeTab, setActiveTab]         = useState<PageTab>("Standings")
+  const [activeTab, setActiveTab]         = useState<PageTab>("Summary")
   const [dialogOpen, setDialogOpen]       = useState(false)
   const [configOpen, setConfigOpen]       = useState(false)
   const [showToast, setShowToast]         = useState(false)
@@ -4073,7 +4073,7 @@ export default function FifaSeasonTabs({
             onChange={(e) => {
               const season = e.target.value as Season
               setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
             }}
             className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
           >
@@ -4108,7 +4108,7 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      {activeTab === "Standings" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
+      {activeTab === "Summary" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[16px] font-bold">Standings</h2>
         </div>
@@ -4143,7 +4143,7 @@ export default function FifaSeasonTabs({
       )}
 
       {/* Render content based on active page tab */}
-      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
     </>

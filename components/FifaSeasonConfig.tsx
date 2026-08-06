@@ -141,13 +141,14 @@ export default function FifaSeasonConfig({
 
         {activeRound === "Round 2" ? (
           <>
-            <p className="text-sm text-gray-500 mb-4">
-              Pick which teams go through to round 2. Standings are not affected — this only sets the
-              teams offered when adding a game result.
-            </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {PLAYERS.map(({ name, color }) => {
                 const player = name as PlayerName
+                // Teams that went through are listed first
+                const orderedTeams = [
+                  ...playerTeams[player].filter((t) => round2Teams[player].includes(t)),
+                  ...playerTeams[player].filter((t) => !round2Teams[player].includes(t)),
+                ]
                 return (
                   <div key={player} className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
@@ -162,7 +163,7 @@ export default function FifaSeasonConfig({
                       {playerTeams[player].length === 0 && (
                         <p className="text-xs text-gray-400 italic">No round 1 teams yet.</p>
                       )}
-                      {playerTeams[player].map((team) => {
+                      {orderedTeams.map((team) => {
                         const included = round2Teams[player].includes(team)
                         return (
                           <button

@@ -24,7 +24,7 @@ type Season = (typeof seasons)[number]
 
 const visibleSeasons = seasons.filter((season) => season !== "XXXX/XX")
 
-const pageTabs = ["Standings", "Insights", "Brecords"] as const
+const pageTabs = ["Summary", "Insights", "Brecords"] as const
 type PageTab = (typeof pageTabs)[number]
 
 type StatCard = {
@@ -879,7 +879,7 @@ export default function HoldemSeasonTabs({
   columns,
 }: HoldemSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2024/25") // Update to return 2025-26
-  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
+  const [activeTab, setActiveTab] = useState<PageTab>("Summary")
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
@@ -1084,7 +1084,7 @@ export default function HoldemSeasonTabs({
             onChange={(e) => {
               const season = e.target.value as Season
               setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
             }}
             className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
           >
@@ -1120,7 +1120,7 @@ export default function HoldemSeasonTabs({
       </div>
 
       {/* Render content based on active page tab */}
-      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
     </>

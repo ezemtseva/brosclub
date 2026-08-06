@@ -33,7 +33,7 @@ const seasons = [
 ] as const
 type Season = (typeof seasons)[number]
 
-const pageTabs = ["Standings", "Insights", "Brecords"] as const
+const pageTabs = ["Summary", "Insights", "Brecords"] as const
 type PageTab = (typeof pageTabs)[number]
 
 type StatCard = {
@@ -461,7 +461,7 @@ export default function FplSeasonTabs({
   columns,
 }: FplSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
-  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
+  const [activeTab, setActiveTab] = useState<PageTab>("Summary")
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
@@ -682,7 +682,7 @@ export default function FplSeasonTabs({
             onChange={(e) => {
               const season = e.target.value as Season
               setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
             }}
             className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
           >
@@ -718,7 +718,7 @@ export default function FplSeasonTabs({
       </div>
 
       {/* Render content based on active page tab */}
-      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
     </>

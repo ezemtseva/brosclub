@@ -22,7 +22,7 @@ function playerNameFromColor(color: string): string {
   return Object.entries(playerColors).find(([, c]) => c === color)?.[0] ?? ""
 }
 
-const pageTabs = ["Standings", "Insights", "Brecords"] as const
+const pageTabs = ["Summary", "Insights", "Brecords"] as const
 type PageTab = (typeof pageTabs)[number]
 
 const PLAYER_AVATARS: Record<string, string> = {
@@ -133,7 +133,7 @@ export default function SevenOkerSeasonTabs({
   columns,
 }: SevenOkerSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
-  const [activeTab, setActiveTab] = useState<PageTab>("Standings")
+  const [activeTab, setActiveTab] = useState<PageTab>("Summary")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const router = useRouter()
@@ -312,7 +312,7 @@ export default function SevenOkerSeasonTabs({
             onChange={(e) => {
               const season = e.target.value as Season
               setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Standings")
+              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
             }}
             className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
           >
@@ -362,7 +362,7 @@ export default function SevenOkerSeasonTabs({
       )}
 
       {/* Render content based on active page tab */}
-      {activeTab === "Standings" && renderStandingsContent()}
+      {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
     </>

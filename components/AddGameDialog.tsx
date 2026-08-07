@@ -7,11 +7,17 @@ type Player = (typeof PLAYERS)[number]
 
 interface AddGameDialogProps {
   apiEndpoint: string
+  /**
+   * When set, mobile shows dropdowns limited to these values — one per player.
+   * A value picked by one player disappears from the others, and the last
+   * player is filled in automatically. Desktop keeps the free-form inputs.
+   */
+  scoreOptions?: number[]
   onSuccess: () => void
   onClose: () => void
 }
 
-export default function AddGameDialog({ apiEndpoint, onSuccess, onClose }: AddGameDialogProps) {
+export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, onClose }: AddGameDialogProps) {
   const [scores, setScores] = useState<Record<Player, string>>({
     Panda: "",
     Choco: "",
@@ -32,6 +38,35 @@ export default function AddGameDialog({ apiEndpoint, onSuccess, onClose }: AddGa
     if (allFilled && numericScores[player] === maxScore) return "border-yellow-300 bg-yellow-50"
     return "border-gray-200 bg-white"
   }
+
+  // Dropdown pick: take the value off whoever else held it, then fill the last
+  // remaining player automatically once the other two are set.
+  const pickScore = (player: Player, val: string) => {
+    setScores((prev) => {
+      const next = { ...prev, [player]: val }
+      if (!scoreOptions || val === "") return next
+
+      for (const p of PLAYERS) {
+        if (p !== player && next[p] === val) next[p] = ""
+      }
+
+      const empty = PLAYERS.filter((p) => next[p] === "")
+      if (empty.length === 1) {
+        const used = PLAYERS.filter((p) => p !== empty[0]).map((p) => Number(next[p]))
+        const remaining = scoreOptions.find((o) => !used.includes(o))
+        if (remaining !== undefined) next[empty[0]] = String(remaining)
+      }
+      return next
+    })
+  }
+
+  // Values still selectable for a player: unused ones plus their own current value
+  const optionsFor = (player: Player) =>
+    (scoreOptions ?? []).filter(
+      (o) =>
+        Number(scores[player]) === o ||
+        !PLAYERS.some((p) => p !== player && scores[p] !== "" && Number(scores[p]) === o)
+    )
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -75,9 +110,21 @@ export default function AddGameDialog({ apiEndpoint, onSuccess, onClose }: AddGa
               className={`flex items-center justify-between border rounded-lg px-4 py-2 transition-colors ${getRowClass(player)}`}
             >
               <span className="text-sm font-medium">{player}</span>
+              {scoreOptions && (
+                <select
+                  className="season-select sm:hidden w-20 border border-gray-200 rounded-lg px-2 pr-6 py-1 text-sm font-bold bg-white focus:outline-none"
+                  value={scores[player]}
+                  onChange={(e) => pickScore(player, e.target.value)}
+                >
+                  <option value=""></option>
+                  {optionsFor(player).map((o) => (
+                    <option key={o} value={String(o)}>{o}</option>
+                  ))}
+                </select>
+              )}
               <input
                 type="number"
-                className="w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className={`${scoreOptions ? "hidden sm:block" : ""} w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
                 value={scores[player]}
                 onChange={(e) => {
                   const val = e.target.value

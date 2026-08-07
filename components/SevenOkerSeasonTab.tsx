@@ -345,6 +345,7 @@ export default function SevenOkerSeasonTabs({
       {dialogOpen && (
         <AddGameDialog
           apiEndpoint="/api/7oker-game"
+          scoreOptions={[3, 1, 0]}
           onSuccess={handleGameSuccess}
           onClose={() => setDialogOpen(false)}
         />

@@ -5,6 +5,9 @@ import { useState } from "react"
 const PLAYERS = ["Panda", "Choco", "Vanilla"] as const
 type Player = (typeof PLAYERS)[number]
 
+const POINT_OPTIONS = [3, 1, 0]
+const FIVE_K_OPTIONS = [0, 1, 2, 3, 4, 5]
+
 interface AddGGGameDialogProps {
   onSuccess: () => void
   onClose: () => void
@@ -24,6 +27,35 @@ export default function AddGGGameDialog({ onSuccess, onClose }: AddGGGameDialogP
 
   const allPointsFilled = PLAYERS.every((p) => points[p] !== "")
   const maxPoints = allPointsFilled ? Math.max(...PLAYERS.map((p) => Number(points[p]))) : null
+
+  // Dropdown pick: take the value off whoever else held it, then fill the last
+  // remaining player automatically once the other two are set.
+  const pickPoints = (player: Player, val: string) => {
+    setPoints((prev) => {
+      const next = { ...prev, [player]: val }
+      if (val === "") return next
+
+      for (const p of PLAYERS) {
+        if (p !== player && next[p] === val) next[p] = ""
+      }
+
+      const empty = PLAYERS.filter((p) => next[p] === "")
+      if (empty.length === 1) {
+        const used = PLAYERS.filter((p) => p !== empty[0]).map((p) => Number(next[p]))
+        const remaining = POINT_OPTIONS.find((o) => !used.includes(o))
+        if (remaining !== undefined) next[empty[0]] = String(remaining)
+      }
+      return next
+    })
+  }
+
+  // Point values still selectable for a player: unused ones plus their own
+  const pointOptionsFor = (player: Player) =>
+    POINT_OPTIONS.filter(
+      (o) =>
+        Number(points[player]) === o ||
+        !PLAYERS.some((p) => p !== player && points[p] !== "" && Number(points[p]) === o)
+    )
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -61,13 +93,6 @@ export default function AddGGGameDialog({ onSuccess, onClose }: AddGGGameDialogP
       >
         <h2 className="text-lg font-bold mb-5">Add Game Result</h2>
 
-        {/* Header row */}
-        <div className="flex items-center gap-3 mb-2 px-4">
-          <span className="flex-1 text-xs font-medium text-gray-400 uppercase tracking-wide">Player</span>
-          <span className="w-16 text-center text-xs font-medium text-gray-400 uppercase tracking-wide">Points</span>
-          <span className="w-16 text-center text-xs font-medium text-gray-400 uppercase tracking-wide">5K</span>
-        </div>
-
         <div className="flex flex-col gap-2 mb-6">
           {PLAYERS.map((player) => {
             const isTop = allPointsFilled && maxPoints !== null && Number(points[player]) === maxPoints
@@ -79,9 +104,19 @@ export default function AddGGGameDialog({ onSuccess, onClose }: AddGGGameDialogP
                 }`}
               >
                 <span className="flex-1 text-sm font-medium">{player}</span>
+                <select
+                  className="season-select sm:hidden w-16 border border-gray-200 rounded-lg px-1 pr-5 py-1 text-sm font-bold bg-white focus:outline-none"
+                  value={points[player]}
+                  onChange={(e) => pickPoints(player, e.target.value)}
+                >
+                  <option value=""></option>
+                  {pointOptionsFor(player).map((o) => (
+                    <option key={o} value={String(o)}>{o}</option>
+                  ))}
+                </select>
                 <input
                   type="number"
-                  className="w-16 text-center border border-gray-200 rounded-lg px-1 py-1 text-sm font-bold bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="hidden sm:block w-16 text-center border border-gray-200 rounded-lg px-1 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   placeholder="0"
                   value={points[player]}
                   onChange={(e) => {
@@ -95,10 +130,19 @@ export default function AddGGGameDialog({ onSuccess, onClose }: AddGGGameDialogP
                     }
                   }}
                 />
+                <select
+                  className="season-select sm:hidden w-16 border border-gray-200 rounded-lg px-1 pr-5 py-1 text-sm font-bold bg-white focus:outline-none"
+                  value={fiveK[player]}
+                  onChange={(e) => setFiveK((prev) => ({ ...prev, [player]: e.target.value }))}
+                >
+                  {FIVE_K_OPTIONS.map((o) => (
+                    <option key={o} value={String(o)}>{o}</option>
+                  ))}
+                </select>
                 <input
                   type="number"
                   min="0"
-                  className="w-16 text-center border border-gray-200 rounded-lg px-1 py-1 text-sm font-bold bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="hidden sm:block w-16 text-center border border-gray-200 rounded-lg px-1 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   placeholder="0"
                   value={fiveK[player]}
                   onChange={(e) =>

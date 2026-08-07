@@ -235,7 +235,7 @@ export default function FifaSeasonConfig({
                   <input
                     type="text"
                     placeholder="Add team..."
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
                     value={queries[player]}
                     onFocus={() => setOpens((prev) => ({ ...prev, [player]: true }))}
                     onChange={(e) => setQueries((prev) => ({ ...prev, [player]: e.target.value }))}

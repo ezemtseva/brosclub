@@ -74,8 +74,8 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
     <div ref={containerRef} className="relative flex-1 min-w-0" onBlur={handleBlur}>
       <input
         type="text"
-        className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors ${colorClass}`}
-        placeholder="Select team"
+        className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-colors ${colorClass}`}
+        placeholder={open ? "" : "Select team"}
         value={open ? query : value}
         onFocus={() => { setOpen(true); setQuery("") }}
         onChange={(e) => setQuery(e.target.value)}
@@ -328,7 +328,7 @@ export default function AddMatchDialog({
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreA}
             onChange={(e) => setScoreA(e.target.value.slice(0, 2))}
           />
@@ -340,7 +340,7 @@ export default function AddMatchDialog({
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreB}
             onChange={(e) => setScoreB(e.target.value.slice(0, 2))}
           />

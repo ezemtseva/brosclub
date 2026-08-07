@@ -21,8 +21,6 @@ interface MatchRecord {
 interface AddMatchDialogProps {
   teams: string[]
   playerTeams: PlayerTeams
-  /** Round 2 teams — a subset of playerTeams. When set, these replace the team options. */
-  round2Teams?: PlayerTeams
   playedMatches: MatchRecord[]
   onSuccess: () => void
   onClose: () => void
@@ -187,7 +185,6 @@ function getPlayer(team: string, playerTeams: PlayerTeams): string | null {
 export default function AddMatchDialog({
   teams,
   playerTeams,
-  round2Teams,
   playedMatches,
   onSuccess,
   onClose,
@@ -199,11 +196,7 @@ export default function AddMatchDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
 
-  // Once round 2 is configured its teams drive the dropdowns; otherwise round 1 does.
-  const round2Configured = !!round2Teams && Object.values(round2Teams).some((arr) => arr.length > 0)
-  const optionTeams = round2Configured ? (round2Teams as PlayerTeams) : playerTeams
-
-  const configured = Object.values(optionTeams).some((arr) => arr.length > 0)
+  const configured = Object.values(playerTeams).some((arr) => arr.length > 0)
   const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches) : null
   const accuracy = computePredictionAccuracy(playedMatches)
 
@@ -216,22 +209,42 @@ export default function AddMatchDialog({
       : "Draw"
     : null
 
-  // Build available options for team A: all teams (or just configured ones)
+  // How many fixtures a team still has left against the other players' teams
+  const remainingFor = (team: string) => {
+    const player = getPlayer(team, playerTeams)
+    const opponents = configured
+      ? Object.entries(playerTeams)
+          .filter(([p]) => p !== player)
+          .flatMap(([, ts]) => ts)
+      : teams.filter((t) => t !== team)
+
+    let unplayed = 0
+    let once = 0
+    for (const opponent of opponents) {
+      const played = matchCount(team, opponent, playedMatches)
+      if (played === 0) unplayed++
+      else if (played === 1) once++
+    }
+    return { unplayed, once }
+  }
+
+  // Team A options: only teams that still have fixtures left. A team sits under
+  // Round 1 while it has unplayed opponents, then moves to Round 2, then drops out.
   const teamsForA: { team: string; matchCount: number }[] = (
-    configured
-      ? Object.values(optionTeams).flat()
-      : teams.filter((t) => t !== teamB)
+    configured ? Object.values(playerTeams).flat() : teams
   )
     .filter((t) => t !== teamB)
-    .map((t) => ({ team: t, matchCount: 0 }))
+    .map((t) => ({ team: t, ...remainingFor(t) }))
+    .filter((o) => o.unplayed > 0 || o.once > 0)
+    .map((o) => ({ team: o.team, matchCount: o.unplayed > 0 ? 0 : 1 }))
 
   // Build available options for team B given team A selection
   const getTeamsForB = (): { team: string; matchCount: number }[] => {
     if (!teamA) return []
-    const playerA = getPlayer(teamA, optionTeams)
+    const playerA = getPlayer(teamA, playerTeams)
 
     const candidates = configured
-      ? Object.entries(optionTeams)
+      ? Object.entries(playerTeams)
           .filter(([player]) => player !== playerA)
           .flatMap(([, ts]) => ts)
       : teams.filter((t) => t !== teamA)

@@ -4119,6 +4119,7 @@ export default function FifaSeasonTabs({
         <AddMatchDialog
           teams={teamNames}
           playerTeams={playerTeams}
+          round2Teams={round2Teams}
           playedMatches={matches}
           onSuccess={handleMatchSuccess}
           onClose={() => setDialogOpen(false)}

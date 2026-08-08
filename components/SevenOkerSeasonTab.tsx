@@ -9,6 +9,7 @@ import ImageCarousel from "./ImageCarousel"
 import SevenOkerChartToggle from "./SevenOkerChartToggle"
 import AddGameDialog from "./AddGameDialog"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import PlayerCell from "./PlayerCell"
 
 // Define the seasons array
 const seasons = ["2026/27", "2025/26", "2024/25", "All Time"] as const
@@ -176,10 +177,7 @@ export default function SevenOkerSeasonTabs({
     return sorted.map(([name, data], index) => ({
         position: index + 1,
         bearo: (
-          <span className="relative">
-            {name}
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
-          </span>
+          <PlayerCell name={name} color={data.hoverColor} />
         ),
         games: data.games,
         wins: data.wins,

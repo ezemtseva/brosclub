@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import { useScrollLock } from "../lib/useScrollLock"
 
 interface PlayerTeams {
   Vanilla: string[]
@@ -16,6 +17,7 @@ interface MatchRecord {
   teamB: string
   scoreB: number
   prediction?: string | null
+  createdAt?: string
 }
 
 interface AddMatchDialogProps {
@@ -117,30 +119,60 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
   )
 }
 
-// Compute win/draw/loss probabilities for teamA vs teamB based on last 5 form
+// Weights for blending the two form signals
+const TEAM_FORM_WEIGHT = 0.6
+const PLAYER_FORM_WEIGHT = 0.4
+
+/** Points from the last 5 of the given matches, newest first. */
+function formPoints(relevant: MatchRecord[], pointsFor: (m: MatchRecord) => number) {
+  const lastFive = relevant
+    .slice()
+    // The caller's order is not guaranteed, so sort explicitly — reading the
+    // wrong end of this array used to score teams on their oldest games.
+    .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+    .slice(0, 5)
+  if (lastFive.length === 0) return null
+  return lastFive.reduce((sum, m) => sum + pointsFor(m), 0)
+}
+
+function resultPoints(scored: number, conceded: number) {
+  return scored > conceded ? 3 : scored === conceded ? 1 : 0
+}
+
+// Compute win/draw/loss probabilities from recent team form and recent form of
+// the player who owns the team.
 function computeOdds(
   teamA: string,
   teamB: string,
-  matches: MatchRecord[]
+  matches: MatchRecord[],
+  playerTeams: PlayerTeams
 ): { probA: number; probDraw: number; probB: number } | null {
-  const getForm = (team: string) => {
-    const teamMatches = matches
-      .filter((m) => m.teamA === team || m.teamB === team)
-      .slice(-5)
-    if (teamMatches.length === 0) return null
-    return teamMatches.map((m) => {
-      const scored = m.teamA === team ? m.scoreA : m.scoreB
-      const conceded = m.teamA === team ? m.scoreB : m.scoreA
-      return scored > conceded ? 3 : scored === conceded ? 1 : 0
-    })
+  const teamForm = (team: string) =>
+    formPoints(
+      matches.filter((m) => m.teamA === team || m.teamB === team),
+      (m) => (m.teamA === team ? resultPoints(m.scoreA, m.scoreB) : resultPoints(m.scoreB, m.scoreA))
+    )
+
+  const playerForm = (team: string) => {
+    const player = getPlayer(team, playerTeams)
+    if (!player) return null
+    const owned = playerTeams[player as keyof PlayerTeams]
+    return formPoints(
+      matches.filter((m) => owned.includes(m.teamA) || owned.includes(m.teamB)),
+      (m) => (owned.includes(m.teamA) ? resultPoints(m.scoreA, m.scoreB) : resultPoints(m.scoreB, m.scoreA))
+    )
   }
 
-  const formA = getForm(teamA)
-  const formB = getForm(teamB)
-  if (!formA || !formB) return null
+  const teamA_form = teamForm(teamA)
+  const teamB_form = teamForm(teamB)
+  if (teamA_form === null || teamB_form === null) return null
 
-  const ptsA = formA.reduce((s, v) => s + v, 0 as number)
-  const ptsB = formB.reduce((s, v) => s + v, 0 as number)
+  // Fall back to team form alone when a player has no history yet
+  const playerA_form = playerForm(teamA) ?? teamA_form
+  const playerB_form = playerForm(teamB) ?? teamB_form
+
+  const ptsA = TEAM_FORM_WEIGHT * teamA_form + PLAYER_FORM_WEIGHT * playerA_form
+  const ptsB = TEAM_FORM_WEIGHT * teamB_form + PLAYER_FORM_WEIGHT * playerB_form
   const total = ptsA + ptsB || 1
 
   const rawA = ptsA / total
@@ -193,6 +225,7 @@ export default function AddMatchDialog({
   onSuccess,
   onClose,
 }: AddMatchDialogProps) {
+  useScrollLock(true)
   const [teamA, setTeamA] = useState("")
   const [teamB, setTeamB] = useState("")
   const [scoreA, setScoreA] = useState("")
@@ -202,12 +235,11 @@ export default function AddMatchDialog({
 
   const configured = Object.values(playerTeams).some((arr) => arr.length > 0)
 
-  // Round 2 is restricted to the teams picked in Season Configuration. Until
-  // something is picked there, round 2 stays open to every team as before.
-  const round2Configured = !!round2Teams && Object.values(round2Teams).some((arr) => arr.length > 0)
+  // Round 2 only exists for the teams picked in Season Configuration — while
+  // nothing is picked there, no return fixtures are offered at all.
   const inRound2 = (team: string) =>
-    !round2Configured || Object.values(round2Teams as PlayerTeams).some((ts) => ts.includes(team))
-  const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches) : null
+    !!round2Teams && Object.values(round2Teams).some((ts) => ts.includes(team))
+  const odds = teamA && teamB ? computeOdds(teamA, teamB, playedMatches, playerTeams) : null
   const accuracy = computePredictionAccuracy(playedMatches)
 
   // Predicted outcome based on highest probability
@@ -404,12 +436,11 @@ export default function AddMatchDialog({
               </span>
               <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "#374151" }}>{odds.probB}%</span>
             </div>
-            <p className="text-sm text-gray-500 text-center mt-1">
-              Based on last 5 games
-              {accuracy && (
-                <span className="ml-2 text-sm text-gray-500">· Prediction accuracy: {Math.round((accuracy.correct / accuracy.total) * 100)}%</span>
-              )}
-            </p>
+            {accuracy && (
+              <p className="text-sm text-gray-500 text-center mt-1">
+                Prediction accuracy: {Math.round((accuracy.correct / accuracy.total) * 100)}%
+              </p>
+            )}
           </div>
         )}
 

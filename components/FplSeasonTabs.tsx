@@ -8,6 +8,7 @@ import ImageCarousel from "./ImageCarousel"
 import dynamicImport from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import Image from "next/image"
+import PlayerCell from "./PlayerCell"
 
 const PLAYER_AVATARS: Record<keyof typeof PLAYER_COLORS, string> = {
   Vanilla: "/imgs/vanilla.png",
@@ -113,10 +114,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 2511,
@@ -126,10 +124,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 2339,
@@ -139,10 +134,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2217,
@@ -156,10 +148,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 2422,
@@ -169,10 +158,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2309,
@@ -182,10 +168,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 2209,
@@ -199,10 +182,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2187,
@@ -212,10 +192,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 2164,
@@ -225,10 +202,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 2150,
@@ -242,10 +216,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 2332,
@@ -255,10 +226,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2192,
@@ -268,10 +236,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 2192,
@@ -285,10 +250,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2232,
@@ -298,10 +260,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 2160,
@@ -311,10 +270,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 1981,
@@ -328,10 +284,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 2017,
@@ -341,10 +294,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 1967,
@@ -354,10 +304,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 1907,
@@ -371,10 +318,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         player: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         points: 2177,
@@ -384,10 +328,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         player: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         points: 1921,
@@ -397,10 +338,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         player: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         points: 1902,
@@ -519,10 +457,7 @@ export default function FplSeasonTabs({
     return sorted.map(([name, data], index) => ({
         position: index + 1,
         player: (
-          <span className="relative">
-            {name}
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
-          </span>
+          <PlayerCell name={name} color={data.hoverColor} />
         ),
         games: data.games,
         wins: data.wins,

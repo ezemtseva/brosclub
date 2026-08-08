@@ -42,12 +42,11 @@ function isLocked(kickoff: string): boolean {
 
 function formatKickoff(kickoff: string): string {
   const d = new Date(kickoff)
-  return d.toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  // Formatted in two calls on purpose: asking for date and time together makes
+  // newer browsers insert a connector ("21 Aug at 21:00").
+  const date = d.toLocaleString("en-GB", { day: "numeric", month: "short" })
+  const time = d.toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false })
+  return `${date}, ${time}`
 }
 
 
@@ -110,11 +109,7 @@ function BetCell({
   if (finished || locked) {
     return (
       <div className={`flex items-center justify-center rounded px-2 py-1 ${finished && bet ? betBg(bet.points) : ""}`}>
-        {bet ? (
-          <span className="text-[14px] tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>
-        ) : (
-          <span className="text-[14px] text-gray-300">—</span>
-        )}
+        {bet && <span className="tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>}
       </div>
     )
   }
@@ -122,8 +117,8 @@ function BetCell({
   // Saved and not editing: show score + Edit button
   if (bet && !editing) {
     return (
-      <div className="relative flex items-center justify-center group">
-        <span className="text-[14px] tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>
+      <div className="relative flex w-[76px] mx-auto items-center justify-center group">
+        <span className="tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>
         <button
           onClick={() => setEditing(true)}
           className="absolute left-full ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-700"
@@ -140,14 +135,16 @@ function BetCell({
   // Editing or no bet yet: show inputs + Save
   const showSave = home !== "" || away !== "" || bet !== undefined
   return (
-    <div className="relative flex items-center justify-center gap-1">
+    <div className="relative flex w-[76px] mx-auto items-center justify-center gap-1">
       <input
         type="number"
         min="0"
         max="20"
         value={home}
         onChange={(e) => setHome(e.target.value.slice(0, 2))}
-        placeholder="—"
+        // A focused number input changes value on wheel by default — drop focus instead
+        onWheel={(e) => e.currentTarget.blur()}
+        placeholder=""
         className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <span className="text-gray-300 text-xs">:</span>
@@ -157,7 +154,8 @@ function BetCell({
         max="20"
         value={away}
         onChange={(e) => setAway(e.target.value.slice(0, 2))}
-        placeholder="—"
+        onWheel={(e) => e.currentTarget.blur()}
+        placeholder=""
         className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <div className="absolute left-full flex items-center gap-0.5 ml-1">
@@ -244,7 +242,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
     <div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-        <h2 className="text-title font-bold leading-none m-0">Gameweek {gameweek}</h2>
+        <h2 className="text-[16px] font-bold leading-none m-0">Gameweek {gameweek}</h2>
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setGameweek(1)}
@@ -281,7 +279,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
           >
             »
           </button>
-          <button onClick={handleSync} disabled={syncing} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-500 hover:text-gray-800">
+          <button onClick={handleSync} disabled={syncing} className="hidden px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-500 hover:text-gray-800">
             {syncing ? "Syncing..." : "Sync"}
           </button>
         </div>
@@ -292,18 +290,18 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
       {matches.length === 0 ? (
         <p className="text-sm text-gray-400">No fixtures for GW{gameweek}. Click <strong>Sync</strong> to fetch.</p>
       ) : (
-        <div className={`overflow-x-auto rounded-lg transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
+        <div className={`bets-gameweek-table overflow-x-auto rounded-lg transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
           <table className="min-w-max w-full bg-white">
             <thead>
-              <tr className="bg-gray-200 text-gray-600 uppercase text-[12.25px] leading-normal h-[45px]">
+              <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
                 <th className="py-2 px-4 text-left w-[130px]">Date</th>
-                <th className="py-2 pl-0 pr-4 text-right whitespace-nowrap w-px">Home</th>
-                <th className="py-2 px-2 text-center whitespace-nowrap">Score</th>
-                <th className="py-2 pl-2 pr-4 text-left whitespace-nowrap w-px">Away</th>
-                <th className="py-2 px-4 text-center whitespace-nowrap">Status</th>
+                <th className="py-2 px-4 text-left whitespace-nowrap w-[170px]">Home</th>
+                <th className="py-2 px-2 text-center whitespace-nowrap w-px">Score</th>
+                <th className="py-2 px-4 text-right whitespace-nowrap w-[170px]">Away</th>
+                <th className="py-2 px-4 text-center whitespace-nowrap w-[170px]">Status</th>
                 {PLAYERS.map((p) => (
-                  <th key={p} className="py-2 px-4 text-center whitespace-nowrap">
-                    <span className="relative inline-block text-[12.25px]">
+                  <th key={p} className="py-2 px-4 text-center whitespace-nowrap w-[170px]">
+                    <span className="relative inline-block text-xs md:text-sm">
                       {p}
                       <span className="absolute bottom-[-2px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS[p] }} />
                     </span>
@@ -311,7 +309,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                 ))}
               </tr>
             </thead>
-            <tbody className="text-gray-600 text-[14px] font-light">
+            <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
               {matches.map((match) => {
                 const locked = isLocked(match.kickoff)
                 const finished = match.status === "FINISHED"
@@ -320,11 +318,11 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                 const showScore = (finished || inPlay) && match.scoreHome !== null && match.scoreAway !== null
                 return (
                   <tr key={match.matchId} className="border-b border-gray-200 h-[45px]">
-                    <td className="py-2 px-4 w-[130px] text-[12.25px]">{formatKickoff(match.kickoff)}</td>
-                    <td className="py-2 pl-0 pr-4 w-px whitespace-nowrap">
-                      <span className={`flex items-center justify-end gap-1.5 rounded px-1 ${finished && match.scoreHome! > match.scoreAway! ? "bg-green-50" : ""}`}>
-                        <span className="font-medium text-[14px]">{match.homeTeam}</span>
+                    <td className="py-2 px-4 w-[130px]">{formatKickoff(match.kickoff)}</td>
+                    <td className="py-2 px-4 whitespace-nowrap">
+                      <span className={`flex items-center justify-start gap-1.5 rounded px-1 ${finished && match.scoreHome! > match.scoreAway! ? "bg-green-50" : ""}`}>
                         {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="shrink-0 object-contain" />}
+                        <span>{match.homeTeam}</span>
                       </span>
                     </td>
                     <td className="py-2 px-2 text-center whitespace-nowrap tabular-nums">
@@ -338,25 +336,25 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                         <span className="text-gray-300">vs</span>
                       )}
                     </td>
-                    <td className="py-2 pl-2 pr-4 w-px whitespace-nowrap">
-                      <span className={`flex items-center gap-1.5 rounded px-1 ${finished && match.scoreAway! > match.scoreHome! ? "bg-green-50" : ""}`}>
+                    <td className="py-2 px-4 whitespace-nowrap">
+                      <span className={`flex items-center justify-end gap-1.5 rounded px-1 ${finished && match.scoreAway! > match.scoreHome! ? "bg-green-50" : ""}`}>
+                        <span>{match.awayTeam}</span>
                         {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="shrink-0 object-contain" />}
-                        <span className="font-medium text-[14px]">{match.awayTeam}</span>
                       </span>
                     </td>
                     <td className="py-2 px-4 text-center whitespace-nowrap">
                       {finished ? (
-                        <span className="text-[14px] font-medium text-green-600">Finished</span>
+                        <span className="font-medium text-green-600">Finished</span>
                       ) : postponed ? (
-                        <span className="text-[14px] font-medium text-gray-400">Postponed</span>
+                        <span className="font-medium text-gray-400">Postponed</span>
                       ) : match.status === "PAUSED" && (Date.now() - new Date(match.kickoff).getTime()) < 63 * 60 * 1000 ? (
-                        <span className="text-[14px] font-medium text-red-400">Half Time</span>
+                        <span className="font-medium text-red-400">Half Time</span>
                       ) : inPlay ? (
-                        <span className="text-[14px] font-medium text-red-400">Live</span>
+                        <span className="font-medium text-red-400">Live</span>
                       ) : locked ? (
-                        <span className="text-[14px] font-medium text-red-400">Locked</span>
+                        <span className="font-medium text-red-400">Locked</span>
                       ) : (
-                        <span className="text-[14px] font-medium text-green-500">Open</span>
+                        <span className="font-medium text-green-500">Open</span>
                       )}
                     </td>
                     {PLAYERS.map((player) => (

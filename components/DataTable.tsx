@@ -91,15 +91,28 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
       })
     : data
 
+  // Spread the surplus width evenly instead of letting the browser hand it out
+  // in proportion to each column's content, which made the gaps uneven. Columns
+  // carrying an explicit percentage keep it, and the rest split what is left —
+  // mixing px with these percentages loses, so widths should be given in %.
+  const claimedPercent = activeColumns.reduce((sum, c: any) => {
+    const w = typeof c.width === 'string' && c.width.endsWith('%') ? parseFloat(c.width) : 0
+    return sum + w
+  }, 0)
+  const flexibleCols = activeColumns.filter((c: any) => !c.width && c.accessor !== 'position').length
+  const evenWidth = flexibleCols > 0 ? `${(100 - claimedPercent) / flexibleCols}%` : undefined
+  const widthFor = (column: any) =>
+    column.width ? { width: column.width } : column.accessor === 'position' ? undefined : { width: evenWidth }
+
   return (
-    <div ref={scrollRef} className="overflow-x-auto rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div ref={scrollRef} className="table-scroll overflow-x-auto rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
             {activeColumns.map((column, index) => (
               <th
                 key={index}
-                style={column.width ? { width: column.width } : undefined}
+                style={widthFor(column)}
                 className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
@@ -123,7 +136,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
               onMouseLeave={() => setHoveredRow(null)}
             >
               {activeColumns.map((column, colIndex) => (
-                <td key={colIndex} style={column.width ? { width: column.width } : undefined} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
+                <td key={colIndex} style={widthFor(column)} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
                   {fmtCell(row[column.accessor])}
                 </td>
               ))}

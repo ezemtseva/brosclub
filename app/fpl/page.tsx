@@ -4,6 +4,7 @@ import { updateFplData } from "../../lib/fplUtils"
 import FplSeasonTabs from "../../components/FplSeasonTabs"
 import AutoRefresh from "../../components/AutoRefresh"
 import { PLAYER_COLORS } from "../../lib/teamColors"
+import PlayerCell from "../../components/PlayerCell"
 
 
 export const dynamic = "force-dynamic"
@@ -95,10 +96,7 @@ function processFplData(playersData: PlayerData[]): TableDataItem[] {
     .map((entry, index, sortedData) => ({
       position: index + 1,
       player: (
-        <span className="relative">
-          {entry.player}
-          <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: entry.color }} />
-        </span>
+        <PlayerCell name={entry.player} color={entry.color} />
       ),
       games: entry.games,
       wins: entry.wins,

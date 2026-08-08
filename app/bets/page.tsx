@@ -4,6 +4,8 @@ import BetsSeasonTabs from "../../components/BetsSeasonTabs"
 import AutoRefresh from "../../components/AutoRefresh"
 import { settleAndRecalculate } from "../../lib/pl-settle"
 import { PLAYER_COLORS } from "../../lib/teamColors"
+import { CURRENT_PL_SEASON } from "../../lib/plSeason"
+import PlayerCell from "../../components/PlayerCell"
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +27,16 @@ const columns = [
 const playerColors: Record<string, string> = PLAYER_COLORS
 
 // Helper function to process data for display
+// Placeholder entries for a season that has not had its first game yet
+function emptySeasonEntries() {
+  return ["Vanilla", "Choco", "Panda"].map((player) => ({
+    player,
+    games: 0,
+    wins: 0,
+    points: 0,
+  }))
+}
+
 function processSeasonData(latestEntries: any[], betStats?: Record<string, { total: number; outcome: number; exact: number }>) {
   const totalWins = latestEntries.reduce((sum: number, entry: any) => sum + entry.wins, 0)
 
@@ -38,21 +50,15 @@ function processSeasonData(latestEntries: any[], betStats?: Record<string, { tot
       return {
         position: rank,
         player: (
-          <span className="relative">
-            {entry.player}
-            <span
-              className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: playerColors[entry.player as keyof typeof playerColors] }}
-            />
-          </span>
+          <PlayerCell name={entry.player} color={playerColors[entry.player as keyof typeof playerColors]} />
         ),
         games: entry.games,
         wins: entry.wins,
         points: entry.points,
         difference: tied ? "-" : (topPoints - entry.points).toString(),
         winPercentage: totalWins > 0 ? `${((entry.wins / totalWins) * 100).toFixed(1)}%` : "0%",
-        outcomePercent: stats && stats.total > 0 ? `${((stats.outcome / stats.total) * 100).toFixed(1)}%` : "—",
-        exactPercent: stats && stats.total > 0 ? `${((stats.exact / stats.total) * 100).toFixed(1)}%` : "—",
+        outcomePercent: stats && stats.total > 0 ? `${((stats.outcome / stats.total) * 100).toFixed(1)}%` : "0%",
+        exactPercent: stats && stats.total > 0 ? `${((stats.exact / stats.total) * 100).toFixed(1)}%` : "0%",
         hoverColor: playerColors[entry.player as keyof typeof playerColors],
       }
     })
@@ -69,7 +75,9 @@ function createPieChartData(latestEntries: any[]) {
 
 async function getBetStats() {
   const bets = await prisma.plBet.findMany({
-    where: { points: { not: null } },
+    // Bets carry no season of their own — scope them through the match, or last
+    // season's stats leak into the new season's table.
+    where: { points: { not: null }, match: { season: CURRENT_PL_SEASON } },
     select: { player: true, points: true },
   })
   const stats: Record<string, { total: number; outcome: number; exact: number }> = {}
@@ -124,7 +132,7 @@ async function getHistoricalSeasonData() {
 async function getInitialGameweek(): Promise<number> {
   const grouped = await prisma.plMatch.groupBy({
     by: ["gameweek"],
-    where: { season: "2026/27", status: { notIn: ["FINISHED", "POSTPONED"] } },
+    where: { season: CURRENT_PL_SEASON, status: { notIn: ["FINISHED", "POSTPONED"] } },
     _count: { id: true },
   })
 
@@ -132,7 +140,7 @@ async function getInitialGameweek(): Promise<number> {
   if (active.length > 0) return active[0].gameweek
 
   const last = await prisma.plMatch.findFirst({
-    where: { season: "2026/27" },
+    where: { season: CURRENT_PL_SEASON },
     orderBy: { gameweek: "desc" },
     select: { gameweek: true },
   })
@@ -146,7 +154,12 @@ export default async function BetsPage() {
 
   const betStats = await getBetStats()
 
-  const currentSeasonData = processSeasonData(currentLatestEntries, betStats)
+  // Before the first game of a season there are no entries yet — show the three
+  // players on zeros instead of an empty table.
+  const currentSeasonData = processSeasonData(
+    currentLatestEntries.length > 0 ? currentLatestEntries : emptySeasonEntries(),
+    betStats
+  )
   const currentSeasonPieData = createPieChartData(currentLatestEntries)
 
   const season2526Data = processSeasonData(season2526LatestEntries)
@@ -158,7 +171,7 @@ export default async function BetsPage() {
   const initialGameweek = await getInitialGameweek()
 
   const initialMatches = await prisma.plMatch.findMany({
-    where: { season: "2026/27", gameweek: initialGameweek },
+    where: { season: CURRENT_PL_SEASON, gameweek: initialGameweek },
     include: { bets: true },
     orderBy: { kickoff: "asc" },
   })

@@ -8,6 +8,7 @@ import ImageCarousel from "./ImageCarousel"
 import dynamic from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import Image from "next/image"
+import PlayerCell from "./PlayerCell"
 
 const PLAYER_AVATARS: Record<keyof typeof PLAYER_COLORS, string> = {
   Vanilla: "/imgs/vanilla.png",
@@ -124,10 +125,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 58,
         wins: 24,
@@ -139,10 +137,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 58,
         wins: 15,
@@ -154,10 +149,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 58,
         wins: 19,
@@ -200,10 +192,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 24,
         wins: 8,
@@ -215,10 +204,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 24,
         wins: 3,
@@ -230,10 +216,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 24,
         wins: 3,
@@ -271,10 +254,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 44,
         wins: 22,
@@ -296,10 +276,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 44,
         wins: 7,
@@ -311,10 +288,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 44,
         wins: 3,
@@ -352,10 +326,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 36,
         wins: 17,
@@ -377,10 +348,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 36,
         wins: 4,
@@ -392,10 +360,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 36,
         wins: 6,
@@ -433,10 +398,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 38,
         wins: 12,
@@ -448,10 +410,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 38,
         wins: 11,
@@ -473,10 +432,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 38,
         wins: 6,
@@ -514,10 +470,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 70,
         wins: 29,
@@ -539,10 +492,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 70,
         wins: 10,
@@ -554,10 +504,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 70,
         wins: 14,
@@ -595,10 +542,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 67,
         wins: 24,
@@ -610,10 +554,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 67,
         wins: 14,
@@ -625,10 +566,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 67,
         wins: 16,
@@ -676,10 +614,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 1,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 48,
         wins: 20,
@@ -691,10 +626,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 48,
         wins: 13,
@@ -706,10 +638,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 48,
         wins: 7,
@@ -767,10 +696,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 2,
         bearo: (
-          <span className="relative">
-            Panda
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Panda }} />
-          </span>
+          <PlayerCell name={"Panda"} color={PLAYER_COLORS.Panda} />
         ),
         games: 21,
         wins: 6,
@@ -782,10 +708,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 3,
         bearo: (
-          <span className="relative">
-            Vanilla
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Vanilla }} />
-          </span>
+          <PlayerCell name={"Vanilla"} color={PLAYER_COLORS.Vanilla} />
         ),
         games: 21,
         wins: 3,
@@ -797,10 +720,7 @@ const pastSeasonsData: PastSeasonsData = {
       {
         position: 4,
         bearo: (
-          <span className="relative">
-            Choco
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS.Choco }} />
-          </span>
+          <PlayerCell name={"Choco"} color={PLAYER_COLORS.Choco} />
         ),
         games: 21,
         wins: 5,
@@ -929,10 +849,7 @@ export default function HoldemSeasonTabs({
     return sorted.map(([name, data], index) => ({
         position: index + 1,
         bearo: (
-          <span className="relative">
-            {name}
-            <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: data.hoverColor }} />
-          </span>
+          <PlayerCell name={name} color={data.hoverColor} />
         ),
         games: data.games,
         wins: data.wins,

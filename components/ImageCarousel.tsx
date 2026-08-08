@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useScrollLock } from '../lib/useScrollLock'
 
 interface ImageData {
   src: string
@@ -17,6 +18,7 @@ interface ImageCarouselProps {
 export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
+  useScrollLock(modalOpen)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const imagesPerPage = 3

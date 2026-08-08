@@ -122,6 +122,18 @@
   z-index: 1;
 }
 
+/* On touch devices these inner scrollers rubber-band once they hit their end,
+   which drags the whole table out of place. Keep the scroll inside. */
+@media (max-width: 767px) {
+  .fifa-standings-table > div,
+  .fifa-results-table > div,
+  .bets-gameweek-table,
+  .history-table,
+  .table-scroll {
+    overscroll-behavior: none;
+  }
+}
+
 /* Prevent iOS auto-zoom on input focus */
 @media (max-width: 767px) {
   input:focus, select:focus, textarea:focus {

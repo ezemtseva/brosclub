@@ -9,6 +9,7 @@ import dynamic from "next/dynamic"
 import AddGameDialog from "./AddGameDialog"
 import PlBetsGameweek from "./PlBetsGameweek"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import PlayerCell from "./PlayerCell"
 
 const BetsChart = dynamic(() => import("./BetsChart"), { ssr: false })
 const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
@@ -133,10 +134,7 @@ const playerColors: Record<string, string> = {
 const createPlayerElement = (name: string) => {
   const color = playerColors[name as keyof typeof playerColors] || "#cccccc"
   return (
-    <span className="relative">
-      {name}
-      <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: color }} />
-    </span>
+    <PlayerCell name={name} color={color} />
   )
 }
 
@@ -487,10 +485,7 @@ const allTimeColumns = [
 const createAllTimePlayerElement = (name: string) => {
   const color = playerColors[name as keyof typeof playerColors] || "#cccccc"
   return (
-    <span className="relative">
-      {name}
-      <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: color }} />
-    </span>
+    <PlayerCell name={name} color={color} />
   )
 }
 
@@ -589,11 +584,6 @@ export default function BetsSeasonTabs({
   // Render content based on active tab
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
-      if (currentSeasonData.length === 0 || currentSeasonData.every(r => r.games === 0)) {
-        return (
-          <p className="text-gray-500 text-center italic mt-32">The new season kicks off on August 21</p>
-        )
-      }
       return (
         <>
           <div className="mb-6">

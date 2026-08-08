@@ -1,4 +1,5 @@
 import prisma from "./prisma"
+import { CURRENT_PL_SEASON } from "./plSeason"
 
 function calcPoints(betHome: number, betAway: number, matchHome: number, matchAway: number): number {
   if (betHome === matchHome && betAway === matchAway) {
@@ -22,7 +23,7 @@ async function recalculateBetsEntry() {
 
   // Find gameweeks that still have unfinished matches
   const unfinishedMatches = await prisma.plMatch.findMany({
-    where: { season: "2026/27", gameweek: { in: gameweeks }, status: { notIn: ["FINISHED", "POSTPONED"] } },
+    where: { season: CURRENT_PL_SEASON, gameweek: { in: gameweeks }, status: { notIn: ["FINISHED", "POSTPONED"] } },
     select: { gameweek: true },
   })
   const gwsWithUnfinished = new Set(unfinishedMatches.map((m) => m.gameweek))

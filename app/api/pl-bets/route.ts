@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { CURRENT_PL_SEASON } from "@/lib/plSeason"
 
 const PLAYERS = ["Vanilla", "Choco", "Panda"]
 
@@ -9,7 +10,7 @@ export async function GET(req: Request) {
 
   const matches = await prisma.plMatch.findMany({
     where: {
-      season: "2025/26",
+      season: CURRENT_PL_SEASON,
       ...(gameweek ? { gameweek: parseInt(gameweek) } : {}),
     },
     include: { bets: true },

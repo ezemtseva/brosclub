@@ -3,6 +3,7 @@ import dynamicImport from "next/dynamic"
 import HoldemSeasonTabs from "../../components/HoldemSeasonTabs"
 import AutoRefresh from "../../components/AutoRefresh"
 import { PLAYER_COLORS } from "../../lib/teamColors"
+import PlayerCell from "../../components/PlayerCell"
 
 export const dynamic = 'force-dynamic'
 
@@ -28,13 +29,7 @@ function processSeasonData(latestEntries: any[]) {
     .map((entry: any, index: number, arr: any[]) => ({
       position: index + 1,
       bearo: (
-        <span className="relative">
-          {entry.bearo}
-          <span
-            className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]"
-            style={{ backgroundColor: playerColors[entry.bearo as keyof typeof playerColors] }}
-          />
-        </span>
+        <PlayerCell name={entry.bearo} color={playerColors[entry.bearo as keyof typeof playerColors]} />
       ),
       games: entry.games,
       wins: entry.wins,

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { YouTubeVideo } from './YouTubeVideo'
+import { useScrollLock } from '../lib/useScrollLock'
 
 interface VideoData {
   videoId: string
@@ -19,6 +20,7 @@ interface VideoCarouselProps {
 export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
+  useScrollLock(modalOpen)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
 
   const videosPerPage = 3

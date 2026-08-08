@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useScrollLock } from "../lib/useScrollLock"
 
 const PLAYERS = ["Panda", "Choco", "Vanilla"] as const
 type Player = (typeof PLAYERS)[number]
@@ -18,6 +19,7 @@ interface AddGameDialogProps {
 }
 
 export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, onClose }: AddGameDialogProps) {
+  useScrollLock(true)
   const [scores, setScores] = useState<Record<Player, string>>({
     Panda: "",
     Choco: "",
@@ -110,9 +112,9 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               className={`flex items-center justify-between border rounded-lg px-4 py-2 transition-colors ${getRowClass(player)}`}
             >
               <span className="text-sm font-medium">{player}</span>
-              {scoreOptions && (
+              {scoreOptions ? (
                 <select
-                  className="season-select sm:hidden w-20 border border-gray-200 rounded-lg px-2 pr-6 py-1 text-sm font-bold bg-white focus:outline-none"
+                  className="season-select w-20 border border-gray-200 rounded-lg px-5 py-1 text-sm font-bold text-center bg-white focus:outline-none"
                   value={scores[player]}
                   onChange={(e) => pickScore(player, e.target.value)}
                 >
@@ -121,22 +123,23 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
                     <option key={o} value={String(o)}>{o}</option>
                   ))}
                 </select>
+              ) : (
+                <input
+                  type="number"
+                  className="w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  value={scores[player]}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (val === "" || val === "-") {
+                      setScores((prev) => ({ ...prev, [player]: val }))
+                    } else {
+                      const digits = val.replace(/[^0-9]/g, "")
+                      const signed = val.startsWith("-") ? `-${digits}` : digits
+                      setScores((prev) => ({ ...prev, [player]: signed.slice(0, 4) }))
+                    }
+                  }}
+                />
               )}
-              <input
-                type="number"
-                className={`${scoreOptions ? "hidden sm:block" : ""} w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-                value={scores[player]}
-                onChange={(e) => {
-                  const val = e.target.value
-                  if (val === "" || val === "-") {
-                    setScores((prev) => ({ ...prev, [player]: val }))
-                  } else {
-                    const digits = val.replace(/[^0-9]/g, "")
-                    const signed = val.startsWith("-") ? `-${digits}` : digits
-                    setScores((prev) => ({ ...prev, [player]: signed.slice(0, 4) }))
-                  }
-                }}
-              />
             </div>
           ))}
         </div>

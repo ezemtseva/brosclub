@@ -11,7 +11,6 @@ const mainNavItems = [
   { href: "/bets", label: "BETS" },
   { href: "/7oker", label: "7OKER" },
   { href: "/poker", label: "HOLDEM" },
-  { href: "/gg", label: "GG" },
 ]
 
 export default function NavBar() {
@@ -40,7 +39,7 @@ export default function NavBar() {
         <div className="justify-self-start">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold">
             <Image src="/imgs/logo.png" alt="Bearos Club logo" width={36} height={36} className="rounded-full" />
-            <span className="hidden sm:inline">Bearos Club</span>
+            <span className="hidden sm:inline uppercase">Bearos Club</span>
           </Link>
         </div>
 

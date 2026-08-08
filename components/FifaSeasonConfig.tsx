@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import { useScrollLock } from "../lib/useScrollLock"
 
 const PLAYERS = [
   { name: "Vanilla", color: PLAYER_COLORS.Vanilla },
@@ -32,6 +33,7 @@ export default function FifaSeasonConfig({
   onClose,
   onSaved,
 }: FifaSeasonConfigProps) {
+  useScrollLock(true)
   const [playerTeams, setPlayerTeams] = useState<PlayerTeams>(initialPlayerTeams)
   const [round2Teams, setRound2Teams] = useState<PlayerTeams>(initialRound2Teams)
   const [activeRound, setActiveRound] = useState<Round>("Round 1")

@@ -13,19 +13,19 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    cups: { fifa: 6, fpl: 3, bets: 3, sevenOker: 1, holdem: 0, gg: 1 },
+    cups: { fifa: 6, fpl: 3, bets: 3, sevenOker: 1, holdem: 0 },
     bgColor: "bg-red-100",
   },
   {
     name: "Choco",
     image: "/imgs/choco.png",
-    cups: { fifa: 2, fpl: 1, bets: 3, sevenOker: 0, holdem: 0, gg: 0 },
+    cups: { fifa: 2, fpl: 1, bets: 3, sevenOker: 0, holdem: 0 },
     bgColor: "bg-blue-100",
   },
   {
     name: "Panda",
     image: "/imgs/panda.png",
-    cups: { fifa: 0, fpl: 5, bets: 8, sevenOker: 1, holdem: 8, gg: 0 },
+    cups: { fifa: 0, fpl: 5, bets: 8, sevenOker: 1, holdem: 8 },
     bgColor: "bg-green-100",
   },
 ]
@@ -36,26 +36,25 @@ const cupCategories = [
   { key: "bets", label: "BETS" },
   { key: "sevenOker", label: "7P" },
   { key: "holdem", label: "TH" },
-  { key: "gg", label: "GG" },
 ] as const
 
 const historyData = [
-  //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "", gg: "" },
-  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla", gg: "-" },
-  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda", gg: "Vanilla" },
-  { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-", gg: "-" },
-  { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
-  { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
-  { year: "2020/21", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-", gg: "-" },
-  { year: "2019/20", fifa: "Vanilla", fpl: "Vanilla", bets: "Choco", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2019", fifa: "-", fpl: "Panda", bets: "-", poker: "DNF", sevenOker: "-", gg: "-" },
-  { year: "2018", fifa: "DNF", fpl: "Vanilla", bets: "-", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2017", fifa: "Vanilla", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2016", fifa: "Choco", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2015", fifa: "-", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2014", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2013", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-", gg: "-" },
-  { year: "2012", fifa: "-", fpl: "-", bets: "Panda", poker: "DSQ", sevenOker: "-", gg: "-" },
+  //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "" },
+  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla" },
+  { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda" },
+  { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-" },
+  { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-" },
+  { year: "2021/22", fifa: "Vanilla", fpl: "Vanilla", bets: "Panda", poker: "-", sevenOker: "-" },
+  { year: "2020/21", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-" },
+  { year: "2019/20", fifa: "Vanilla", fpl: "Vanilla", bets: "Choco", poker: "Panda", sevenOker: "-" },
+  { year: "2019", fifa: "-", fpl: "Panda", bets: "-", poker: "DNF", sevenOker: "-" },
+  { year: "2018", fifa: "DNF", fpl: "Vanilla", bets: "-", poker: "Panda", sevenOker: "-" },
+  { year: "2017", fifa: "Vanilla", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-" },
+  { year: "2016", fifa: "Choco", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-" },
+  { year: "2015", fifa: "-", fpl: "-", bets: "Vanilla", poker: "Panda", sevenOker: "-" },
+  { year: "2014", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-" },
+  { year: "2013", fifa: "-", fpl: "-", bets: "Panda", poker: "Panda", sevenOker: "-" },
+  { year: "2012", fifa: "-", fpl: "-", bets: "Panda", poker: "DSQ", sevenOker: "-" },
 ]
 
 async function getLatestFplLeader() {
@@ -87,27 +86,6 @@ async function getLatestFplLeader() {
     return archiveLeader ? { ...archiveLeader, isArchive: true } : null
   } catch (error) {
     console.error("Error fetching FPL leader:", error)
-    return null
-  }
-}
-
-async function getLatestGgLeader() {
-  try {
-    const latestWeek = await prisma.ggEntry.findFirst({
-      orderBy: { week: "desc" },
-      select: { week: true },
-    })
-
-    if (!latestWeek) return null
-
-    const leader = await prisma.ggEntry.findFirst({
-      where: { week: latestWeek.week },
-      orderBy: { points: "desc" },
-    })
-
-    return leader
-  } catch (error) {
-    console.error("Error fetching GG leader:", error)
     return null
   }
 }
@@ -206,7 +184,6 @@ const HistoryCell = ({ value }: { value: string }) => {
 
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
-  const ggLeader = await getLatestGgLeader()
   const sevenOkerLeader = await getLatest7okerLeader()
   const fifaLeader = await getLatestFifaLeader()
 
@@ -222,20 +199,6 @@ export default async function Home() {
         "Will be started soon"
       ),
     link: "/fpl",
-  }
-
-  const ggSummary = {
-    title: "GG",
-    champion: false,
-    content:
-      ggLeader && ggLeader.points > 0 ? (
-        <>
-          Leader: <UnderlinedPlayer name={ggLeader.player} /> - {ggLeader.points} points
-        </>
-      ) : (
-        "Will be started soon"
-      ),
-    link: "/gg",
   }
 
   const holdemSummary = {
@@ -285,7 +248,7 @@ export default async function Home() {
     link: "/fifa",
   }
 
-  const summaries = [fifaSummary, fplSummary, betsSummary, sevenOkerSummary, ggSummary]
+  const summaries = [fifaSummary, fplSummary, betsSummary, sevenOkerSummary]
 
   const currentMonth = new Date().getMonth() + 1 // getMonth() returns 0-11
 
@@ -325,7 +288,7 @@ export default async function Home() {
                       <div className="text-xs text-gray-500 uppercase tracking-wide">Cups</div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-6 gap-1.5">
+                  <div className="grid grid-cols-5 gap-1.5">
                     {cupCategories.map((category) => (
                       <div key={category.key} className="bg-white border border-gray-200 rounded-lg p-1.5 text-center">
                         <div className="text-[9px] text-gray-500 uppercase tracking-wide mb-0.5 truncate">{category.label}</div>
@@ -341,7 +304,7 @@ export default async function Home() {
 
         <section className="mb-12">
           <h2 className="text-title font-bold mb-6">XV Season 2025/26</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {summaries.map((summary, index) => (
               <div
                 key={index}
@@ -372,13 +335,12 @@ export default async function Home() {
           <div className="history-table overflow-x-auto rounded-lg">
             <table className="history-table-inner min-w-full bg-white shadow-md rounded-lg table-fixed">
               <colgroup>
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[14%]" />
+                <col className="w-[16.66%]" />
+                <col className="w-[16.66%]" />
+                <col className="w-[16.66%]" />
+                <col className="w-[16.66%]" />
+                <col className="w-[16.66%]" />
+                <col className="w-[16.66%]" />
               </colgroup>
               <thead className="bg-gray-100">
                 <tr>
@@ -388,7 +350,6 @@ export default async function Home() {
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Bets</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">7oker</th>
                   <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Holdem</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">GG</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -412,9 +373,6 @@ export default async function Home() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <HistoryCell value={row.poker} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <HistoryCell value={row.gg} />
                     </td>
                   </tr>
                 ))}

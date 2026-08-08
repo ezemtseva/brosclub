@@ -75,7 +75,7 @@ function TeamCell({ team, playerTeams, teamLogos, align = "left" }: { team: stri
 
 export default function FifaMatchResults({ matches, playerTeams, teamLogos }: FifaMatchResultsProps) {
   return (
-    <div className="overflow-x-auto rounded-lg flex justify-center">
+    <div className="table-scroll overflow-x-auto rounded-lg flex justify-center">
       <table className="bg-white w-auto min-w-full">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">

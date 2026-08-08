@@ -10,6 +10,7 @@ import FifaSeasonConfig from "./FifaSeasonConfig"
 import FifaMatchResults from "./FifaMatchResults"
 import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
+import PlayerCell from "./PlayerCell"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -20,9 +21,9 @@ const seasons = [
   "2021/22",
   "2020/21",
   "2019/20",
-  "2017/18",
-  "2016/17",
-  "2015/16",
+  "2018",
+  "2017",
+  "2016",
   "All Time",
 ] as const
 type Season = (typeof seasons)[number]
@@ -78,12 +79,12 @@ const seasonHighlightCards: Partial<Record<Season, SeasonHighlightCard[]>> = {
   "2019/20": [
     { player: "Vanilla", description: "Vanilla, Lille — first to score an Olympic goal direct from a corner" },
   ],
-  "2017/18": [
+  "2018": [
     { value: "8 h 18 m", description: "Longest FIFA Night of the season — 22 matches" },
     { player: "Choco", description: "Choco, Atletico Madrid — first to score a goal with a goalkeeper" },
     { player: "Vanilla", description: "Vanilla, Napoli — first to score from their own half into an empty net" },
   ],
-  "2015/16": [
+  "2016": [
     { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
   ],
 }
@@ -2257,7 +2258,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
   },
-  "2017/18": {
+  "2018": {
     description: "This season was not completed due to a suspension. No winner was determined.",
     standings: [
       {
@@ -2730,7 +2731,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
   },
-  "2016/17": {
+  "2017": {
     standings: [
       {
         team: "Bayern Munich",
@@ -3124,7 +3125,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
     ],
   },
-  "2015/16": {
+  "2016": {
     standings: [
       {
         team: "PSG",
@@ -3576,9 +3577,11 @@ export default function FifaSeasonTabs({
   }
 
   // All Time columns
+  // Fixed widths on the first two columns so "by Team" and "by Player" line up:
+  // otherwise these size to their content, which differs between the tables.
   const allTimeColumns = [
-    { header: "#", accessor: "position" },
-    { header: "Team", accessor: "team" },
+    { header: "#", accessor: "position", width: "4%" },
+    { header: "Team", accessor: "team", width: "20%" },
     { header: "G", accessor: "games" },
     { header: "W", accessor: "wins" },
     { header: "D", accessor: "draws" },
@@ -3590,8 +3593,8 @@ export default function FifaSeasonTabs({
     { header: "W%", accessor: "winPercentage" },
   ]
   const allTimeColumnsMobile = [
-    { header: "#", accessor: "position" },
-    { header: "Team", accessor: "team" },
+    { header: "#", accessor: "position", width: "4%" },
+    { header: "Team", accessor: "team", width: "20%" },
     { header: "G", accessor: "games" },
     { header: "P", accessor: "points" },
     { header: "W", accessor: "wins" },
@@ -3604,8 +3607,8 @@ export default function FifaSeasonTabs({
   ]
 
   const allTimePlayerColumns = [
-    { header: "#", accessor: "position" },
-    { header: "Player", accessor: "player" },
+    { header: "#", accessor: "position", width: "4%" },
+    { header: "Player", accessor: "player", width: "20%" },
     { header: "G", accessor: "games" },
     { header: "W", accessor: "wins" },
     { header: "D", accessor: "draws" },
@@ -3617,8 +3620,8 @@ export default function FifaSeasonTabs({
     { header: "W%", accessor: "winPercentage" },
   ]
   const allTimePlayerColumnsMobile = [
-    { header: "#", accessor: "position" },
-    { header: "Player", accessor: "player" },
+    { header: "#", accessor: "position", width: "4%" },
+    { header: "Player", accessor: "player", width: "20%" },
     { header: "G", accessor: "games" },
     { header: "P", accessor: "points" },
     { header: "W", accessor: "wins" },
@@ -3699,10 +3702,7 @@ export default function FifaSeasonTabs({
     return sorted.map((entry, index) => ({
       position: index + 1,
       player: (
-        <span className="relative">
-          {entry.name}
-          <span className="absolute bottom-[-4px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: entry.hoverColor }} />
-        </span>
+        <PlayerCell name={entry.name} color={entry.hoverColor} />
       ),
       games: entry.games,
       wins: entry.wins,
@@ -4006,12 +4006,12 @@ export default function FifaSeasonTabs({
       const allTimePlayerData = computeAllTimePlayerStandings()
       return (
         <>
-          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
+          <h2 className="text-[16px] font-bold mb-6">Standings by Team</h2>
           <div className="fifa-standings-table">
             <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">All Time by Player</h2>
+            <h2 className="text-[16px] font-bold mb-6">Standings by Player</h2>
             <div className="fifa-standings-table">
               <DataTable columns={allTimePlayerColumns} mobileColumns={allTimePlayerColumnsMobile} data={allTimePlayerData} />
             </div>

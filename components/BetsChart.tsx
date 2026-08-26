@@ -57,7 +57,9 @@ export default function BetsChart({ entries }: BetsChartProps) {
 
       Object.keys(playerData).forEach(player => {
         const playerEntry = playerData[player].find(entry => entry.games === gameNumber)
-        dataPoint[player] = playerEntry ? playerEntry.points : null
+        // Everyone starts the season on zero, so the first gameweek has a line to
+        // draw from instead of sitting there as a lone dot.
+        dataPoint[player] = playerEntry ? playerEntry.points : gameNumber === 0 ? 0 : null
       })
 
       return dataPoint

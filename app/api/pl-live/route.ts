@@ -12,6 +12,7 @@ type FplFixture = {
   id: number
   event: number | null
   finished: boolean
+  finished_provisional: boolean | null
   started: boolean | null
   team_h_score: number | null
   team_a_score: number | null
@@ -19,7 +20,9 @@ type FplFixture = {
 
 function statusOf(fixture: FplFixture) {
   if (fixture.event === null) return "POSTPONED"
-  if (fixture.finished) return "FINISHED"
+  // finished_provisional flips at the final whistle; finished only once FPL has
+  // finalised bonus points, which can lag by hours.
+  if (fixture.finished || fixture.finished_provisional) return "FINISHED"
   if (fixture.started) return "IN_PLAY"
   return "SCHEDULED"
 }

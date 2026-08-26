@@ -14,7 +14,9 @@ async function recalculateBetsEntry() {
   const players = ["Vanilla", "Choco", "Panda"]
 
   const bets = await prisma.plBet.findMany({
-    where: { points: { not: null } },
+    // Bets have no season of their own — without scoping through the match, every
+    // previous season's bets get folded into the current standings.
+    where: { points: { not: null }, match: { season: CURRENT_PL_SEASON } },
     include: { match: { select: { gameweek: true } } },
     orderBy: { match: { gameweek: "asc" } },
   })

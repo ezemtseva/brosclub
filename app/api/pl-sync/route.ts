@@ -16,6 +16,7 @@ type FplFixture = {
   id: number
   event: number | null
   finished: boolean
+  finished_provisional: boolean | null
   started: boolean | null
   kickoff_time: string | null
   team_h: number
@@ -37,9 +38,11 @@ function crestFor(team: FplTeam | undefined) {
   return team ? `https://resources.premierleague.com/premierleague/badges/70/t${team.code}.png` : null
 }
 
-/** FPL has no status field — derive it from the two flags it does have. */
+/** FPL has no status field — derive it from the flags it does have. */
 function statusOf(fixture: FplFixture) {
-  if (fixture.finished) return "FINISHED"
+  // finished_provisional flips at the final whistle; finished only once FPL has
+  // finalised bonus points, which can lag by hours.
+  if (fixture.finished || fixture.finished_provisional) return "FINISHED"
   if (fixture.started) return "IN_PLAY"
   return "SCHEDULED"
 }

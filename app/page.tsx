@@ -126,6 +126,26 @@ async function getLatest7okerLeader() {
 }
 
 
+async function getLatestBetsLeaders() {
+  try {
+    const latestWeek = await prisma.betsEntry.findFirst({
+      orderBy: { week: "desc" },
+      select: { week: true },
+    })
+    if (!latestWeek) return null
+
+    const entries = await prisma.betsEntry.findMany({ where: { week: latestWeek.week } })
+    const top = entries.reduce((max, e) => Math.max(max, e.points), 0)
+    if (top <= 0) return null
+
+    // Several players can share the lead
+    return { players: entries.filter((e) => e.points === top).map((e) => e.player), points: top }
+  } catch (error) {
+    console.error("Error fetching Bets leader:", error)
+    return null
+  }
+}
+
 async function getLatestFifaLeader() {
   try {
     const leader = await prisma.fifaEntry.findFirst({
@@ -184,16 +204,18 @@ const HistoryCell = ({ value }: { value: string }) => {
 
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
-  const sevenOkerLeader = await getLatest7okerLeader()
+  const betsLeaders = await getLatestBetsLeaders()
   const fifaLeader = await getLatestFifaLeader()
 
   const fplSummary = {
     title: "FPL",
-    champion: !!(fplLeader && fplLeader.points > 0),
+    // Highlighted only once the season is over — mid-season we just show the leader
+    champion: !!(fplLeader && fplLeader.points > 0 && fplLeader.isArchive),
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          Champion: <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
+          {fplLeader.isArchive ? "Champion: " : "Leader: "}
+          <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
         </>
       ) : (
         "Will be started soon"
@@ -211,25 +233,27 @@ export default async function Home() {
 
   const sevenOkerSummary = {
     title: "7oker",
-    champion: !!(sevenOkerLeader && sevenOkerLeader.points > 0),
-    content:
-      sevenOkerLeader && sevenOkerLeader.points > 0 ? (
-        <>
-          Champion: <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
-        </>
-      ) : (
-        "Will be started soon"
-      ),
+    champion: false,
+    content: "Will be started soon",
     link: "/7oker",
   }
 
   const betsSummary = {
     title: "Bets",
-    champion: true,
-    content: (
+    champion: false,
+    content: betsLeaders ? (
       <>
-        Champions: <UnderlinedPlayer name="Choco" /> & <UnderlinedPlayer name="Panda" /> - 240 points
+        {betsLeaders.players.length > 1 ? "Leaders: " : "Leader: "}
+        {betsLeaders.players.map((player, i) => (
+          <span key={player}>
+            {i > 0 && " & "}
+            <UnderlinedPlayer name={player} />
+          </span>
+        ))}
+        {` - ${betsLeaders.points} points`}
       </>
+    ) : (
+      "Will be started soon"
     ),
     link: "/bets",
   }
@@ -303,7 +327,7 @@ export default async function Home() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-title font-bold mb-6">XV Season 2025/26</h2>
+          <h2 className="text-title font-bold mb-6">XVI Season 2026/27</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {summaries.map((summary, index) => (
               <div

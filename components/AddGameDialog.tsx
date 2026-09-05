@@ -25,12 +25,25 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
     Choco: "",
     Vanilla: "",
   })
+  // Points scored in the game, asked for alongside the win-points dropdown
+  const [gamePoints, setGamePoints] = useState<Record<Player, string>>({
+    Panda: "",
+    Choco: "",
+    Vanilla: "",
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
 
-  const isValid = PLAYERS.every(
-    (p) => scores[p] !== "" && scores[p] !== "-" && !isNaN(Number(scores[p]))
-  )
+  const filled = (v: string) => v !== "" && v !== "-" && !isNaN(Number(v))
+  const isValid =
+    PLAYERS.every((p) => filled(scores[p])) &&
+    (!scoreOptions || PLAYERS.every((p) => filled(gamePoints[p])))
+
+  const typeNumber = (val: string, maxDigits: number) => {
+    if (val === "" || val === "-") return val
+    const digits = val.replace(/[^0-9]/g, "").slice(0, maxDigits)
+    return val.startsWith("-") ? `-${digits}` : digits
+  }
 
   const numericScores = Object.fromEntries(PLAYERS.map((p) => [p, Number(scores[p])]))
   const maxScore = Math.max(...PLAYERS.map((p) => numericScores[p]))
@@ -80,6 +93,9 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scores: Object.fromEntries(PLAYERS.map((p) => [p, Number(scores[p])])),
+        ...(scoreOptions
+          ? { gamePoints: Object.fromEntries(PLAYERS.map((p) => [p, Number(gamePoints[p])])) }
+          : {}),
       }),
     })
 
@@ -113,16 +129,27 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
             >
               <span className="text-sm font-medium">{player}</span>
               {scoreOptions ? (
-                <select
-                  className="season-select w-20 border border-gray-200 rounded-lg px-5 py-1 text-sm font-bold text-center bg-white focus:outline-none"
-                  value={scores[player]}
-                  onChange={(e) => pickScore(player, e.target.value)}
-                >
-                  <option value=""></option>
-                  {optionsFor(player).map((o) => (
-                    <option key={o} value={String(o)}>{o}</option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-2">
+                  <select
+                    className="season-select w-20 border border-gray-200 rounded-lg px-5 py-1 text-sm font-bold text-center bg-white focus:outline-none"
+                    value={scores[player]}
+                    onChange={(e) => pickScore(player, e.target.value)}
+                  >
+                    <option value=""></option>
+                    {optionsFor(player).map((o) => (
+                      <option key={o} value={String(o)}>{o}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    className="w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    value={gamePoints[player]}
+                    onChange={(e) =>
+                      setGamePoints((prev) => ({ ...prev, [player]: typeNumber(e.target.value, 3) }))
+                    }
+                    onWheel={(e) => e.currentTarget.blur()}
+                  />
+                </div>
               ) : (
                 <input
                   type="number"

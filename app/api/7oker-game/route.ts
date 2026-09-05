@@ -4,11 +4,16 @@ const PLAYERS = ["Panda", "Choco", "Vanilla"]
 
 export async function POST(request: Request) {
   const body = await request.json()
-  const { scores } = body
+  // scores = win points (3/1/0) picked in the dialog; gamePoints = points scored
+  // in the game. Older callers sent scores alone and had placement derived here.
+  const { scores, gamePoints } = body
 
   for (const player of PLAYERS) {
     if (typeof scores[player] !== "number" || isNaN(scores[player])) {
       return Response.json({ error: "Invalid scores" }, { status: 400 })
+    }
+    if (gamePoints && (typeof gamePoints[player] !== "number" || isNaN(gamePoints[player]))) {
+      return Response.json({ error: "Invalid game points" }, { status: 400 })
     }
   }
 
@@ -39,13 +44,16 @@ export async function POST(request: Request) {
     data: ranked.map((player, idx) => {
       const place = idx + 1
       const current = currentTotals[player]
+      // With gamePoints present the dialog already decided the win points
+      const wonPoints = gamePoints ? scores[player] : pointsMap[place]
+      const scoredInGame = gamePoints ? gamePoints[player] : scores[player]
       return {
         week: latestWeek + 1,
         bearo: player,
         games: current.games + 1,
-        wins: current.wins + (place === 1 ? 1 : 0),
-        points: current.points + pointsMap[place],
-        gamepoints: current.gamepoints + scores[player],
+        wins: current.wins + (wonPoints === 3 ? 1 : 0),
+        points: current.points + wonPoints,
+        gamepoints: current.gamepoints + scoredInGame,
       }
     }),
   })

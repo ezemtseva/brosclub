@@ -92,6 +92,16 @@ export default function SevenOkerChart({
       return dp
     })
 
+    // Everyone starts the season on zero, so the first game has a line to draw
+    // from instead of sitting there as a lone dot.
+    if (!gameNumbers.includes(0)) {
+      const start: ChartDataPoint = { games: 0 }
+      Object.keys(playerMaps).forEach((bearo) => {
+        start[bearo] = 0
+      })
+      nextChartData.unshift(start)
+    }
+
     setChartData(nextChartData)
   }, [entries, dataKey])
 

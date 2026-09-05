@@ -13,7 +13,7 @@ const clubMembers = [
   {
     name: "Vanilla",
     image: "/imgs/vanilla.png",
-    cups: { fifa: 6, fpl: 3, bets: 3, sevenOker: 1, holdem: 0 },
+    cups: { fifa: 7, fpl: 3, bets: 3, sevenOker: 1, holdem: 0 },
     bgColor: "bg-red-100",
   },
   {
@@ -40,7 +40,8 @@ const cupCategories = [
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "" },
-  { year: "2025/26", fifa: "-", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla" },
+  { year: "2026/27", fifa: "-", fpl: "-", bets: "-", poker: "-", sevenOker: "-" },
+  { year: "2025/26", fifa: "Vanilla", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-" },
   { year: "2022/23", fifa: "Choco", fpl: "Panda", bets: "Panda", poker: "-", sevenOker: "-" },
@@ -258,11 +259,14 @@ export default async function Home() {
     link: "/bets",
   }
 
+  // Temporary until the new FIFA season starts — swap `false` back to
+  // `fifaLeader && fifaLeader.points > 0` to show the leader again.
+  const fifaSeasonStarted = false
   const fifaSummary = {
     title: "FIFA",
     champion: false,
     content:
-      fifaLeader && fifaLeader.points > 0 ? (
+      fifaSeasonStarted && fifaLeader && fifaLeader.points > 0 ? (
         <>
           Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> - {fifaLeader.points} points
         </>

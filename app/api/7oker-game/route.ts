@@ -40,6 +40,10 @@ export async function POST(request: Request) {
   const ranked = [...PLAYERS].sort((a, b) => scores[b] - scores[a])
   const pointsMap: Record<number, number> = { 1: 3, 2: 1, 3: 0 }
 
+  // A win is the top win-points score of the game, not the number 3: players
+  // sharing first place get 2 each and both count as winners.
+  const topWinPoints = Math.max(...PLAYERS.map((p) => scores[p]))
+
   await (prisma as any).sevenOkerEntry.createMany({
     data: ranked.map((player, idx) => {
       const place = idx + 1
@@ -47,11 +51,12 @@ export async function POST(request: Request) {
       // With gamePoints present the dialog already decided the win points
       const wonPoints = gamePoints ? scores[player] : pointsMap[place]
       const scoredInGame = gamePoints ? gamePoints[player] : scores[player]
+      const won = gamePoints ? wonPoints > 0 && wonPoints === topWinPoints : place === 1
       return {
         week: latestWeek + 1,
         bearo: player,
         games: current.games + 1,
-        wins: current.wins + (wonPoints === 3 ? 1 : 0),
+        wins: current.wins + (won ? 1 : 0),
         points: current.points + wonPoints,
         gamepoints: current.gamepoints + scoredInGame,
       }

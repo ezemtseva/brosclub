@@ -9,9 +9,10 @@ type Player = (typeof PLAYERS)[number]
 interface AddGameDialogProps {
   apiEndpoint: string
   /**
-   * When set, mobile shows dropdowns limited to these values — one per player.
-   * A value picked by one player disappears from the others, and the last
-   * player is filled in automatically. Desktop keeps the free-form inputs.
+   * When set, each player picks their win points from these values in a
+   * dropdown — independently, so the same value can go to more than one
+   * player. A second, free-form field for points scored in the game is shown
+   * alongside.
    */
   scoreOptions?: number[]
   onSuccess: () => void
@@ -54,34 +55,10 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
     return "border-gray-200 bg-white"
   }
 
-  // Dropdown pick: take the value off whoever else held it, then fill the last
-  // remaining player automatically once the other two are set.
+  // Every player picks independently — the same value may go to more than one
   const pickScore = (player: Player, val: string) => {
-    setScores((prev) => {
-      const next = { ...prev, [player]: val }
-      if (!scoreOptions || val === "") return next
-
-      for (const p of PLAYERS) {
-        if (p !== player && next[p] === val) next[p] = ""
-      }
-
-      const empty = PLAYERS.filter((p) => next[p] === "")
-      if (empty.length === 1) {
-        const used = PLAYERS.filter((p) => p !== empty[0]).map((p) => Number(next[p]))
-        const remaining = scoreOptions.find((o) => !used.includes(o))
-        if (remaining !== undefined) next[empty[0]] = String(remaining)
-      }
-      return next
-    })
+    setScores((prev) => ({ ...prev, [player]: val }))
   }
-
-  // Values still selectable for a player: unused ones plus their own current value
-  const optionsFor = (player: Player) =>
-    (scoreOptions ?? []).filter(
-      (o) =>
-        Number(scores[player]) === o ||
-        !PLAYERS.some((p) => p !== player && scores[p] !== "" && Number(scores[p]) === o)
-    )
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -136,7 +113,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
                     onChange={(e) => pickScore(player, e.target.value)}
                   >
                     <option value=""></option>
-                    {optionsFor(player).map((o) => (
+                    {scoreOptions.map((o) => (
                       <option key={o} value={String(o)}>{o}</option>
                     ))}
                   </select>

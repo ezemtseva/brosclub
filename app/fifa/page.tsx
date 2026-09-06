@@ -351,6 +351,18 @@ export default async function FIFAPage() {
       coverageText: "GAME DAY 3",
     },
     {
+      videoId: "YWEnX5tvGBA",
+      title: "Dybala",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 26",
+    },
+    {
+      videoId: "TDGiUGv1r7c",
+      title: "Alvarez",
+      thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
+      coverageText: "GAME DAY 26",
+    },
+    {
       videoId: "f0eWjpnaTK0",
       title: "Gyökeres",
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",

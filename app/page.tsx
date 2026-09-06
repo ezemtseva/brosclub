@@ -104,7 +104,7 @@ async function getLatest7okerLeader() {
         orderBy: { points: "desc" },
         select: { bearo: true, points: true },
       })
-      if (leader) return leader
+      if (leader) return { ...leader, isArchive: false }
     }
 
     // Fallback: show 2025/26 champion from archive
@@ -119,7 +119,7 @@ async function getLatest7okerLeader() {
       orderBy: { points: "desc" },
       select: { bearo: true, points: true },
     })
-    return archiveLeader
+    return archiveLeader ? { ...archiveLeader, isArchive: true } : null
   } catch (error) {
     console.error("Error fetching 7oker leader:", error)
     return null
@@ -205,6 +205,7 @@ const HistoryCell = ({ value }: { value: string }) => {
 
 export default async function Home() {
   const fplLeader = await getLatestFplLeader()
+  const sevenOkerLeader = await getLatest7okerLeader()
   const betsLeaders = await getLatestBetsLeaders()
   const fifaLeader = await getLatestFifaLeader()
 
@@ -234,8 +235,17 @@ export default async function Home() {
 
   const sevenOkerSummary = {
     title: "7oker",
-    champion: false,
-    content: "Will be started soon",
+    // Highlighted only once the season is over — mid-season we just show the leader
+    champion: !!(sevenOkerLeader && sevenOkerLeader.points > 0 && sevenOkerLeader.isArchive),
+    content:
+      sevenOkerLeader && sevenOkerLeader.points > 0 ? (
+        <>
+          {sevenOkerLeader.isArchive ? "Champion: " : "Leader: "}
+          <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
+        </>
+      ) : (
+        "Will be started soon"
+      ),
     link: "/7oker",
   }
 

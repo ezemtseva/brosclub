@@ -20,7 +20,8 @@ interface FifaSeasonConfigProps {
   season: string
   initialPlayerTeams: PlayerTeams
   initialRound2Teams: PlayerTeams
-  allTeams: string[]           // existing FifaEntry teams
+  allTeams: string[]           // every team that ever played
+  teamLogos: Record<string, string>
   onClose: () => void
   onSaved: () => void
 }
@@ -30,6 +31,7 @@ export default function FifaSeasonConfig({
   initialPlayerTeams,
   initialRound2Teams,
   allTeams,
+  teamLogos,
   onClose,
   onSaved,
 }: FifaSeasonConfigProps) {
@@ -41,22 +43,38 @@ export default function FifaSeasonConfig({
   const [opens, setOpens]             = useState<Record<PlayerName, boolean>>({ Vanilla: false, Choco: false, Panda: false })
   const containerRefs = useRef<Record<PlayerName, HTMLDivElement | null>>({ Vanilla: null, Choco: null, Panda: null })
 
-  // All teams already assigned (to prevent double-assignment)
-  const assignedTeams = new Set([...playerTeams.Vanilla, ...playerTeams.Choco, ...playerTeams.Panda])
+  /** Who holds this team this season, if anyone. */
+  const ownerOf = (team: string): PlayerName | undefined =>
+    (["Vanilla", "Choco", "Panda"] as PlayerName[]).find((p) => playerTeams[p].includes(team))
 
-  const getAvailableTeams = (player: PlayerName, query: string) => {
-    const base = allTeams.filter((t) => !assignedTeams.has(t) || playerTeams[player].includes(t))
-    const filtered = query ? base.filter((t) => t.toLowerCase().includes(query.toLowerCase())) : base
-    // If query doesn't match existing teams, show it as a "new team" option
-    const isNew = query.trim() && !allTeams.some((t) => t.toLowerCase() === query.toLowerCase())
-    return { filtered, isNew }
+  const getAvailableTeams = (player: PlayerName, rawQuery: string) => {
+    const query = rawQuery.trim().toLowerCase()
+    const matching = query ? allTeams.filter((t) => t.toLowerCase().includes(query)) : allTeams
+
+    // Teams taken by someone else stay visible but cannot be picked — an empty
+    // dropdown reads as a broken search.
+    const options = matching.map((team) => {
+      const owner = ownerOf(team)
+      return { team, takenBy: owner && owner !== player ? owner : undefined }
+    })
+
+    // Only offer "new team" when nothing in the pool matches by name, ignoring
+    // case and stray spaces — otherwise a typo spawns a duplicate team.
+    const isNew = Boolean(query) && !allTeams.some((t) => t.toLowerCase() === query)
+    return { options, isNew }
   }
 
-  const addTeam = async (player: PlayerName, team: string) => {
+  const addTeam = async (player: PlayerName, rawTeam: string) => {
+    const typed = rawTeam.trim()
+    if (!typed) return
+    // Reuse the known spelling when the name only differs by case
+    const team = allTeams.find((t) => t.toLowerCase() === typed.toLowerCase()) ?? typed
+    if (ownerOf(team) && ownerOf(team) !== player) return
+
     const res = await fetch("/api/fifa-season-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ season, player, team, action: "add" }),
+      body: JSON.stringify({ season, player, team, action: "add", logo: teamLogos[team] }),
     })
     if (res.ok) {
       setPlayerTeams((prev) => ({
@@ -198,7 +216,7 @@ export default function FifaSeasonConfig({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {PLAYERS.map(({ name, color }) => {
             const player = name as PlayerName
-            const { filtered, isNew } = getAvailableTeams(player, queries[player])
+            const { options, isNew } = getAvailableTeams(player, queries[player])
 
             return (
               <div key={player} className="flex flex-col gap-3">
@@ -242,15 +260,20 @@ export default function FifaSeasonConfig({
                     onFocus={() => setOpens((prev) => ({ ...prev, [player]: true }))}
                     onChange={(e) => setQueries((prev) => ({ ...prev, [player]: e.target.value }))}
                   />
-                  {opens[player] && (filtered.length > 0 || isNew) && (
+                  {opens[player] && (options.length > 0 || isNew) && (
                     <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                      {filtered.map((team) => (
+                      {options.map(({ team, takenBy }) => (
                         <li
                           key={team}
-                          onMouseDown={() => addTeam(player, team)}
-                          className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                          onMouseDown={takenBy ? undefined : () => addTeam(player, team)}
+                          className={
+                            takenBy
+                              ? "flex items-center justify-between px-3 py-2 text-sm text-gray-300 cursor-not-allowed"
+                              : "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                          }
                         >
-                          {team}
+                          <span>{team}</span>
+                          {takenBy && <span className="text-xs">{takenBy}</span>}
                         </li>
                       ))}
                       {isNew && (

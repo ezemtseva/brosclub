@@ -156,7 +156,7 @@ export default async function PokerPage() {
             <span className="hidden sm:inline text-title">Texas Holdem Cup</span>
           </>
         }
-        description="XI season is currently suspended - we have all had enough of Vladimir Vladimirovich reign..."
+        description="Permanently suspended after X seasons."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}

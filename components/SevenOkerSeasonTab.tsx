@@ -85,6 +85,26 @@ function StatCardTile({ card }: { card: StatCard }) {
   )
 }
 
+/**
+ * Seating runs on a fixed six-game rotation that restarts every seventh game,
+ * so game N sits in slot ((N - 1) mod 6).
+ */
+const SEATING_ROTATION = [
+  ["Choco", "Panda", "Vanilla"],
+  ["Panda", "Vanilla", "Choco"],
+  ["Vanilla", "Choco", "Panda"],
+  ["Choco", "Vanilla", "Panda"],
+  ["Vanilla", "Panda", "Choco"],
+  ["Panda", "Choco", "Vanilla"],
+]
+
+function seatingForGame(gameNumber: number) {
+  return SEATING_ROTATION[(gameNumber - 1) % SEATING_ROTATION.length]
+}
+
+/** The 7oker season ends once someone reaches this many points. */
+const SEASON_WIN_TARGET = 100
+
 // All Time columns
 const allTimeColumns = [
   { header: "#", accessor: "position" },
@@ -96,6 +116,7 @@ const allTimeColumns = [
   { header: "GP", accessor: "gamepoints" },
   { header: "GPD", accessor: "gamepointsDifference" },
   { header: "W%", accessor: "winPercentage" },
+  { header: "SW", accessor: "seasonsWon" },
 ]
 
 type SevenOkerSeasonTabsProps = {
@@ -141,11 +162,22 @@ export default function SevenOkerSeasonTabs({
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
-    const totals: Record<string, { games: number; wins: number; points: number; gamepoints: number; hoverColor: string }> = {}
+    const totals: Record<string, { games: number; wins: number; points: number; gamepoints: number; titles: number; hoverColor: string }> = {}
 
     const ensurePlayer = (name: string) => {
       if (!totals[name]) {
-        totals[name] = { games: 0, wins: 0, points: 0, gamepoints: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+        totals[name] = { games: 0, wins: 0, points: 0, gamepoints: 0, titles: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+      }
+    }
+
+    /** Season champion(s): most points, once someone has reached the target. */
+    const awardTitle = (pointsByPlayer: Record<string, number>) => {
+      const best = Math.max(...Object.values(pointsByPlayer), 0)
+      if (best < SEASON_WIN_TARGET) return
+      for (const [player, points] of Object.entries(pointsByPlayer)) {
+        if (points !== best) continue
+        ensurePlayer(player)
+        totals[player].titles += 1
       }
     }
 
@@ -169,6 +201,7 @@ export default function SevenOkerSeasonTabs({
         totals[player].wins += maxWins[player] ?? 0
         totals[player].gamepoints += maxGamepoints[player] ?? 0
       }
+      awardTitle(maxPoints)
     }
 
     const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
@@ -186,6 +219,7 @@ export default function SevenOkerSeasonTabs({
         gamepoints: data.gamepoints,
         gamepointsDifference: index === 0 ? "-" : String(data.gamepoints - leaderGamepoints),
         winPercentage: data.games > 0 ? `${((data.wins / data.games) * 100).toFixed(1)}%` : "0%",
+        seasonsWon: data.titles,
         hoverColor: data.hoverColor,
       }))
   }
@@ -197,6 +231,12 @@ export default function SevenOkerSeasonTabs({
   }
 
   // Render content based on active tab
+  const [seatingOpen, setSeatingOpen] = useState(false)
+
+  // Games already played this season decide which seat order comes next
+  const gamesPlayed = currentSeasonData.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
+  const nextGameNumber = gamesPlayed + 1
+
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
@@ -204,13 +244,33 @@ export default function SevenOkerSeasonTabs({
         <>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-[16px] font-bold">Standings</h2>
-            <button
-              onClick={() => setDialogOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <span className="text-base leading-none">+</span> Add Game
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSeatingOpen((open) => !open)}
+                className="w-[102px] py-1.5 text-sm text-center border border-gray-300 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors"
+              >
+                {seatingOpen ? "Hide seating" : "Show seating"}
+              </button>
+              <button
+                onClick={() => setDialogOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <span className="text-base leading-none">+</span> Add Game
+              </button>
+            </div>
           </div>
+
+          {seatingOpen && (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50">
+              <span className="text-sm text-gray-500 whitespace-nowrap">Game {nextGameNumber}</span>
+              {seatingForGame(nextGameNumber).map((name, i) => (
+                <span key={name} className="flex items-center gap-2">
+                  <span className="text-sm text-gray-400 tabular-nums">{i + 1}</span>
+                  <span className="text-sm text-gray-900">{name}</span>
+                </span>
+              ))}
+            </div>
+          )}
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
@@ -343,7 +403,6 @@ export default function SevenOkerSeasonTabs({
       {dialogOpen && (
         <AddGameDialog
           apiEndpoint="/api/7oker-game"
-          scoreOptions={[3, 2, 1, 0]}
           onSuccess={handleGameSuccess}
           onClose={() => setDialogOpen(false)}
         />

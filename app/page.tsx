@@ -40,7 +40,8 @@ const cupCategories = [
 
 const historyData = [
   //{ year: "2025/26", fifa: "", fpl: "", bets: "", poker: "-", sevenOker: "" },
-  { year: "2026/27", fifa: "-", fpl: "-", bets: "-", poker: "-", sevenOker: "-" },
+  // Hidden until the season has winners to show
+  //{ year: "2026/27", fifa: "-", fpl: "-", bets: "-", poker: "-", sevenOker: "-" },
   { year: "2025/26", fifa: "Vanilla", fpl: "Choco", bets: "Choco & Panda", poker: "-", sevenOker: "Vanilla" },
   { year: "2024/25", fifa: "Vanilla", fpl: "Panda", bets: "Panda", poker: "Panda", sevenOker: "Panda" },
   { year: "2023/24", fifa: "Vanilla", fpl: "Panda", bets: "Choco", poker: "-", sevenOker: "-" },
@@ -269,14 +270,11 @@ export default async function Home() {
     link: "/bets",
   }
 
-  // Temporary until the new FIFA season starts — swap `false` back to
-  // `fifaLeader && fifaLeader.points > 0` to show the leader again.
-  const fifaSeasonStarted = false
   const fifaSummary = {
     title: "FIFA",
     champion: false,
     content:
-      fifaSeasonStarted && fifaLeader && fifaLeader.points > 0 ? (
+      fifaLeader && fifaLeader.points > 0 ? (
         <>
           Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> - {fifaLeader.points} points
         </>

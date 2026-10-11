@@ -296,6 +296,15 @@ async function getCurrentSeasonData() {
   return entries
 }
 
+async function getLastSeasonData() {
+  try {
+    return await (prisma as any).fifaEntry2526.findMany()
+  } catch (error) {
+    console.error("Error fetching 2025/26 FIFA data:", error)
+    return []
+  }
+}
+
 async function getHistoricalSeasonData() {
   try {
     const entries = await (prisma as any).fifaEntry2024.findMany()
@@ -324,26 +333,47 @@ async function getMatches(season: string) {
 }
 
 export default async function FIFAPage() {
-  // Fetch current season data (2025/26)
-  const [currentEntries, historicalEntries, seasonTeams, matches] = await Promise.all([
-    getCurrentSeasonData(),
-    getHistoricalSeasonData(),
-    getPlayerTeams("2025/26"),
-    getMatches("2025/26"),
-  ])
+  // Current season, plus the finished 2025/26 one it replaced
+  const [currentEntries, lastSeasonEntries, historicalEntries, seasonTeams, lastSeasonTeams, matches, lastSeasonMatches] =
+    await Promise.all([
+      getCurrentSeasonData(),
+      getLastSeasonData(),
+      getHistoricalSeasonData(),
+      getPlayerTeams("2026/27"),
+      getPlayerTeams("2025/26"),
+      getMatches("2026/27"),
+      getMatches("2025/26"),
+    ])
+
+  // Every team that ever played — the season configurator picks from this pool,
+  // and archived-season insights need their crests too.
+  const teamLogos: Record<string, string> = {}
+  for (const entry of [...historicalEntries, ...lastSeasonEntries, ...currentEntries] as { team: string; logo: string }[]) {
+    if (entry.logo) teamLogos[entry.team] = entry.logo
+  }
+  const everyTeam = new Set<string>(Object.keys(teamLogos))
+  for (const m of [...lastSeasonMatches, ...matches] as { teamA: string; teamB: string }[]) {
+    everyTeam.add(m.teamA)
+    everyTeam.add(m.teamB)
+  }
+  for (const team of Array.from(everyTeam)) {
+    if (!teamLogos[team]) teamLogos[team] = "/placeholder.svg"
+  }
 
   const teamNames = currentEntries.map((e: { team: string }) => e.team).sort()
-  const teamLogos: Record<string, string> = Object.fromEntries(
-    currentEntries.map((e: { team: string; logo: string }) => [e.team, e.logo || "/placeholder.svg"])
-  )
+  const allKnownTeams = Array.from(everyTeam).sort((a, b) => a.localeCompare(b))
   const playerTeams = seasonTeams.round1
   const round2Teams = seasonTeams.round2
   const positionMovements = computePositionMovements(currentEntries, matches)
   const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches, positionMovements)
+  const lastSeasonData = processFifaData2025(lastSeasonEntries, lastSeasonTeams.round1, lastSeasonMatches, {})
   const historicalSeasonData = processFifaData2024(historicalEntries)
 
-  // Current season highlights (2025/26) - update as new highlights happen
-  const currentSeasonHighlights = [
+  // New season starts with no highlights — add them as they happen
+  const currentSeasonHighlights: any[] = []
+
+  // 2025/26 highlights, kept with the season they belong to
+  const lastSeasonHighlights = [
     {
       videoId: "CrNcXFZkemY",
       title: "✯ Goal of the season - Phil Foden",
@@ -945,14 +975,20 @@ export default async function FIFAPage() {
 
       <FifaSeasonTabs
         title="EA FC Cup"
-        description="X anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually."
+        description="XI anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually."
         currentSeasonData={currentSeasonData}
         currentSeasonHighlights={currentSeasonHighlights}
+        lastSeasonData={lastSeasonData}
+        lastSeasonHighlights={lastSeasonHighlights}
+        lastSeasonPlayerTeams={lastSeasonTeams.round1}
+        lastSeasonMatches={lastSeasonMatches.map((m: { id: number; season: string; teamA: string; scoreA: number; teamB: string; scoreB: number; createdAt: Date }) => ({ ...m, createdAt: m.createdAt.toISOString() }))}
+        lastSeasonRawEntries={lastSeasonEntries}
         historicalSeasonData={historicalSeasonData}
         historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
         mobileColumns={mobileColumns}
         teamNames={teamNames}
+        allKnownTeams={allKnownTeams}
         playerTeams={playerTeams}
         round2Teams={round2Teams}
         historicalPlayerTeams={{ Vanilla: teamColors2024.red, Choco: teamColors2024.blue, Panda: teamColors2024.green }}

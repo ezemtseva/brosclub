@@ -154,6 +154,20 @@ model FifaEntry {
   updatedAt     DateTime @updatedAt
 }
 
+model FifaEntry2526 {
+  id            Int    @id @default(autoincrement())
+  team          String
+  logo          String
+  games         Int
+  wins          Int
+  draws         Int
+  losses        Int
+  goalsScored   Int
+  goalsConceded Int
+
+  @@map("fifaEntry2526")
+}
+
 model FifaEntry2024 {
   id            Int    @id @default(autoincrement())
   team          String

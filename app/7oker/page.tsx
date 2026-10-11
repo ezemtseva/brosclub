@@ -231,14 +231,14 @@ export default async function SevenOkerPage() {
         title="7oker Cup"
         description={
           <>
-            III season of loosing solid games in the last round. {" "}
+            III season of our beloved local{" "}
             <Link
               href="https://bearos-poker.vercel.app/"
               className="text-blue-500 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              You should try it
+              game
             </Link>
             .
           </>

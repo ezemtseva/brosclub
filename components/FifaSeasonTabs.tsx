@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import DataTable from "./DataTable"
@@ -14,6 +14,7 @@ import PlayerCell from "./PlayerCell"
 
 // Define the seasons array with all the required seasons
 const seasons = [
+  "2026/27",
   "2025/26",
   "2024/25",
   "2023/24",
@@ -27,6 +28,8 @@ const seasons = [
   "All Time",
 ] as const
 type Season = (typeof seasons)[number]
+
+const CURRENT_FIFA_SEASON: Season = "2026/27"
 
 const PLAYER_AVATARS: Record<string, string> = {
   Vanilla: "/imgs/vanilla.png",
@@ -123,10 +126,12 @@ type SeasonData = {
   standings: TeamStanding[]
   highlights?: string[]
   description?: string
+  /** Season abandoned — it has standings but no champion. */
+  unfinished?: boolean
 }
 
 type PastSeasonsData = {
-  [K in Exclude<Season, "2025/26" | "2024/25" | "All Time">]: SeasonData
+  [K in Exclude<Season, "2026/27" | "2025/26" | "2024/25" | "All Time">]: SeasonData
 }
 
 // Static data for past seasons (2023/24 and earlier)
@@ -2260,6 +2265,7 @@ const pastSeasonsData: PastSeasonsData = {
   },
   "2018": {
     description: "This season was not completed due to a suspension. No winner was determined.",
+    unfinished: true,
     standings: [
       {
         team: "Manchester United",
@@ -3511,11 +3517,17 @@ type FifaSeasonTabsProps = {
   description: string
   currentSeasonData: any[]
   currentSeasonHighlights: any[]
+  lastSeasonData: any[]
+  lastSeasonHighlights: any[]
+  lastSeasonPlayerTeams: PlayerTeams
+  lastSeasonMatches: MatchRecord[]
+  lastSeasonRawEntries: any[]
   historicalSeasonData: any[]
   historicalSeasonHighlights: any[]
   columns: any[]
   mobileColumns?: any[]
   teamNames: string[]
+  allKnownTeams: string[]
   playerTeams: PlayerTeams
   round2Teams: PlayerTeams
   historicalPlayerTeams: PlayerTeams
@@ -3533,11 +3545,17 @@ export default function FifaSeasonTabs({
   description,
   currentSeasonData,
   currentSeasonHighlights,
+  lastSeasonData,
+  lastSeasonHighlights,
+  lastSeasonPlayerTeams,
+  lastSeasonMatches,
+  lastSeasonRawEntries,
   historicalSeasonData,
   historicalSeasonHighlights,
   columns,
   mobileColumns,
   teamNames,
+  allKnownTeams,
   playerTeams: initialPlayerTeams,
   round2Teams: initialRound2Teams,
   historicalPlayerTeams,
@@ -3557,6 +3575,25 @@ export default function FifaSeasonTabs({
   const [resultsSearch, setResultsSearch] = useState("")
   const router = useRouter()
 
+  // The configurator offers every team that ever played: the DB-backed seasons
+  // plus the ones that only exist in the static history above.
+  const configTeamLogos = useMemo(() => {
+    const logos: Record<string, string> = { ...teamLogos }
+    for (const season of Object.values(pastSeasonsData)) {
+      for (const entry of season.standings) {
+        if (entry.logo && (!logos[entry.team] || logos[entry.team] === "/placeholder.svg")) {
+          logos[entry.team] = entry.logo
+        }
+      }
+    }
+    return logos
+  }, [teamLogos])
+
+  const configTeamPool = useMemo(
+    () => Array.from(new Set([...allKnownTeams, ...Object.keys(configTeamLogos)])).sort((a, b) => a.localeCompare(b)),
+    [allKnownTeams, configTeamLogos]
+  )
+
   const handleMatchSuccess = async () => {
     // Refresh matches from server
     const res = await fetch("/api/fifa-matches?season=2025/26")
@@ -3567,7 +3604,7 @@ export default function FifaSeasonTabs({
   }
 
   const handleConfigSaved = async () => {
-    const res = await fetch("/api/fifa-season-config?season=2025/26")
+    const res = await fetch(`/api/fifa-season-config?season=${encodeURIComponent(CURRENT_FIFA_SEASON)}`)
     if (res.ok) {
       const { round1, round2 } = await res.json()
       setPlayerTeams(round1)
@@ -3591,6 +3628,8 @@ export default function FifaSeasonTabs({
     { header: "GD", accessor: "goalDifference" },
     { header: "P", accessor: "points" },
     { header: "W%", accessor: "winPercentage" },
+    { header: "SW", accessor: "seasonsWon" },
+    { header: "SP", accessor: "seasonsPlayed" },
   ]
   const allTimeColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
@@ -3604,6 +3643,8 @@ export default function FifaSeasonTabs({
     { header: "GC", accessor: "goalsConceded" },
     { header: "GD", accessor: "goalDifference" },
     { header: "W%", accessor: "winPercentage" },
+    { header: "SW", accessor: "seasonsWon" },
+    { header: "SP", accessor: "seasonsPlayed" },
   ]
 
   const allTimePlayerColumns = [
@@ -3647,6 +3688,21 @@ export default function FifaSeasonTabs({
     for (const [playerName, teams] of Object.entries(playerTeams)) {
       ensurePlayer(playerName)
       for (const entry of currentRawEntries) {
+        if ((teams as string[]).includes(entry.team)) {
+          totals[playerName].games += entry.games ?? 0
+          totals[playerName].wins += entry.wins ?? 0
+          totals[playerName].draws += entry.draws ?? 0
+          totals[playerName].losses += entry.losses ?? 0
+          totals[playerName].goalsScored += entry.goalsScored ?? 0
+          totals[playerName].goalsConceded += entry.goalsConceded ?? 0
+        }
+      }
+    }
+
+    // 2025/26 — finished season, its own team assignment
+    for (const [playerName, teams] of Object.entries(lastSeasonPlayerTeams)) {
+      ensurePlayer(playerName)
+      for (const entry of lastSeasonRawEntries) {
         if ((teams as string[]).includes(entry.team)) {
           totals[playerName].games += entry.games ?? 0
           totals[playerName].wins += entry.wins ?? 0
@@ -3745,17 +3801,31 @@ export default function FifaSeasonTabs({
 
   // Helper: aggregate all-time totals from a given set of current-season entries
   const computeAllTimeTotals = (overrideCurrentEntries: any[]) => {
-    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; logo: string; color: string }> = {}
+    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; logo: string; color: string; seasons: Set<string>; titles: number }> = {}
+
+    /** Winner of a finished season — same ordering the standings tables use. */
+    const winnerOf = (entries: { team: string; wins?: number; draws?: number; goalsScored?: number; goalsConceded?: number }[]) => {
+      const ranked = entries
+        .map((e) => ({
+          team: normalizeTeamName(e.team),
+          points: (e.wins ?? 0) * 3 + (e.draws ?? 0),
+          gd: (e.goalsScored ?? 0) - (e.goalsConceded ?? 0),
+        }))
+        .sort((a, b) => b.points - a.points || b.gd - a.gd)
+      return ranked[0]?.points > 0 ? ranked[0].team : undefined
+    }
 
     const ensureTeam = (team: string, logo: string, color: string) => {
       if (!totals[team]) {
-        totals[team] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, logo, color }
+        totals[team] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, logo, color, seasons: new Set(), titles: 0 }
       }
     }
 
     for (const entry of overrideCurrentEntries) {
       const team = normalizeTeamName(entry.team)
       ensureTeam(team, entry.logo || "/placeholder.svg", getTeamColor(team))
+      // Drafted teams count for the running season even before a ball is kicked
+      totals[team].seasons.add(CURRENT_FIFA_SEASON)
       totals[team].games += entry.games ?? 0
       totals[team].wins += entry.wins ?? 0
       totals[team].draws += entry.draws ?? 0
@@ -3764,15 +3834,26 @@ export default function FifaSeasonTabs({
       totals[team].goalsConceded += entry.goalsConceded ?? 0
     }
 
-    for (const entry of historicalRawEntries) {
+    for (const { season, entries } of [
+      { season: "2025/26", entries: lastSeasonRawEntries },
+      { season: "2024/25", entries: historicalRawEntries },
+    ]) {
+      for (const entry of entries) {
       const team = normalizeTeamName(entry.team)
       ensureTeam(team, entry.logo || "/placeholder.svg", getTeamColor(team))
+      totals[team].seasons.add(season)
       totals[team].games += entry.games ?? 0
       totals[team].wins += entry.wins ?? 0
       totals[team].draws += entry.draws ?? 0
       totals[team].losses += entry.losses ?? 0
       totals[team].goalsScored += entry.goalsScored ?? 0
       totals[team].goalsConceded += entry.goalsConceded ?? 0
+      }
+      const champion = winnerOf(entries)
+      if (champion) {
+        ensureTeam(champion, "/placeholder.svg", getTeamColor(champion))
+        totals[champion].titles += 1
+      }
     }
 
     for (const seasonKey of Object.keys(pastSeasonsData)) {
@@ -3781,6 +3862,7 @@ export default function FifaSeasonTabs({
       for (const entry of sd.standings) {
         const team = normalizeTeamName(entry.team)
         ensureTeam(team, entry.logo, entry.color || getTeamColor(team))
+        totals[team].seasons.add(seasonKey)
         totals[team].games += entry.games
         totals[team].wins += entry.wins
         totals[team].draws += entry.draws
@@ -3788,12 +3870,19 @@ export default function FifaSeasonTabs({
         totals[team].goalsScored += entry.goalsScored
         totals[team].goalsConceded += entry.goalsConceded
       }
+      const champion = sd.unfinished ? undefined : winnerOf(sd.standings)
+      if (champion) {
+        ensureTeam(champion, "/placeholder.svg", getTeamColor(champion))
+        totals[champion].titles += 1
+      }
     }
 
     return Object.entries(totals)
       .map(([teamName, data]) => ({
         teamName,
         ...data,
+        seasonsPlayed: data.seasons.size,
+        seasonsWon: data.titles,
         points: data.wins * 3 + data.draws,
         goalDifference: data.goalsScored - data.goalsConceded,
       }))
@@ -3864,6 +3953,8 @@ export default function FifaSeasonTabs({
         goalDifference: entry.goalDifference,
         points: entry.points,
         winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
+        seasonsWon: entry.seasonsWon,
+        seasonsPlayed: entry.seasonsPlayed,
         hoverColor: "#e5e7eb",
       }
     })
@@ -3913,8 +4004,8 @@ export default function FifaSeasonTabs({
 
   // Render content based on active tab
   const renderStandingsContent = () => {
-    if (activeSeason === "2025/26") {
-      // For the current season (2025/26), use the live data from fifaEntry
+    if (activeSeason === "2026/27") {
+      // For the current season, use the live data from fifaEntry
       return (
         <>
           <div className="flex flex-col lg:flex-row justify-between gap-6">
@@ -3975,12 +4066,34 @@ export default function FifaSeasonTabs({
             </div>
           </div>
 
-          <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-            <div className="">
-              <VideoCarousel videos={currentSeasonHighlights} />
-            </div>
-          </section>
+          {currentSeasonHighlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
+              <div className="">
+                <VideoCarousel videos={currentSeasonHighlights} />
+              </div>
+            </section>
+          )}
+        </>
+      )
+    } else if (activeSeason === "2025/26") {
+      // Finished season — standings from the fifaEntry2526 archive
+      const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
+      const mobileColumnsWithoutForm = mobileColumns ? mobileColumns.filter((c: any) => c.accessor !== "form") : undefined
+      return (
+        <>
+          <div className="fifa-standings-table">
+            <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} />
+          </div>
+
+          {lastSeasonHighlights.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
+              <div className="">
+                <VideoCarousel videos={lastSeasonHighlights} />
+              </div>
+            </section>
+          )}
         </>
       )
     } else if (activeSeason === "2024/25") {
@@ -4043,8 +4156,18 @@ export default function FifaSeasonTabs({
   }
 
   const renderInsightsContent = () => {
-    if (activeSeason === "2025/26") {
+    if (activeSeason === "2026/27") {
       return <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />
+    }
+    // The finished season keeps its insights — same computation, its own match log
+    if (activeSeason === "2025/26") {
+      return (
+        <FifaAdvancedAnalytics
+          matches={lastSeasonMatches}
+          playerTeams={lastSeasonPlayerTeams}
+          teamLogos={teamLogos}
+        />
+      )
     }
     const highlights = seasonHighlightCards[activeSeason]
     if (highlights && highlights.length > 0) {
@@ -4109,7 +4232,7 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      {activeTab === "Summary" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
+      {activeTab === "Summary" && activeSeason !== "2026/27" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[16px] font-bold">Standings</h2>
         </div>
@@ -4128,10 +4251,11 @@ export default function FifaSeasonTabs({
 
       {configOpen && (
         <FifaSeasonConfig
-          season="2025/26"
+          season={CURRENT_FIFA_SEASON}
           initialPlayerTeams={playerTeams}
           initialRound2Teams={round2Teams}
-          allTeams={teamNames}
+          allTeams={configTeamPool}
+          teamLogos={configTeamLogos}
           onClose={() => setConfigOpen(false)}
           onSaved={handleConfigSaved}
         />

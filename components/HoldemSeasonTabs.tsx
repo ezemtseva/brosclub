@@ -761,6 +761,12 @@ function playerNameFromColor(color: string): string {
 }
 
 // All Time columns
+/**
+ * The cup is permanently suspended, so its title count is final — Panda took
+ * every season played.
+ */
+const SEASONS_WON: Record<string, number> = { Panda: 8, Vanilla: 0, Choco: 0 }
+
 const allTimeColumns = [
   { header: "#", accessor: "position" },
   { header: "Bearo", accessor: "bearo" },
@@ -769,6 +775,7 @@ const allTimeColumns = [
   { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
   { header: "W%", accessor: "winPercentage" },
+  { header: "SW", accessor: "seasonsWon" },
 ]
 
 type HoldemSeasonTabsProps = {
@@ -798,7 +805,8 @@ export default function HoldemSeasonTabs({
   historicalSeasonHighlights,
   columns,
 }: HoldemSeasonTabsProps) {
-  const [activeSeason, setActiveSeason] = useState<Season>("2024/25") // Update to return 2025-26
+  // The cup is over — All Time is the view that matters now
+  const [activeSeason, setActiveSeason] = useState<Season>("All Time")
   const [activeTab, setActiveTab] = useState<PageTab>("Summary")
 
   // Compute All Time standings
@@ -856,6 +864,7 @@ export default function HoldemSeasonTabs({
         points: data.points,
         difference: index === 0 ? "-" : String(data.points - leaderPoints),
         winPercentage: data.games > 0 ? `${((data.wins / data.games) * 100).toFixed(1)}%` : "0%",
+        seasonsWon: SEASONS_WON[name] ?? 0,
         hoverColor: data.hoverColor,
       }))
   }

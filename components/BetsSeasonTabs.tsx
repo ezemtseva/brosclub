@@ -473,12 +473,15 @@ function playerNameFromColor(color: string): string {
 }
 
 // All Time columns
+const GAMEWEEKS_IN_SEASON = 38
+
 const allTimeColumns = [
   { header: "#", accessor: "position" },
   { header: "Player", accessor: "player" },
-  { header: "G", accessor: "games" },
+  { header: "GW", accessor: "games" },
   { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
+  { header: "SW", accessor: "seasonsWon" },
 ]
 
 // Helper to create player element for All Time table
@@ -513,11 +516,22 @@ export default function BetsSeasonTabs({
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
-    const totals: Record<string, { games: number; wins: number; points: number; hoverColor: string }> = {}
+    const totals: Record<string, { games: number; wins: number; points: number; titles: number; hoverColor: string }> = {}
 
     const ensurePlayer = (name: string) => {
       if (!totals[name]) {
-        totals[name] = { games: 0, wins: 0, points: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+        totals[name] = { games: 0, wins: 0, points: 0, titles: 0, hoverColor: playerColors[name] ?? "#cccccc" }
+      }
+    }
+
+    /** Season champion(s): most points at the end. A tie shares the title. */
+    const awardTitle = (pointsByPlayer: Record<string, number>) => {
+      const best = Math.max(...Object.values(pointsByPlayer), 0)
+      if (best <= 0) return
+      for (const [player, points] of Object.entries(pointsByPlayer)) {
+        if (points !== best) continue
+        ensurePlayer(player)
+        totals[player].titles += 1
       }
     }
 
@@ -546,12 +560,15 @@ export default function BetsSeasonTabs({
         totals[player].points += maxPoints[player] ?? 0
         totals[player].wins += winsMap[player] ?? 0
       }
+      // A season is over once all 38 gameweeks are in
+      if (Math.max(...Object.values(maxGames), 0) >= GAMEWEEKS_IN_SEASON) awardTitle(maxPoints)
     }
 
     // From static pastSeasonsData
     for (const seasonKey of Object.keys(pastSeasonsData)) {
       const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
       if (!sd) continue
+      const seasonPoints: Record<string, number> = {}
       for (const entry of sd.standings) {
         const name = playerNameFromColor(entry.hoverColor)
         if (!name) continue
@@ -559,7 +576,9 @@ export default function BetsSeasonTabs({
         totals[name].games += typeof entry.games === "number" ? entry.games : 0
         totals[name].points += entry.points
         totals[name].wins += entry.wins ?? 0
+        seasonPoints[name] = entry.points
       }
+      awardTitle(seasonPoints)
     }
 
     const sorted = Object.entries(totals).sort(([, a], [, b]) => b.points - a.points)
@@ -571,6 +590,7 @@ export default function BetsSeasonTabs({
         wins: data.wins,
         points: data.points,
         difference: index === 0 ? "-" : String(data.points - leaderPoints),
+        seasonsWon: data.titles,
         hoverColor: data.hoverColor,
       }))
   }

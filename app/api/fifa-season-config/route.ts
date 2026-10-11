@@ -4,6 +4,19 @@ const PLAYERS = ["Vanilla", "Choco", "Panda"]
 
 const emptyTeams = (): Record<string, string[]> => ({ Vanilla: [], Choco: [], Panda: [] })
 
+/** A team returning from an earlier season should come back with its crest. */
+async function logoFromArchive(team: string): Promise<string> {
+  for (const model of ["fifaEntry2526", "fifaEntry2024"] as const) {
+    try {
+      const row = await (prisma as any)[model].findFirst({ where: { team }, select: { logo: true } })
+      if (row?.logo) return row.logo
+    } catch {
+      // archive table may not exist yet — fall through to the placeholder
+    }
+  }
+  return "/placeholder.svg"
+}
+
 // GET /api/fifa-season-config?season=2025/26
 // Returns { round1, round2 } — round2 is the subset of round 1 teams that advanced.
 export async function GET(request: Request) {
@@ -27,7 +40,7 @@ export async function GET(request: Request) {
 // Body: { season, player, team, action: "add" | "remove" }
 //       { season, team, action: "round2", include: boolean }
 export async function POST(request: Request) {
-  const { season, player, team, action, include } = await request.json()
+  const { season, player, team, action, include, logo } = await request.json()
 
   if (!season || !team || !["add", "remove", "round2"].includes(action)) {
     return Response.json({ error: "Invalid body" }, { status: 400 })
@@ -61,11 +74,20 @@ export async function POST(request: Request) {
     const exists = await prisma.fifaEntry.findUnique({ where: { team } })
     if (!exists) {
       await prisma.fifaEntry.create({
-        data: { team, logo: "/placeholder.svg", games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0 },
+        data: { team, logo: logo || (await logoFromArchive(team)), games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0 },
       })
     }
   } else {
     await prisma.fifaPlayerTeam.deleteMany({ where: { season, team } })
+
+    // A team nobody plays has no place in the standings — drop it, but never
+    // throw away a team that actually played.
+    const entry = await prisma.fifaEntry.findUnique({ where: { team } })
+    const stillAssigned = await prisma.fifaPlayerTeam.count({ where: { team } })
+    const played = await prisma.fifaMatch.count({ where: { OR: [{ teamA: team }, { teamB: team }] } })
+    if (entry && stillAssigned === 0 && played === 0 && entry.games === 0) {
+      await prisma.fifaEntry.delete({ where: { team } })
+    }
   }
 
   return Response.json({ success: true })

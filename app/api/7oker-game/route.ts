@@ -4,16 +4,12 @@ const PLAYERS = ["Panda", "Choco", "Vanilla"]
 
 export async function POST(request: Request) {
   const body = await request.json()
-  // scores = win points (3/1/0) picked in the dialog; gamePoints = points scored
-  // in the game. Older callers sent scores alone and had placement derived here.
-  const { scores, gamePoints } = body
+  // scores = points scored in the game; the placement points below are derived
+  const { scores } = body
 
   for (const player of PLAYERS) {
     if (typeof scores[player] !== "number" || isNaN(scores[player])) {
       return Response.json({ error: "Invalid scores" }, { status: 400 })
-    }
-    if (gamePoints && (typeof gamePoints[player] !== "number" || isNaN(gamePoints[player]))) {
-      return Response.json({ error: "Invalid game points" }, { status: 400 })
     }
   }
 
@@ -38,27 +34,32 @@ export async function POST(request: Request) {
 
   // Rank players by score descending — higher score = better placement
   const ranked = [...PLAYERS].sort((a, b) => scores[b] - scores[a])
-  const pointsMap: Record<number, number> = { 1: 3, 2: 1, 3: 0 }
+  const topScore = Math.max(...PLAYERS.map((p) => scores[p]))
 
-  // A win is the top win-points score of the game, not the number 3: players
-  // sharing first place get 2 each and both count as winners.
-  const topWinPoints = Math.max(...PLAYERS.map((p) => scores[p]))
+  /**
+   * Placement points from the game score: 3 / 1 / 0 when all three differ.
+   * A tie splits by where it sits — players sharing first place take 2 each,
+   * a tie below first takes 1 each.
+   */
+  const placementPoints = (player: string) => {
+    const mine = scores[player]
+    const better = PLAYERS.filter((p) => scores[p] > mine).length
+    const sharing = PLAYERS.filter((p) => scores[p] === mine).length
+    if (sharing > 1) return better === 0 ? 2 : 1
+    return better === 0 ? 3 : better === 1 ? 1 : 0
+  }
 
   await (prisma as any).sevenOkerEntry.createMany({
-    data: ranked.map((player, idx) => {
-      const place = idx + 1
+    data: ranked.map((player) => {
       const current = currentTotals[player]
-      // With gamePoints present the dialog already decided the win points
-      const wonPoints = gamePoints ? scores[player] : pointsMap[place]
-      const scoredInGame = gamePoints ? gamePoints[player] : scores[player]
-      const won = gamePoints ? wonPoints > 0 && wonPoints === topWinPoints : place === 1
+      const wonPoints = placementPoints(player)
       return {
         week: latestWeek + 1,
         bearo: player,
         games: current.games + 1,
-        wins: current.wins + (won ? 1 : 0),
+        wins: current.wins + (scores[player] === topScore ? 1 : 0),
         points: current.points + wonPoints,
-        gamepoints: current.gamepoints + scoredInGame,
+        gamepoints: current.gamepoints + scores[player],
       }
     }),
   })

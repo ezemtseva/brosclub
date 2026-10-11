@@ -842,7 +842,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
 
 export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos }: FifaAdvancedAnalyticsProps) {
   if (matches.length === 0) {
-    return <p className="text-sm text-gray-400">No matches played yet — analytics will appear here.</p>
+    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
   }
 
   const stats = computePlayerStats(matches, playerTeams)

@@ -260,17 +260,18 @@ export default function SevenOkerSeasonTabs({
             </div>
           </div>
 
-          {seatingOpen && (
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50">
-              <span className="text-sm text-gray-500 whitespace-nowrap">Game {nextGameNumber}</span>
-              {seatingForGame(nextGameNumber).map((name, i) => (
-                <span key={name} className="flex items-center gap-2">
-                  <span className="text-sm text-gray-400 tabular-nums">{i + 1}</span>
-                  <span className="text-sm text-gray-900">{name}</span>
+          {seatingOpen && (() => {
+            // globals.css forces a size on every span, so each one sets its own
+            const [first, second, third] = seatingForGame(nextGameNumber)
+            const who = (name: string) => <span className="text-sm font-medium text-gray-900">{name}</span>
+            return (
+              <div className="mb-6 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50">
+                <span className="text-sm text-gray-500">
+                  Game {nextGameNumber}: {who(first)} creates the table, then {who(second)} joins and later {who(third)}
                 </span>
-              ))}
-            </div>
-          )}
+              </div>
+            )
+          })()}
           <DataTable columns={columns} data={currentSeasonData} />
 
           <section className="mt-12">
@@ -345,7 +346,7 @@ export default function SevenOkerSeasonTabs({
         </div>
       )
     }
-    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
   }
 
   const renderBrecordsContent = () => (

@@ -217,7 +217,7 @@ export default async function Home() {
     content:
       fplLeader && fplLeader.points > 0 ? (
         <>
-          {fplLeader.isArchive ? "Champion: " : "Leader: "}
+          <span className="font-medium">{fplLeader.isArchive ? "Champion: " : "Leader: "}</span>
           <UnderlinedPlayer name={fplLeader.player} /> - {fplLeader.points} points
         </>
       ) : (
@@ -241,7 +241,7 @@ export default async function Home() {
     content:
       sevenOkerLeader && sevenOkerLeader.points > 0 ? (
         <>
-          {sevenOkerLeader.isArchive ? "Champion: " : "Leader: "}
+          <span className="font-medium">{sevenOkerLeader.isArchive ? "Champion: " : "Leader: "}</span>
           <UnderlinedPlayer name={sevenOkerLeader.bearo} /> - {sevenOkerLeader.points} points
         </>
       ) : (
@@ -255,7 +255,7 @@ export default async function Home() {
     champion: false,
     content: betsLeaders ? (
       <>
-        {betsLeaders.players.length > 1 ? "Leaders: " : "Leader: "}
+        <span className="font-medium">{betsLeaders.players.length > 1 ? "Leaders: " : "Leader: "}</span>
         {betsLeaders.players.map((player, i) => (
           <span key={player}>
             {i > 0 && " & "}
@@ -276,7 +276,8 @@ export default async function Home() {
     content:
       fifaLeader && fifaLeader.points > 0 ? (
         <>
-          Leader: <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> - {fifaLeader.points} points
+          <span className="font-medium">Leader: </span>
+          <UnderlinedPlayer name={fifaLeader.team} isFifaTeam={true} /> - {fifaLeader.points} points
         </>
       ) : (
         "Will be started soon"

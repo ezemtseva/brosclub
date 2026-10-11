@@ -3659,6 +3659,7 @@ export default function FifaSeasonTabs({
     { header: "GD", accessor: "goalDifference" },
     { header: "P", accessor: "points" },
     { header: "W%", accessor: "winPercentage" },
+    { header: "SW", accessor: "seasonsWon" },
   ]
   const allTimePlayerColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
@@ -3672,16 +3673,29 @@ export default function FifaSeasonTabs({
     { header: "GC", accessor: "goalsConceded" },
     { header: "GD", accessor: "goalDifference" },
     { header: "W%", accessor: "winPercentage" },
+    { header: "SW", accessor: "seasonsWon" },
   ]
 
   // Compute All Time standings by player
   const computeAllTimePlayerStandings = () => {
-    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; hoverColor: string }> = {}
+    const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; titles: number; hoverColor: string }> = {}
 
     const ensurePlayer = (name: string) => {
       if (!totals[name]) {
-        totals[name] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
+        totals[name] = { games: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, titles: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
       }
+    }
+
+    /** A season title goes to whoever owned the winning team that season. */
+    const awardTitle = (entries: any[], owners: PlayerTeams) => {
+      const champion = winnerOf(entries)
+      if (!champion) return
+      const owner = (Object.keys(owners) as (keyof PlayerTeams)[]).find((p) =>
+        owners[p].some((team) => normalizeTeamName(team) === champion)
+      )
+      if (!owner) return
+      ensurePlayer(owner)
+      totals[owner].titles += 1
     }
 
     // 2025/26 — use playerTeams state
@@ -3714,6 +3728,8 @@ export default function FifaSeasonTabs({
       }
     }
 
+    awardTitle(lastSeasonRawEntries, lastSeasonPlayerTeams)
+
     // 2024/25 — use historicalPlayerTeams prop
     for (const [playerName, teams] of Object.entries(historicalPlayerTeams)) {
       ensurePlayer(playerName)
@@ -3729,10 +3745,21 @@ export default function FifaSeasonTabs({
       }
     }
 
+    awardTitle(historicalRawEntries, historicalPlayerTeams)
+
     // Past seasons — reverse-map team color → player name
     for (const seasonKey of Object.keys(pastSeasonsData)) {
       const sd = pastSeasonsData[seasonKey as keyof typeof pastSeasonsData]
       if (!sd) continue
+      if (!sd.unfinished) {
+        const champion = winnerOf(sd.standings)
+        const championEntry = sd.standings.find((e) => normalizeTeamName(e.team) === champion)
+        const championOwner = Object.entries(PLAYER_COLORS).find(([, c]) => c === championEntry?.color)?.[0]
+        if (championOwner) {
+          ensurePlayer(championOwner)
+          totals[championOwner].titles += 1
+        }
+      }
       for (const entry of sd.standings) {
         const playerName = Object.entries(PLAYER_COLORS).find(([, c]) => c === entry.color)?.[0]
         if (!playerName) continue
@@ -3769,6 +3796,7 @@ export default function FifaSeasonTabs({
       goalDifference: entry.goalDifference,
       points: entry.points,
       winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
+      seasonsWon: entry.titles,
       hoverColor: entry.hoverColor,
     }))
   }
@@ -3800,20 +3828,20 @@ export default function FifaSeasonTabs({
   }
 
   // Helper: aggregate all-time totals from a given set of current-season entries
+  /** Winner of a finished season — same ordering the standings tables use. */
+  const winnerOf = (entries: { team: string; wins?: number; draws?: number; goalsScored?: number; goalsConceded?: number }[]) => {
+    const ranked = entries
+      .map((e) => ({
+        team: normalizeTeamName(e.team),
+        points: (e.wins ?? 0) * 3 + (e.draws ?? 0),
+        gd: (e.goalsScored ?? 0) - (e.goalsConceded ?? 0),
+      }))
+      .sort((a, b) => b.points - a.points || b.gd - a.gd)
+    return ranked[0]?.points > 0 ? ranked[0].team : undefined
+  }
+
   const computeAllTimeTotals = (overrideCurrentEntries: any[]) => {
     const totals: Record<string, { games: number; wins: number; draws: number; losses: number; goalsScored: number; goalsConceded: number; logo: string; color: string; seasons: Set<string>; titles: number }> = {}
-
-    /** Winner of a finished season — same ordering the standings tables use. */
-    const winnerOf = (entries: { team: string; wins?: number; draws?: number; goalsScored?: number; goalsConceded?: number }[]) => {
-      const ranked = entries
-        .map((e) => ({
-          team: normalizeTeamName(e.team),
-          points: (e.wins ?? 0) * 3 + (e.draws ?? 0),
-          gd: (e.goalsScored ?? 0) - (e.goalsConceded ?? 0),
-        }))
-        .sort((a, b) => b.points - a.points || b.gd - a.gd)
-      return ranked[0]?.points > 0 ? ranked[0].team : undefined
-    }
 
     const ensureTeam = (team: string, logo: string, color: string) => {
       if (!totals[team]) {
@@ -4177,7 +4205,7 @@ export default function FifaSeasonTabs({
         </div>
       )
     }
-    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
   }
 
   const renderBrecordsContent = () => (

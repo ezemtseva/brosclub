@@ -50,10 +50,37 @@ function formatKickoff(kickoff: string): string {
 }
 
 
-function betBg(points: number | null): string {
-  if (points !== null && points >= 3) return "bg-green-100"
-  if (points === 1) return "bg-yellow-100"
-  return ""
+/** Live and Half Time share a colour — one is a pause inside the other. */
+const STATUS_STYLES: Record<string, string> = {
+  Open: "bg-green-50 text-green-600",
+  Finished: "bg-green-700 text-white",
+  Live: "bg-blue-50 text-blue-700",
+  "Half Time": "bg-blue-50 text-blue-700",
+  Postponed: "bg-red-50 text-red-700",
+  Locked: "bg-gray-100 text-gray-500",
+}
+
+function StatusLabel({ status }: { status: string }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium whitespace-nowrap ${
+        STATUS_STYLES[status] ?? "bg-gray-100 text-gray-500"
+      }`}
+    >
+      {status}
+    </span>
+  )
+}
+
+/** Settled bet: hits get the same pills as the statuses — exact score reads
+ *  like Finished, a correct outcome like Open — and a miss is struck through. */
+const BET_PILL = "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium whitespace-nowrap"
+
+function betStyle(points: number | null): string {
+  if (points === null) return ""
+  if (points >= 3) return `${BET_PILL} ${STATUS_STYLES.Finished}`
+  if (points === 1) return `${BET_PILL} ${STATUS_STYLES.Open}`
+  return "line-through text-gray-400"
 }
 
 function BetCell({
@@ -108,8 +135,12 @@ function BetCell({
   // Locked or finished: read-only
   if (finished || locked) {
     return (
-      <div className={`flex items-center justify-center rounded px-2 py-1 ${finished && bet ? betBg(bet.points) : ""}`}>
-        {bet && <span className="tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>}
+      <div className="flex items-center justify-center px-2 py-1">
+        {bet && (
+          <span className={`tabular-nums ${finished ? betStyle(bet.points) : ""}`}>
+            {bet.scoreHome}:{bet.scoreAway}
+          </span>
+        )}
       </div>
     )
   }
@@ -320,42 +351,45 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                   <tr key={match.matchId} className="border-b border-gray-200 h-[45px]">
                     <td className="py-2 px-4 w-[130px]">{formatKickoff(match.kickoff)}</td>
                     <td className="py-2 px-4 whitespace-nowrap">
-                      <span className={`flex items-center justify-start gap-1.5 rounded px-1 ${finished && match.scoreHome! > match.scoreAway! ? "bg-green-50" : ""}`}>
+                      <span className="flex items-center justify-start gap-1.5 px-1">
                         {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="shrink-0 object-contain" />}
-                        <span>{match.homeTeam}</span>
+                        <span className={finished && match.scoreHome! > match.scoreAway! ? "font-bold" : ""}>{match.homeTeam}</span>
                       </span>
                     </td>
                     <td className="py-2 px-2 text-center whitespace-nowrap tabular-nums">
                       {showScore ? (
                         <>
-                          <span className={inPlay ? "text-red-400" : finished && match.scoreHome! > match.scoreAway! ? "font-bold" : "font-normal"}>{match.scoreHome}</span>
-                          <span className={`mx-0.5 ${inPlay ? "text-red-400" : "text-gray-300"}`}>:</span>
-                          <span className={inPlay ? "text-red-400" : finished && match.scoreAway! > match.scoreHome! ? "font-bold" : "font-normal"}>{match.scoreAway}</span>
+                          <span className={inPlay ? "text-blue-700" : finished && match.scoreHome! > match.scoreAway! ? "font-bold" : "font-light"}>{match.scoreHome}</span>
+                          <span className={`mx-0.5 ${inPlay ? "text-blue-700" : "text-gray-300"}`}>:</span>
+                          <span className={inPlay ? "text-blue-700" : finished && match.scoreAway! > match.scoreHome! ? "font-bold" : "font-light"}>{match.scoreAway}</span>
                         </>
                       ) : (
                         <span className="text-gray-300">vs</span>
                       )}
                     </td>
                     <td className="py-2 px-4 whitespace-nowrap">
-                      <span className={`flex items-center justify-end gap-1.5 rounded px-1 ${finished && match.scoreAway! > match.scoreHome! ? "bg-green-50" : ""}`}>
-                        <span>{match.awayTeam}</span>
+                      <span className="flex items-center justify-end gap-1.5 px-1">
+                        <span className={finished && match.scoreAway! > match.scoreHome! ? "font-bold" : ""}>{match.awayTeam}</span>
                         {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="shrink-0 object-contain" />}
                       </span>
                     </td>
                     <td className="py-2 px-4 text-center whitespace-nowrap">
-                      {finished ? (
-                        <span className="font-medium text-green-600">Finished</span>
-                      ) : postponed ? (
-                        <span className="font-medium text-gray-400">Postponed</span>
-                      ) : match.status === "PAUSED" && (Date.now() - new Date(match.kickoff).getTime()) < 63 * 60 * 1000 ? (
-                        <span className="font-medium text-red-400">Half Time</span>
-                      ) : inPlay ? (
-                        <span className="font-medium text-red-400">Live</span>
-                      ) : locked ? (
-                        <span className="font-medium text-red-400">Locked</span>
-                      ) : (
-                        <span className="font-medium text-green-500">Open</span>
-                      )}
+                      <StatusLabel
+                        status={
+                          finished
+                            ? "Finished"
+                            : postponed
+                              ? "Postponed"
+                              : match.status === "PAUSED" &&
+                                  Date.now() - new Date(match.kickoff).getTime() < 63 * 60 * 1000
+                                ? "Half Time"
+                                : inPlay
+                                  ? "Live"
+                                  : locked
+                                    ? "Locked"
+                                    : "Open"
+                        }
+                      />
                     </td>
                     {PLAYERS.map((player) => (
                       <td key={player} className="py-2 px-4">

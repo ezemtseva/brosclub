@@ -610,7 +610,7 @@ export default function FplSeasonTabs({
         </div>
       )
     }
-    return <p className="text-gray-500 text-center italic mt-32">No insights available for this season.</p>
+    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
   }
 
   const renderBrecordsContent = () => (

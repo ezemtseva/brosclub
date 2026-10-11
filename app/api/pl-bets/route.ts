@@ -14,7 +14,7 @@ export async function GET(req: Request) {
       ...(gameweek ? { gameweek: parseInt(gameweek) } : {}),
     },
     include: { bets: true },
-    orderBy: { kickoff: "asc" },
+    orderBy: [{ kickoff: "asc" }, { homeTeam: "asc" }],
   })
 
   return NextResponse.json(matches)

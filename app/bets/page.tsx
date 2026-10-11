@@ -173,7 +173,7 @@ export default async function BetsPage() {
   const initialMatches = await prisma.plMatch.findMany({
     where: { season: CURRENT_PL_SEASON, gameweek: initialGameweek },
     include: { bets: true },
-    orderBy: { kickoff: "asc" },
+    orderBy: [{ kickoff: "asc" }, { homeTeam: "asc" }],
   })
 
   // Auto-settle finished matches on every page load

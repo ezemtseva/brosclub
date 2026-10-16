@@ -11,6 +11,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "resources.premierleague.com",
       },
+      {
+        // Country flags in the FIFA all-time table
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
     ],
   },
 }

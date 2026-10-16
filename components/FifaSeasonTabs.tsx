@@ -10,6 +10,7 @@ import FifaSeasonConfig from "./FifaSeasonConfig"
 import FifaMatchResults from "./FifaMatchResults"
 import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
+import { countryOf, flagUrl } from "../lib/teamCountries"
 import PlayerCell from "./PlayerCell"
 
 // Define the seasons array with all the required seasons
@@ -90,6 +91,21 @@ const seasonHighlightCards: Partial<Record<Season, SeasonHighlightCard[]>> = {
   "2016": [
     { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
   ],
+}
+
+/** Small rectangular flag of the club's country, blank when unknown. */
+function CountryFlag({ team }: { team: string }) {
+  const code = countryOf(team)
+  if (!code) return null
+  return (
+    <Image
+      src={flagUrl(code)}
+      alt={code}
+      width={20}
+      height={14}
+      className="inline-block rounded-sm object-contain align-middle"
+    />
+  )
 }
 
 function SeasonHighlightCardTile({ card }: { card: SeasonHighlightCard }) {
@@ -3573,6 +3589,7 @@ export default function FifaSeasonTabs({
   const [round2Teams, setRound2Teams]     = useState<PlayerTeams>(initialRound2Teams)
   const [matches, setMatches]             = useState<MatchRecord[]>(initialMatches)
   const [resultsSearch, setResultsSearch] = useState("")
+  const [lastSeasonSearch, setLastSeasonSearch] = useState("")
   const router = useRouter()
 
   // The configurator offers every team that ever played: the DB-backed seasons
@@ -3619,6 +3636,7 @@ export default function FifaSeasonTabs({
   const allTimeColumns = [
     { header: "#", accessor: "position", width: "4%" },
     { header: "Team", accessor: "team", width: "20%" },
+    { header: "C", accessor: "country", width: "5%" },
     { header: "G", accessor: "games" },
     { header: "W", accessor: "wins" },
     { header: "D", accessor: "draws" },
@@ -3634,6 +3652,7 @@ export default function FifaSeasonTabs({
   const allTimeColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
     { header: "Team", accessor: "team", width: "20%" },
+    { header: "C", accessor: "country", width: "5%" },
     { header: "G", accessor: "games" },
     { header: "P", accessor: "points" },
     { header: "W", accessor: "wins" },
@@ -3981,6 +4000,7 @@ export default function FifaSeasonTabs({
         goalDifference: entry.goalDifference,
         points: entry.points,
         winPercentage: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
+        country: <CountryFlag team={entry.teamName} />,
         seasonsWon: entry.seasonsWon,
         seasonsPlayed: entry.seasonsPlayed,
         hoverColor: "#e5e7eb",
@@ -4105,13 +4125,51 @@ export default function FifaSeasonTabs({
         </>
       )
     } else if (activeSeason === "2025/26") {
-      // Finished season — standings from the fifaEntry2526 archive
+      // Finished season — standings from the fifaEntry2526 archive, next to its
+      // own match log. Read-only: no Add Game, the season is closed.
       const columnsWithoutForm = columns.filter((c: any) => c.accessor !== "form")
       const mobileColumnsWithoutForm = mobileColumns ? mobileColumns.filter((c: any) => c.accessor !== "form") : undefined
+      const shownMatches = lastSeasonSearch
+        ? lastSeasonMatches.filter(
+            (m) =>
+              m.teamA.toLowerCase().includes(lastSeasonSearch.toLowerCase()) ||
+              m.teamB.toLowerCase().includes(lastSeasonSearch.toLowerCase())
+          )
+        : lastSeasonMatches
       return (
         <>
-          <div className="fifa-standings-table">
-            <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} />
+          <div className="flex flex-col lg:flex-row justify-between gap-6">
+            {/* Standings column */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-4 h-9">
+                <h2 className="text-[16px] font-bold leading-none m-0">Standings</h2>
+              </div>
+              <div className="fifa-standings-table">
+                <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} />
+              </div>
+            </div>
+
+            {/* Results column */}
+            <div className="w-full lg:shrink-0 lg:w-[480px]">
+              <div className="flex items-center justify-between mb-4 h-9">
+                <h2 className="text-[16px] font-bold leading-none m-0">Results</h2>
+                <input
+                  type="text"
+                  placeholder="Search by team"
+                  value={lastSeasonSearch}
+                  onChange={(e) => setLastSeasonSearch(e.target.value)}
+                  className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:italic"
+                  style={{ width: "120px", height: "30px" }}
+                />
+              </div>
+              <div className="fifa-results-table">
+                <FifaMatchResults
+                  matches={shownMatches}
+                  playerTeams={lastSeasonPlayerTeams}
+                  teamLogos={teamLogos}
+                />
+              </div>
+            </div>
           </div>
 
           {lastSeasonHighlights.length > 0 && (
@@ -4260,7 +4318,7 @@ export default function FifaSeasonTabs({
         </div>
       </div>
 
-      {activeTab === "Summary" && activeSeason !== "2026/27" && activeSeason !== "All Time" && (
+      {activeTab === "Summary" && activeSeason !== "2026/27" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[16px] font-bold">Standings</h2>
         </div>

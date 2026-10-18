@@ -975,7 +975,7 @@ export default async function FIFAPage() {
 
       <FifaSeasonTabs
         title="EA FC Cup"
-        description="XI anniversary season of pure hate, rage and hopelessness. Only for 80 euro annually."
+        description="XI season of pure hate, rage and hopelessness. Only for 80 euro annually."
         currentSeasonData={currentSeasonData}
         currentSeasonHighlights={currentSeasonHighlights}
         lastSeasonData={lastSeasonData}

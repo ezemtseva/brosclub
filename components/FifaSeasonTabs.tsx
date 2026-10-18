@@ -3868,8 +3868,15 @@ export default function FifaSeasonTabs({
       }
     }
 
+    // A team dropped from the configurator keeps its row only so the crest
+    // survives — it is no part of the record until it is drafted or plays.
+    const draftedNow = new Set(
+      (Object.values(playerTeams) as string[][]).flat().map((t) => normalizeTeamName(t))
+    )
+
     for (const entry of overrideCurrentEntries) {
       const team = normalizeTeamName(entry.team)
+      if (!draftedNow.has(team) && (entry.games ?? 0) === 0) continue
       ensureTeam(team, entry.logo || "/placeholder.svg", getTeamColor(team))
       // Drafted teams count for the running season even before a ball is kicked
       totals[team].seasons.add(CURRENT_FIFA_SEASON)

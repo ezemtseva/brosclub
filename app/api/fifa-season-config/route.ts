@@ -78,16 +78,9 @@ export async function POST(request: Request) {
       })
     }
   } else {
+    // Only the assignment goes. The FifaEntry row stays so the crest survives
+    // if the team comes back; the all-time table leaves unassigned teams out.
     await prisma.fifaPlayerTeam.deleteMany({ where: { season, team } })
-
-    // A team nobody plays has no place in the standings — drop it, but never
-    // throw away a team that actually played.
-    const entry = await prisma.fifaEntry.findUnique({ where: { team } })
-    const stillAssigned = await prisma.fifaPlayerTeam.count({ where: { team } })
-    const played = await prisma.fifaMatch.count({ where: { OR: [{ teamA: team }, { teamB: team }] } })
-    if (entry && stillAssigned === 0 && played === 0 && entry.games === 0) {
-      await prisma.fifaEntry.delete({ where: { team } })
-    }
   }
 
   return Response.json({ success: true })

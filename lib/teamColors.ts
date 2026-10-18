@@ -2,12 +2,18 @@ const TEAM_SHORT: Record<string, string> = {
   "Manchester United": "Man. United",
   "Manchester City": "Man. City",
   "Borussia Dortmund": "Borussia D.",
+  "Borussia Mönchengladbach": "Borussia M.",
   "Eintracht Frankfurt": "Eintracht F.",
   "Nottingham Forest": "Not. Forest",
   "Atletico Madrid": "Atletico M.",
   "Athletic Bilbao": "Athletic B.",
   "Bayern Munich": "Bayern M.",
   "Bayer Leverkusen": "Bayer L.",
+  "Spartak Moscow": "Spartak M.",
+  "Olympique Lyonnais": "Lyon",
+  "Olympique Lyon": "Lyon",
+  "Dinamo Zagreb": "Dinamo Z.",
+  "Adana Demirspor": "Adana DS",
 }
 
 export function shortenTeamName(name: string): string {

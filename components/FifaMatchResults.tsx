@@ -5,7 +5,7 @@ import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 
 const TEAM_NAME_MAP: Record<string, string> = {
   "Nottingham Forrest": "Nottingham Forest",
-  "Olympique Lyonnais": "Olympique Lyon",
+  "Olympique Lyon": "Olympique Lyonnais",
   "SL Benfica": "Benfica",
   "S.L. Benfica": "Benfica",
   "S.S. Lazio": "SS Lazio",

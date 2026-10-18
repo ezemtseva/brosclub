@@ -111,5 +111,6 @@ export function countryOf(team: string): string | undefined {
 }
 
 export function flagUrl(code: string): string {
-  return `https://flagcdn.com/w40/${code}.png`
+  // w80 so the flag stays sharp on retina at the ~26px it renders
+  return `https://flagcdn.com/w80/${code}.png`
 }

@@ -101,9 +101,13 @@ function CountryFlag({ team }: { team: string }) {
     <Image
       src={flagUrl(code)}
       alt={code}
-      width={20}
-      height={14}
-      className="inline-block rounded-sm object-contain align-middle"
+      width={40}
+      height={28}
+      // max-w-none: with Tailwind's img max-width the flag reports no width to
+      // the table, the column collapses to its padding and squeezes it flat
+      // Scaled rather than resized on mobile: a transform leaves the layout box
+      // alone, so the column keeps its width
+      className="inline-block max-w-none rounded-sm object-contain align-middle w-[26px] h-[18px] scale-[0.8] md:w-[20px] md:h-[14px] md:scale-100"
     />
   )
 }
@@ -1715,7 +1719,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Choco,
       },
       {
-        team: "Olympique Lyon",
+        team: "Olympique Lyonnais",
         logo: "/imgs/fifa/lyo.png",
         games: 40,
         wins: 23,
@@ -2057,7 +2061,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Vanilla,
       },
       {
-        team: "Olympique Lyon",
+        team: "Olympique Lyonnais",
         logo: "/imgs/fifa/lyo.png",
         games: 32,
         wins: 20,
@@ -2635,7 +2639,7 @@ const pastSeasonsData: PastSeasonsData = {
         color: PLAYER_COLORS.Panda,
       },
       {
-        team: "Olympique Lyon",
+        team: "Olympique Lyonnais",
         logo: "/imgs/fifa/lyo.png",
         games: 41,
         wins: 14,
@@ -3652,7 +3656,10 @@ export default function FifaSeasonTabs({
   const allTimeColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
     { header: "Team", accessor: "team", width: "20%" },
-    { header: "C", accessor: "country", width: "5%" },
+    // Has to be a percentage: the other columns' percentages claim the whole
+    // table, and a px width would be squeezed down to the leftover. Cell
+    // padding eats 28px, so too narrow a column clamps the flag to a sliver.
+    { header: "C", accessor: "country", width: "7%" },
     { header: "G", accessor: "games" },
     { header: "P", accessor: "points" },
     { header: "W", accessor: "wins" },
@@ -3824,7 +3831,7 @@ export default function FifaSeasonTabs({
   const normalizeTeamName = (name: string): string => {
     const map: Record<string, string> = {
       "Nottingham Forrest": "Nottingham Forest",
-      "Olympique Lyonnais": "Olympique Lyon",
+      "Olympique Lyon": "Olympique Lyonnais",
       "SL Benfica": "Benfica",
       "S.L. Benfica": "Benfica",
       "S.S. Lazio": "SS Lazio",

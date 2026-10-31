@@ -9,6 +9,7 @@ const TEAM_COUNTRY: Record<string, string> = {
   Arsenal: "gb-eng",
   "Aston Villa": "gb-eng",
   Bournemouth: "gb-eng",
+  "AFC Bournemouth": "gb-eng",
   Brentford: "gb-eng",
   Brighton: "gb-eng",
   Chelsea: "gb-eng",

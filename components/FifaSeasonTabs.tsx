@@ -11,6 +11,7 @@ import FifaMatchResults from "./FifaMatchResults"
 import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 import { countryOf, flagUrl } from "../lib/teamCountries"
+import { CURRENT_FIFA_SEASON as FIFA_SEASON } from "../lib/fifaSeason"
 import PlayerCell from "./PlayerCell"
 
 // Define the seasons array with all the required seasons
@@ -30,7 +31,7 @@ const seasons = [
 ] as const
 type Season = (typeof seasons)[number]
 
-const CURRENT_FIFA_SEASON: Season = "2026/27"
+const CURRENT_FIFA_SEASON = FIFA_SEASON as Season
 
 const PLAYER_AVATARS: Record<string, string> = {
   Vanilla: "/imgs/vanilla.png",
@@ -3617,7 +3618,7 @@ export default function FifaSeasonTabs({
 
   const handleMatchSuccess = async () => {
     // Refresh matches from server
-    const res = await fetch("/api/fifa-matches?season=2025/26")
+    const res = await fetch(`/api/fifa-matches?season=${encodeURIComponent(CURRENT_FIFA_SEASON)}`)
     if (res.ok) setMatches(await res.json())
     router.refresh()
     setShowToast(true)

@@ -1,4 +1,5 @@
 import prisma from "../../../lib/prisma"
+import { CURRENT_FIFA_SEASON } from "../../../lib/fifaSeason"
 
 const PLAYERS = ["Vanilla", "Choco", "Panda"]
 
@@ -21,7 +22,7 @@ async function logoFromArchive(team: string): Promise<string> {
 // Returns { round1, round2 } — round2 is the subset of round 1 teams that advanced.
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const season = searchParams.get("season") || "2025/26"
+  const season = searchParams.get("season") || CURRENT_FIFA_SEASON
 
   const rows = await prisma.fifaPlayerTeam.findMany({ where: { season } })
 

@@ -1,8 +1,9 @@
 import prisma from "../../../lib/prisma"
+import { CURRENT_FIFA_SEASON } from "../../../lib/fifaSeason"
 
 export async function POST(request: Request) {
   const body = await request.json()
-  const { teamA, scoreA, teamB, scoreB, season = "2025/26", prediction } = body
+  const { teamA, scoreA, teamB, scoreB, season = CURRENT_FIFA_SEASON, prediction } = body
 
   if (!teamA || !teamB || teamA === teamB) {
     return Response.json({ error: "Invalid teams" }, { status: 400 })

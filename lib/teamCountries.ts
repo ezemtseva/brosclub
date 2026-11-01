@@ -115,3 +115,8 @@ export function flagUrl(code: string): string {
   // w80 so the flag stays sharp on retina at the ~26px it renders
   return `https://flagcdn.com/w80/${code}.png`
 }
+
+/** The same flag as a vector, for places it renders large. */
+export function flagSvgUrl(code: string): string {
+  return `https://flagcdn.com/${code}.svg`
+}

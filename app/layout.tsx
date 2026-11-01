@@ -52,7 +52,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,800..900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Unbounded:wght@500;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,600..900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Unbounded:wght@500;700;800&display=swap"
         />
       </head>
       <body className="bg-night text-ink font-sans text-base antialiased">

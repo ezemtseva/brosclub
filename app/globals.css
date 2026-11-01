@@ -189,6 +189,25 @@ html.light .pill-live .dot {
   color: var(--warning-text);
 }
 
+/* The leader's picture on a season tile stands exactly as tall as the digits
+   next to it: 1cap is the cap height of the score's own font, so the two stay
+   aligned if the number's styles ever change. The px value is the fallback for
+   browsers without the cap unit. */
+.leader-portrait {
+  height: 93px;
+  height: 1cap;
+  width: auto;
+}
+
+/* A bear is shown in the same ringed circle as on the standings cards; the
+   circle keeps the portrait's height, so it is square at the digits' size. */
+.leader-portrait-circle {
+  height: 93px;
+  height: 1cap;
+  aspect-ratio: 1;
+  width: auto;
+}
+
 /* Big season numbers take the bear's colour in dark and plain ink in light */
 html.light .stat-number {
   color: var(--ink) !important;

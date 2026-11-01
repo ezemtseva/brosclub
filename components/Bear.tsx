@@ -19,14 +19,22 @@ export function bearImage(name: string): string {
  * The mascot in a circle ringed in the bear's colour — the redesign keeps the
  * drawings where the mockups use a coloured monogram.
  */
-export function BearAvatar({ name, size = 48 }: { name: string; size?: number }) {
+export function BearAvatar({
+  name,
+  size = 48,
+  ring = true,
+}: {
+  name: string
+  size?: number
+  ring?: boolean
+}) {
   return (
     <span
-      className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface-2"
+      className={`inline-flex shrink-0 items-center justify-center rounded-full ${ring ? "bg-surface-2" : ""}`}
       style={{
         width: size,
         height: size,
-        boxShadow: `inset 0 0 0 2px ${bearColor(name)}`,
+        boxShadow: ring ? `inset 0 0 0 2px ${bearColor(name)}` : undefined,
       }}
     >
       <Image
@@ -35,7 +43,7 @@ export function BearAvatar({ name, size = 48 }: { name: string; size?: number })
         width={size}
         height={size}
         className="rounded-full object-cover"
-        style={{ width: size - 6, height: size - 6 }}
+        style={{ width: ring ? size - 6 : size, height: ring ? size - 6 : size }}
       />
     </span>
   )

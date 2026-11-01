@@ -3,8 +3,9 @@ import Link from "next/link"
 import prisma from "../lib/prisma"
 import { PLAYER_TINTS } from "../lib/teamColors"
 import { CURRENT_FIFA_SEASON } from "../lib/fifaSeason"
+import { flagSvgUrl } from "../lib/teamCountries"
 import { CURRENT_SEASON, CURRENT_SEASON_NUMERAL } from "../lib/season"
-import { BearAvatar, bearColor, bearImage } from "../components/Bear"
+import { BearAvatar, bearColor } from "../components/Bear"
 import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
 
@@ -12,14 +13,53 @@ export const dynamic = 'force-dynamic'
 
 const Snowfall = dynamicImport(() => import("../components/Snowfall"), { ssr: false })
 
+/** Each bear's collectible card: mascot, the flag they play under, their club. */
 const clubMembers = [
-  { name: "Vanilla", image: "/imgs/vanilla.png" },
-  { name: "Choco", image: "/imgs/choco.png" },
-  { name: "Panda", image: "/imgs/panda.png" },
+  {
+    name: "Vanilla",
+    image: "/imgs/vanilla.png",
+    country: "Serbia",
+    countryCode: "rs",
+    club: "Liverpool",
+    crest: "/imgs/fifa/liv.png",
+  },
+  {
+    name: "Choco",
+    image: "/imgs/choco.png",
+    country: "Cyprus",
+    countryCode: "cy",
+    club: "Chelsea",
+    crest: "/imgs/fifa/che.png",
+  },
+  {
+    name: "Panda",
+    image: "/imgs/panda.png",
+    country: "Russia",
+    countryCode: "ru",
+    club: "Juventus",
+    crest: "/imgs/fifa/juv.png",
+  },
 ]
+
+/** Text on the player cards — the same dark ink in both themes. */
+const CARD_INK = "#0B0C0F"
+const CARD_RULE = "rgba(11,12,15,0.35)"
+
+/** Two cut corners, top-right and bottom-left, like a trading card. */
+const CARD_CLIP =
+  "polygon(0 0, calc(100% - 36px) 0, 100% 36px, 100% 100%, 36px 100%, 0 calc(100% - 36px))"
+const CARD_STRIPES = "repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 16px)"
 
 /** The club was founded on 06.09.2012 — the hero counts the years from here. */
 const FOUNDED = new Date(2012, 8, 6)
+
+/** The score on a season tile, and the metrics its portrait aligns to. */
+const SCORE_FONT = {
+  fontWeight: 900,
+  fontVariationSettings: "'wdth' 62",
+  fontSize: "136px",
+  lineHeight: 1,
+} as const
 
 /** One tile in the current-season band: game, score, and who holds it. */
 type SeasonSummary = {
@@ -27,6 +67,8 @@ type SeasonSummary = {
   link: string
   points?: number
   leader?: string
+  /** The bear behind the leader — a club is led by whoever drafted it */
+  owner?: string
   /** Mascot, or the club crest when the leader is a team (FIFA) */
   image?: string
   /** A crest is shown whole; a mascot is cropped by the panel's corner */
@@ -198,7 +240,7 @@ const HistoryCell = ({ value }: { value: string }) => {
           className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium"
           style={{ background: PLAYER_TINTS[name] }}
         >
-          <BearAvatar name={name} size={20} />
+          <BearAvatar name={name} size={20} ring={false} />
           {name}
         </span>
       ))}
@@ -226,9 +268,11 @@ export default async function Home() {
       link: "/fifa",
       points: hasFifa ? fifaLeader!.points : undefined,
       leader: hasFifa ? fifaLeader!.team : undefined,
+      owner: hasFifa ? fifaLeader!.owner ?? undefined : undefined,
       image: hasFifa ? fifaLeader!.logo || "/placeholder.svg" : undefined,
       isClub: true,
-      color: CLUB_PANEL,
+      // The panel takes the colour of whoever drafted the leading club
+      color: fifaLeader?.owner ? bearColor(fifaLeader.owner) : CLUB_PANEL,
       empty: "Will be started soon",
     },
     {
@@ -236,7 +280,6 @@ export default async function Home() {
       link: "/fpl",
       points: hasFpl ? fplLeader!.points : undefined,
       leader: hasFpl ? fplLeader!.player : undefined,
-      image: hasFpl ? bearImage(fplLeader!.player) : undefined,
       color: hasFpl ? bearColor(fplLeader!.player) : CLUB_PANEL,
       empty: "Will be started soon",
     },
@@ -245,8 +288,6 @@ export default async function Home() {
       link: "/bets",
       points: betsLeaders?.points,
       leader: betsLeaders?.players.join(" & "),
-      // A shared lead has no single mascot, so the panel stays neutral
-      image: betsLeaders?.players.length === 1 ? bearImage(betsLeaders.players[0]) : undefined,
       color: betsLeaders?.players.length === 1 ? bearColor(betsLeaders.players[0]) : CLUB_PANEL,
       empty: "Will be started soon",
     },
@@ -255,7 +296,6 @@ export default async function Home() {
       link: "/7oker",
       points: has7oker ? sevenOkerLeader.points : undefined,
       leader: has7oker ? sevenOkerLeader.bearo : undefined,
-      image: has7oker ? bearImage(sevenOkerLeader.bearo) : undefined,
       color: has7oker ? bearColor(sevenOkerLeader.bearo) : CLUB_PANEL,
       empty: "Will be started soon",
     },
@@ -285,7 +325,6 @@ export default async function Home() {
     .sort((a, b) => b.total - a.total)
   const cupsAwarded = standings.reduce((sum, member) => sum + member.total, 0)
   const seasonsPlayed = historyData.length + 1
-  const bestInOneCup = Math.max(...standings.flatMap((member) => member.cups))
 
   const now = new Date()
   const beforeAnniversary =
@@ -322,46 +361,80 @@ export default async function Home() {
             All-time standings
           </h2>
         </div>
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
-          {standings.map((member, index) => {
-            const color = bearColor(member.name)
+        <div className="grid gap-6 lg:grid-cols-3">
+          {standings.map((member) => {
+            const stats = cupCategories.map((category, column) => ({
+              label: category.label,
+              n: member.cups[column],
+            }))
             return (
               <article
                 key={member.name}
-                className="relative flex flex-col gap-7 overflow-hidden rounded-[24px] border border-hairline bg-surface p-7"
+                aria-label={`${member.name}: ${member.total} cups, ${member.club}, ${member.country}`}
+                className="font-archivo mx-auto flex aspect-[320/452] w-full max-w-[320px] flex-col rounded-[18px]"
+                style={{
+                  clipPath: CARD_CLIP,
+                  background: `${CARD_STRIPES}, ${bearColor(member.name)}`,
+                  color: CARD_INK,
+                  fontVariationSettings: "'wdth' 62",
+                }}
               >
-                <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1" style={{ background: color }} />
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-[14px]">
-                    <BearAvatar name={member.name} size={56} />
-                    <div>
-                      <div className="font-mono text-xs tracking-[0.1em] text-ink-muted">
-                        #0{index + 1}
-                      </div>
-                      <h3 className="mt-0.5 font-display text-2xl font-bold">{member.name}</h3>
-                    </div>
+                <div className="relative min-h-0 flex-1">
+                  <div className="absolute left-[26px] top-[26px] flex w-16 flex-col items-center gap-[10px]">
+                    <div className="text-[72px] font-black leading-[0.85]">{member.total}</div>
+                    <div className="text-[22px] font-extrabold leading-none">CUPS</div>
+                    <div className="h-px w-10" style={{ background: CARD_RULE }} />
+                    <Image
+                      src={flagSvgUrl(member.countryCode)}
+                      alt=""
+                      width={44}
+                      height={29}
+                      unoptimized
+                      className="h-[29px] w-[44px] object-cover"
+                      style={{ outline: `1px solid ${CARD_INK}` }}
+                    />
+                    <div className="h-px w-10" style={{ background: CARD_RULE }} />
+                    <Image src={member.crest} alt="" width={42} height={42} className="h-[42px] w-[42px] object-contain" />
                   </div>
-                  <div className="text-right">
-                    <div className="stat-number font-display text-[64px] font-extrabold leading-[0.9]" style={{ color }}>
-                      {member.total}
-                    </div>
-                    <div className="mt-1.5 font-mono text-xs tracking-[0.1em] text-ink-muted">CUPS</div>
+                  {/* Head and shoulders, standing on the name rule like a player photo */}
+                  {/* Full width, never sliced at the sides; the rule crops the bottom
+                      eighth and anything taller may rise past the box */}
+                  <div
+                    className="absolute bottom-0 right-[10px] h-[196px] w-[196px]"
+                    style={{ clipPath: "inset(-100% 0 0 0)" }}
+                  >
+                    <Image
+                      src={member.image}
+                      alt=""
+                      width={392}
+                      height={392}
+                      className="absolute bottom-0 left-0 h-auto w-full translate-y-[12%]"
+                    />
                   </div>
                 </div>
-                <div className="grid grid-cols-5 gap-2">
-                  {cupCategories.map((category, column) => {
-                    const n = member.cups[column]
-                    const pct = n === 0 ? 0 : Math.max(8, Math.round((n / bestInOneCup) * 100))
-                    return (
-                      <div key={category.key} className="flex flex-col gap-2">
-                        <div className="flex h-16 items-end overflow-hidden rounded-lg bg-track">
-                          <div className="w-full rounded-lg" style={{ height: `${pct}%`, background: color }} />
-                        </div>
-                        <div className="font-mono text-[18px] font-medium leading-none">{n}</div>
-                        <div className="text-[11px] tracking-[0.06em] text-ink-muted">{category.label}</div>
+                <div className="px-[26px] pb-[30px]">
+                  <h3
+                    className="font-archivo border-b border-t-2 pb-2 pt-[10px] text-center text-[38px] font-black uppercase leading-none"
+                    style={{ borderTopColor: CARD_INK, borderBottomColor: CARD_RULE }}
+                  >
+                    {member.name}
+                  </h3>
+                  <div className="mt-3 flex gap-[18px]">
+                    {[stats.slice(0, 3), stats.slice(3)].map((column, i) => (
+                      <div
+                        key={i}
+                        className={`flex flex-1 flex-col gap-0.5 ${i === 1 ? "border-l pl-[18px]" : ""}`}
+                        style={i === 1 ? { borderLeftColor: CARD_RULE } : undefined}
+                      >
+                        {column.map((stat) => (
+                          <div key={stat.label} className="flex items-baseline gap-2">
+                            <span className="min-w-[22px] text-right text-[28px] font-black leading-tight">{stat.n}</span>
+                            <span className="text-[22px] font-semibold leading-tight">{stat.label}</span>
+                          </div>
+                        ))}
                       </div>
-                    )
-                  })}
+                    ))}
+                  </div>
                 </div>
               </article>
             )
@@ -418,10 +491,7 @@ export default async function Home() {
                       <span
                         className="font-archivo"
                         style={{
-                          fontWeight: 900,
-                          fontVariationSettings: "'wdth' 62",
-                          fontSize: "136px",
-                          lineHeight: 1,
+                          ...SCORE_FONT,
                           letterSpacing: "-0.02em",
                           color: PANEL_INK,
                           // The figure never shrinks; a longer number is squeezed instead
@@ -436,27 +506,32 @@ export default async function Home() {
                       </span>
                     </div>
                   )}
-                  {summary.image &&
-                    (summary.isClub ? (
-                      // A crest is shown whole, its top level with the mascots'
+                  {summary.image && (
+                    // Sits on the digits' baseline and rises to their cap height:
+                    // the zero-width strut carries the score's own font metrics
+                    <div
+                      aria-hidden="true"
+                      className="font-archivo pointer-events-none absolute left-4 right-[14px] top-[10px] flex items-baseline"
+                      style={SCORE_FONT}
+                    >
                       <Image
                         src={summary.image}
                         alt=""
-                        aria-hidden="true"
-                        width={94}
-                        height={94}
-                        className="pointer-events-none absolute bottom-0 left-4 h-[94px] w-auto object-contain"
+                        width={120}
+                        height={99}
+                        className="leader-portrait shrink-0 object-contain"
                       />
-                    ) : (
-                      <Image
-                        src={summary.image}
-                        alt=""
-                        aria-hidden="true"
-                        width={144}
-                        height={144}
-                        className="pointer-events-none absolute -bottom-[50px] -left-[10px] h-[144px] w-[144px] object-contain"
-                      />
-                    ))}
+                      <span className="w-0 overflow-hidden">0</span>
+                    </div>
+                  )}
+                  {(summary.owner ?? summary.leader) && (
+                    <span
+                      className="absolute bottom-3.5 right-[14px] text-2xl font-medium"
+                      style={{ color: PANEL_INK }}
+                    >
+                      {summary.owner ?? summary.leader}
+                    </span>
+                  )}
                   {summary.points === undefined && (
                     <span
                       className="absolute bottom-4 right-4 max-w-[60%] text-right text-[15px] font-medium"
@@ -477,23 +552,20 @@ export default async function Home() {
           <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
             Hall of champions
           </h2>
-          <div className="flex flex-wrap gap-4 text-[13px] text-ink-2">
-            {clubMembers.map((member) => (
-              <span key={member.name} className="inline-flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ background: bearColor(member.name) }}
-                />
-                {member.name}
-              </span>
-            ))}
-            <span className="font-mono text-ink-muted">DNF · DSQ · — not played</span>
-          </div>
         </div>
-        <div className="overflow-x-auto rounded-[20px] border border-hairline bg-surface">
-          <table className="w-full min-w-[760px] border-collapse text-sm">
-            <thead>
+        {/* Header plus five rows; older seasons scroll under the sticky header */}
+        <div className="max-h-[288px] overflow-auto rounded-[20px] border border-hairline bg-surface">
+          <table className="w-full min-w-[760px] table-fixed border-collapse text-sm">
+            {/* Season gets a fixed width; the five cups split the rest evenly */}
+            <colgroup>
+              <col className="w-[120px]" />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead className="sticky top-0 z-10 bg-surface">
               <tr className="text-left font-mono text-xs tracking-[0.1em] text-ink-muted">
                 <th scope="col" className="border-b border-hairline px-6 py-[18px] font-medium">SEASON</th>
                 <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">FIFA</th>

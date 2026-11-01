@@ -57,61 +57,79 @@ function getPlayerColor(team: string, playerTeams: PlayerTeams): string {
   return "transparent"
 }
 
-function TeamCell({ team, playerTeams, teamLogos, align = "left" }: { team: string; playerTeams: PlayerTeams; teamLogos: Record<string, string>; align?: "left" | "right" }) {
+/** One side of a result card: owner dot, crest and club name; the winner stays white. */
+function TeamCell({
+  team,
+  playerTeams,
+  teamLogos,
+  align = "left",
+  won,
+}: {
+  team: string
+  playerTeams: PlayerTeams
+  teamLogos: Record<string, string>
+  align?: "left" | "right"
+  won: boolean
+}) {
   const normalized = normalizeTeam(team)
   const color = getPlayerColor(team, playerTeams)
   const logo = teamLogos[team] || "/placeholder.svg"
   return (
-    <div className={`flex items-center space-x-2 whitespace-nowrap w-full ${align === "right" ? "flex-row-reverse space-x-reverse justify-start" : "justify-start"}`}>
-      <Image src={logo} alt={normalized} width={24} height={24} className="rounded-full shrink-0" />
-      <span className="relative">
+    <span
+      className={`flex min-w-0 items-center gap-2 ${align === "right" ? "flex-row-reverse" : ""} ${
+        won ? "font-semibold text-ink" : "text-ink-dim"
+      }`}
+    >
+      <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+      <Image
+        src={logo}
+        alt={normalized}
+        width={20}
+        height={20}
+        className="h-5 w-5 shrink-0 rounded-full object-contain"
+      />
+      <span className="truncate">
         <span className="hidden md:inline">{normalized}</span>
         <span className="inline md:hidden">{shortenTeamName(normalized)}</span>
-        <span className="absolute bottom-0 left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: color }} />
       </span>
-    </div>
+    </span>
   )
 }
 
 export default function FifaMatchResults({ matches, playerTeams, teamLogos }: FifaMatchResultsProps) {
+  if (matches.length === 0) {
+    return (
+      <div className="rounded-[20px] border border-dashed border-hairline-strong px-6 py-12 text-center text-[15px] text-ink-muted">
+        No matches played yet
+      </div>
+    )
+  }
+
   return (
-    <div className="table-scroll overflow-x-auto rounded-lg flex justify-center">
-      <table className="bg-white w-auto min-w-full">
-        <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
-            <th className="py-2 px-4 text-center w-[45%] whitespace-nowrap">Home</th>
-            <th className="py-2 px-1 text-center w-px whitespace-nowrap">Score</th>
-            <th className="py-2 px-4 text-center w-[45%] whitespace-nowrap">Away</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
-          {matches.length === 0 ? (
-            <tr>
-              <td colSpan={3} className="py-8 text-center text-gray-400">No matches played yet</td>
-            </tr>
-          ) : (
-            matches.map((match) => {
-              const aWins = match.scoreA > match.scoreB
-              const bWins = match.scoreB > match.scoreA
-              return (
-                <tr key={match.id} className="border-b border-gray-200 h-[45px]">
-                  <td className="py-2 px-4 w-[45%] whitespace-nowrap">
-                    <TeamCell team={match.teamA} playerTeams={playerTeams} teamLogos={teamLogos} />
-                  </td>
-                  <td className="py-2 px-1 text-center w-px whitespace-nowrap">
-                    <span className={aWins ? "font-bold text-gray-900" : "text-gray-400"} style={{fontSize:'12.25px'}}>{match.scoreA}</span>
-                    <span className="text-gray-300 mx-0.5" style={{fontSize:'12.25px'}}>:</span>
-                    <span className={bWins ? "font-bold text-gray-900" : "text-gray-400"} style={{fontSize:'12.25px'}}>{match.scoreB}</span>
-                  </td>
-                  <td className="py-2 px-4 w-[45%] whitespace-nowrap">
-                    <TeamCell team={match.teamB} playerTeams={playerTeams} teamLogos={teamLogos} align="right" />
-                  </td>
-                </tr>
-              )
-            })
-          )}
-        </tbody>
-      </table>
+    <div className="table-scroll flex flex-col gap-2 overflow-y-auto">
+      {matches.map((match) => (
+        <div
+          key={match.id}
+          className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 rounded-[14px] border border-hairline bg-surface px-4 py-3.5 text-sm"
+        >
+          <TeamCell
+            team={match.teamA}
+            playerTeams={playerTeams}
+            teamLogos={teamLogos}
+            won={match.scoreA > match.scoreB}
+          />
+          <span className="rounded-lg bg-surface-3 px-2.5 py-1 font-mono text-[15px] font-medium text-ink">
+            {match.scoreA}:{match.scoreB}
+          </span>
+          <TeamCell
+            team={match.teamB}
+            playerTeams={playerTeams}
+            teamLogos={teamLogos}
+            align="right"
+            won={match.scoreB > match.scoreA}
+          />
+        </div>
+      ))}
     </div>
   )
 }

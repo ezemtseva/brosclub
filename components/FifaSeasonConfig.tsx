@@ -130,18 +130,18 @@ export default function FifaSeasonConfig({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-night/80" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl mx-4"
+        className="rounded-2xl border border-hairline bg-surface shadow-xl p-6 w-full max-w-3xl mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold">Season {season} — Configuration</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <button onClick={onClose} className="text-ink-dim hover:text-ink text-xl leading-none">×</button>
         </div>
 
         {/* Round tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-hairline-strong mb-6">
           <nav className="-mb-px flex space-x-8">
             {ROUNDS.map((round) => (
               <button
@@ -149,8 +149,8 @@ export default function FifaSeasonConfig({
                 onClick={() => setActiveRound(round)}
                 className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeRound === round
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-accent text-ink"
+                    : "border-transparent text-ink-muted hover:text-ink hover:border-hairline-strong"
                 }`}
               >
                 {round}
@@ -174,14 +174,14 @@ export default function FifaSeasonConfig({
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full flex-none" style={{ backgroundColor: color }} />
                       <span className="font-semibold text-[14px]">{player}</span>
-                      <span className="text-xs text-gray-400 ml-auto">
+                      <span className="text-xs text-ink-dim ml-auto">
                         {round2Teams[player].length}/{playerTeams[player].length} teams
                       </span>
                     </div>
 
                     <div className="flex flex-col gap-1 min-h-[120px]">
                       {playerTeams[player].length === 0 && (
-                        <p className="text-xs text-gray-400 italic">No round 1 teams yet.</p>
+                        <p className="text-xs text-ink-dim italic">No round 1 teams yet.</p>
                       )}
                       {orderedTeams.map((team) => {
                         const included = round2Teams[player].includes(team)
@@ -202,7 +202,7 @@ export default function FifaSeasonConfig({
                             >
                               {included ? "✓" : ""}
                             </span>
-                            <span className={included ? "" : "text-gray-400"}>{team}</span>
+                            <span className={included ? "" : "text-ink-dim"}>{team}</span>
                           </button>
                         )
                       })}
@@ -224,7 +224,7 @@ export default function FifaSeasonConfig({
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full flex-none" style={{ backgroundColor: color }} />
                   <span className="font-semibold text-[14px]">{player}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{playerTeams[player].length} teams</span>
+                  <span className="text-xs text-ink-dim ml-auto">{playerTeams[player].length} teams</span>
                 </div>
 
                 {/* Team list */}
@@ -238,7 +238,7 @@ export default function FifaSeasonConfig({
                       <span>{team}</span>
                       <button
                         onClick={() => removeTeam(player, team)}
-                        className="text-gray-400 hover:text-red-500 ml-2 text-xs leading-none"
+                        className="text-ink-dim hover:text-vanilla ml-2 text-xs leading-none"
                       >
                         ×
                       </button>
@@ -255,21 +255,21 @@ export default function FifaSeasonConfig({
                   <input
                     type="text"
                     placeholder="Add team..."
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+                    className="w-full border border-hairline-strong rounded-lg px-3 py-2 text-sm focus:outline-none"
                     value={queries[player]}
                     onFocus={() => setOpens((prev) => ({ ...prev, [player]: true }))}
                     onChange={(e) => setQueries((prev) => ({ ...prev, [player]: e.target.value }))}
                   />
                   {opens[player] && (options.length > 0 || isNew) && (
-                    <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <ul className="absolute z-10 mt-1 w-full bg-surface border border-hairline-strong rounded-lg shadow-lg max-h-48 overflow-y-auto">
                       {options.map(({ team, takenBy }) => (
                         <li
                           key={team}
                           onMouseDown={takenBy ? undefined : () => addTeam(player, team)}
                           className={
                             takenBy
-                              ? "flex items-center justify-between px-3 py-2 text-sm text-gray-300 cursor-not-allowed"
-                              : "px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                              ? "flex items-center justify-between px-3 py-2 text-sm text-ink-dim cursor-not-allowed"
+                              : "px-3 py-2 text-sm cursor-pointer hover:bg-surface-3"
                           }
                         >
                           <span>{team}</span>
@@ -279,7 +279,7 @@ export default function FifaSeasonConfig({
                       {isNew && (
                         <li
                           onMouseDown={() => addTeam(player, queries[player].trim())}
-                          className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 text-blue-600 border-t border-gray-100"
+                          className="px-3 py-2 text-sm cursor-pointer hover:bg-surface-3 text-accent border-t border-hairline"
                         >
                           + Add &quot;{queries[player].trim()}&quot; as new team
                         </li>
@@ -296,7 +296,7 @@ export default function FifaSeasonConfig({
         <div className="flex justify-end mt-6">
           <button
             onClick={() => { onSaved(); onClose() }}
-            className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg hover:opacity-90 transition-colors"
           >
             Done
           </button>

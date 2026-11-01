@@ -84,14 +84,14 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
         onChange={(e) => setQuery(e.target.value)}
       />
       {open && (round1.length > 0 || round2.length > 0) && (
-        <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-y-auto">
+        <ul className="absolute z-10 mt-1 w-full bg-surface border border-hairline-strong rounded-lg shadow-lg max-h-56 overflow-y-auto">
           {round1.length > 0 && (
             <>
-              <li className="px-3 py-1 text-xs text-gray-400 bg-gray-50 font-medium select-none">Round 1</li>
+              <li className="px-3 py-1 text-xs text-ink-dim bg-surface-2 font-medium select-none">Round 1</li>
               {round1.map((o) => {
                 const color = getTeamColor(o.team, playerTeams)
                 return (
-                  <li key={o.team} onMouseDown={() => handleSelect(o.team)} className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-1.5">
+                  <li key={o.team} onMouseDown={() => handleSelect(o.team)} className="px-3 py-2 text-sm cursor-pointer hover:bg-surface-3 flex items-center gap-1.5">
                     {color && <span className="w-2 h-2 rounded-full flex-none" style={{ backgroundColor: color }} />}
                     {o.team}
                   </li>
@@ -101,11 +101,11 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
           )}
           {round2.length > 0 && (
             <>
-              <li className="px-3 py-1 text-xs text-gray-400 bg-gray-50 border-t border-gray-100 font-medium select-none">Round 2</li>
+              <li className="px-3 py-1 text-xs text-ink-dim bg-surface-2 border-t border-hairline font-medium select-none">Round 2</li>
               {round2.map((o) => {
                 const color = getTeamColor(o.team, playerTeams)
                 return (
-                  <li key={o.team} onMouseDown={() => handleSelect(o.team)} className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-1.5">
+                  <li key={o.team} onMouseDown={() => handleSelect(o.team)} className="px-3 py-2 text-sm cursor-pointer hover:bg-surface-3 flex items-center gap-1.5">
                     {color && <span className="w-2 h-2 rounded-full flex-none" style={{ backgroundColor: color }} />}
                     {o.team}
                   </li>
@@ -324,20 +324,20 @@ export default function AddMatchDialog({
   const scoresEntered = scoreA !== "" && scoreB !== ""
 
   const selectAClass = !scoresEntered
-    ? "border-gray-200"
+    ? "border-hairline-strong"
     : aScore > bScore
     ? "border-green-300 bg-green-50"
     : aScore < bScore
     ? "border-red-300 bg-red-50"
-    : "border-gray-300 bg-gray-50"
+    : "border-hairline-strong bg-surface-2"
 
   const selectBClass = !scoresEntered
-    ? "border-gray-200"
+    ? "border-hairline-strong"
     : bScore > aScore
     ? "border-green-300 bg-green-50"
     : bScore < aScore
     ? "border-red-300 bg-red-50"
-    : "border-gray-300 bg-gray-50"
+    : "border-hairline-strong bg-surface-2"
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -369,11 +369,11 @@ export default function AddMatchDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-night/80"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl mx-4"
+        className="rounded-2xl border border-hairline bg-surface shadow-xl p-6 w-full max-w-2xl mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold mb-6">Add Game Result</h2>
@@ -393,19 +393,19 @@ export default function AddMatchDialog({
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreA}
             onChange={(e) => setScoreA(e.target.value.slice(0, 2))}
           />
 
-          <span className="text-gray-400 font-bold shrink-0">:</span>
+          <span className="text-ink-dim font-bold shrink-0">:</span>
 
           <input
             type="number"
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-gray-200 rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreB}
             onChange={(e) => setScoreB(e.target.value.slice(0, 2))}
           />
@@ -423,13 +423,13 @@ export default function AddMatchDialog({
           <div className="mb-5">
             <div className="flex h-2 rounded-full overflow-hidden mb-1.5">
               <div style={{ width: `${odds.probA}%`, backgroundColor: getTeamColor(teamA, playerTeams) || "#9ca3af" }} />
-              <div style={{ width: `${odds.probDraw}%` }} className="bg-gray-200" />
+              <div style={{ width: `${odds.probDraw}%` }} className="bg-surface-3" />
               <div style={{ width: `${odds.probB}%`, backgroundColor: getTeamColor(teamB, playerTeams) || "#9ca3af" }} />
             </div>
             <div className="relative flex justify-between text-xs">
               <span className="font-semibold" style={{ color: getTeamColor(teamA, playerTeams) || "#374151" }}>{odds.probA}%</span>
               <span
-                className="absolute -translate-x-1/2 text-gray-400"
+                className="absolute -translate-x-1/2 text-ink-dim"
                 style={{ left: `${odds.probA + odds.probDraw / 2}%` }}
               >
                 {odds.probDraw}%
@@ -437,7 +437,7 @@ export default function AddMatchDialog({
               <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "#374151" }}>{odds.probB}%</span>
             </div>
             {accuracy && (
-              <p className="text-sm text-gray-500 text-center mt-1">
+              <p className="text-sm text-ink-muted text-center mt-1">
                 Prediction accuracy: {Math.round((accuracy.correct / accuracy.total) * 100)}%
               </p>
             )}
@@ -450,19 +450,19 @@ export default function AddMatchDialog({
           </p>
         )}
 
-        {error && <p className="text-sm text-red-500 mb-4 text-center">{error}</p>}
+        {error && <p className="text-sm text-vanilla mb-4 text-center">{error}</p>}
 
         <div className="flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="px-4 py-2 text-sm text-ink-muted hover:text-ink transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!isValid || isSubmitting}
-            className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg disabled:opacity-40 hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg disabled:opacity-40 hover:opacity-90 transition-colors"
           >
             {isSubmitting ? "Saving..." : "Confirm"}
           </button>

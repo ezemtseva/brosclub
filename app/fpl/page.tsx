@@ -290,16 +290,11 @@ export default async function FPLPage() {
     ]
 
     return (
-      <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+      <>
         <AutoRefresh intervalMs={30000} />
 
         <FplSeasonTabs
-          title={
-            <>
-              <span className="sm:hidden text-title">FPL</span>
-              <span className="hidden sm:inline text-title">Fantasy Premier League Cup</span>
-            </>
-          }
+          title="Fantasy Premier League Cup"
           description="X anniversary season of no-names turning our teams into a shit joke."
           currentSeasonData={currentSeasonData}
           currentSeasonChartData={currentSeasonChartData}
@@ -315,18 +310,18 @@ export default async function FPLPage() {
           season2425Highlights={season2425Highlights}
           columns={columns}
         />
-      </div>
+      </>
     )
   } catch (error) {
     console.error("Error in FPLPage:", error)
     return (
-      <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
-        <h1 className="text-title font-bold mb-4">Fantasy Premier League Cup</h1>
-        <p className="text-base text-gray-600 mb-8">Fantasy Premier League seasons.</p>
-        <h2 className="text-title font-bold mb-4">Standings</h2>
-        <p className="text-red-500">Error loading FPL data. Please try again later.</p>
+      <div className="mx-auto max-w-page px-8 py-16">
+        <h1 className="mb-4 font-display text-[clamp(44px,6vw,84px)] font-extrabold leading-[0.95] tracking-[-0.03em]">
+          Fantasy Premier League Cup
+        </h1>
+        <p className="text-[18px] text-vanilla">Error loading FPL data. Please try again later.</p>
         {process.env.NODE_ENV === "development" && (
-          <p className="text-sm text-gray-500 mt-2">Error details: {(error as Error).message}</p>
+          <p className="mt-2 font-mono text-sm text-ink-muted">Error details: {(error as Error).message}</p>
         )}
       </div>
     )

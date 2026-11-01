@@ -105,15 +105,15 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
     column.width ? { width: column.width } : column.accessor === 'position' ? undefined : { width: evenWidth }
 
   return (
-    <div ref={scrollRef} className="table-scroll overflow-x-auto rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      <table className="min-w-full bg-white">
+    <div ref={scrollRef} className="table-scroll overflow-x-auto rounded-[20px] border border-hairline bg-surface [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <table className="min-w-full tabular-nums">
         <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
+          <tr className="h-[45px] font-mono text-xs uppercase leading-normal tracking-[0.08em] text-ink-muted">
             {activeColumns.map((column, index) => (
               <th
                 key={index}
                 style={widthFor(column)}
-                className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-gray-900' : ''}`}
+                className={`border-b border-hairline py-3 font-medium ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}
@@ -124,19 +124,20 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
             ))}
           </tr>
         </thead>
-        <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
+        <tbody className="text-sm text-ink-2">
           {sortedData.map((row, rowIndex) => (
             <tr
               key={rowIndex}
-              className="border-b border-gray-200 transition-colors duration-200 h-[45px]"
+              className="h-[45px] border-b border-hairline-row transition-colors duration-200"
               style={{
-                backgroundColor: hoveredRow === rowIndex ? `${row.hoverColor}80` : 'transparent',
+                // The bear's colour at 14% — the same tint the chips use
+                backgroundColor: hoveredRow === rowIndex ? `${row.hoverColor}24` : 'transparent',
               }}
               onMouseEnter={() => setHoveredRow(rowIndex)}
               onMouseLeave={() => setHoveredRow(null)}
             >
               {activeColumns.map((column, colIndex) => (
-                <td key={colIndex} style={widthFor(column)} className={`py-2 ${column.accessor === 'position' ? 'px-2 text-center w-px whitespace-nowrap !text-[12.25px]' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'pl-4 pr-8 md:pr-4 text-left whitespace-nowrap' : 'px-4 text-center'}`}>
+                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'}`}>
                   {fmtCell(row[column.accessor])}
                 </td>
               ))}

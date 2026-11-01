@@ -52,7 +52,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
 
   const getRowClass = (player: Player) => {
     if (allFilled && numericScores[player] === maxScore) return "border-yellow-300 bg-yellow-50"
-    return "border-gray-200 bg-white"
+    return "border-hairline-strong bg-surface"
   }
 
   // Every player picks independently — the same value may go to more than one
@@ -89,11 +89,11 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-night/80"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4"
+        className="rounded-2xl border border-hairline bg-surface shadow-xl p-6 w-full max-w-sm mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold mb-6">Add Game Result</h2>
@@ -108,7 +108,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               {scoreOptions ? (
                 <div className="flex items-center gap-2">
                   <select
-                    className="season-select w-20 border border-gray-200 rounded-lg px-5 py-1 text-sm font-bold text-center bg-white focus:outline-none"
+                    className="season-select w-20 border border-hairline-strong rounded-lg px-5 py-1 text-sm font-bold text-center bg-surface focus:outline-none"
                     value={scores[player]}
                     onChange={(e) => pickScore(player, e.target.value)}
                   >
@@ -119,7 +119,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
                   </select>
                   <input
                     type="number"
-                    className="w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     value={gamePoints[player]}
                     onChange={(e) =>
                       setGamePoints((prev) => ({ ...prev, [player]: typeNumber(e.target.value, 3) }))
@@ -130,7 +130,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               ) : (
                 <input
                   type="number"
-                  className="w-20 text-center border border-gray-200 rounded-lg px-2 py-1 text-sm font-bold bg-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   value={scores[player]}
                   onChange={(e) => {
                     const val = e.target.value
@@ -148,19 +148,19 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
           ))}
         </div>
 
-        {error && <p className="text-sm text-red-500 mb-4 text-center">{error}</p>}
+        {error && <p className="text-sm text-vanilla mb-4 text-center">{error}</p>}
 
         <div className="flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="px-4 py-2 text-sm text-ink-muted hover:text-ink transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!isValid || isSubmitting}
-            className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg disabled:opacity-40 hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg disabled:opacity-40 hover:opacity-90 transition-colors"
           >
             {isSubmitting ? "Saving..." : "Confirm"}
           </button>

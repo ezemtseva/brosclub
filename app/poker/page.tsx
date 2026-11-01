@@ -8,7 +8,6 @@ import PlayerCell from "../../components/PlayerCell"
 export const dynamic = 'force-dynamic'
 
 const PokerChart = dynamicImport(() => import("../../components/PokerChart"), { ssr: false })
-const PieChart = dynamicImport(() => import("../../components/PieChart"), { ssr: false })
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -146,16 +145,11 @@ export default async function PokerPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+    <>
       <AutoRefresh intervalMs={30000} />
 
       <HoldemSeasonTabs
-        title={
-          <>
-            <span className="sm:hidden text-title">Holdem Cup</span>
-            <span className="hidden sm:inline text-title">Texas Holdem Cup</span>
-          </>
-        }
+        title="Texas Hold'em Cup"
         description="Permanently suspended after X seasons."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
@@ -167,6 +161,6 @@ export default async function PokerPage() {
         historicalSeasonHighlights={historicalSeasonHighlights}
         columns={columns}
       />
-    </div>
+    </>
   )
 }

@@ -60,7 +60,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         {videos.map((video, index) => (
           <div
             key={index}
-            className="w-[75vw] shrink-0 bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
+            className="w-[75vw] shrink-0 bg-surface shadow-md rounded-lg overflow-hidden cursor-pointer"
             onClick={() => openModal(index)}
           >
             <div className="aspect-video relative">
@@ -70,7 +70,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
               </div>
             </div>
             <div className="p-4">
-              <p className="text-gray-600 truncate">{video.title}</p>
+              <p className="text-ink-2 truncate">{video.title}</p>
             </div>
           </div>
         ))}
@@ -82,7 +82,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           {displayedVideos.map((video, index) => (
             <div
               key={index}
-              className="bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer"
+              className="bg-surface shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer"
               onClick={() => openModal(currentPage * videosPerPage + index)}
             >
               <div className="aspect-video relative">
@@ -92,7 +92,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
                 </div>
               </div>
               <div className="p-4">
-                <p className="text-gray-600 truncate">{video.title}</p>
+                <p className="text-ink-2 truncate">{video.title}</p>
               </div>
             </div>
           ))}
@@ -100,16 +100,16 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         {totalPages > 1 && (
           <>
             <button
-              className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-surface bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={prevPage}
             >
-              <ChevronLeft size={20} className="text-gray-800" />
+              <ChevronLeft size={20} className="text-ink" />
             </button>
             <button
-              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
+              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-surface bg-opacity-75 hover:bg-opacity-100 rounded-full p-3 shadow-md transition-all duration-300"
               onClick={nextPage}
             >
-              <ChevronRight size={20} className="text-gray-800" />
+              <ChevronRight size={20} className="text-ink" />
             </button>
           </>
         )}
@@ -117,7 +117,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
 
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-[93.75rem] flex flex-col mx-auto overflow-hidden">
+          <div className="bg-surface rounded-lg w-full max-w-[93.75rem] flex flex-col mx-auto overflow-hidden">
             <div className="relative aspect-video">
               <YouTubeVideo
                 videoId={videos[currentVideoIndex].videoId}
@@ -127,22 +127,22 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
                 height="100%"
               />
               <button
-                className="absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 left-4"
+                className="absolute top-1/2 transform -translate-y-1/2 bg-surface bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 left-4"
                 onClick={prevVideo}
               >
-                <ChevronLeft size={20} className="text-gray-800" />
+                <ChevronLeft size={20} className="text-ink" />
               </button>
               <button
-                className="absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 right-4"
+                className="absolute top-1/2 transform -translate-y-1/2 bg-surface bg-opacity-50 hover:bg-opacity-75 rounded-full p-3 z-10 shadow-md transition-all duration-300 right-4"
                 onClick={nextVideo}
               >
-                <ChevronRight size={20} className="text-gray-800" />
+                <ChevronRight size={20} className="text-ink" />
               </button>
             </div>
             <div className="p-4 flex flex-col items-center">
-              <p className="text-center text-gray-600 mb-2">{videos[currentVideoIndex].title}</p>
+              <p className="text-center text-ink-2 mb-2">{videos[currentVideoIndex].title}</p>
               <button
-                className="w-[100px] bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 text-sm"
+                className="w-[100px] bg-surface-3 text-ink py-2 px-4 rounded-md hover:bg-hairline-strong text-sm"
                 onClick={closeModal}
               >
                 Close

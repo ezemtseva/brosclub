@@ -3,21 +3,17 @@
 import type React from "react"
 
 import { useState } from "react"
-import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import dynamicImport from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
-import Image from "next/image"
 import PlayerCell from "./PlayerCell"
-
-const PLAYER_AVATARS: Record<keyof typeof PLAYER_COLORS, string> = {
-  Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
-}
+import CupHeader from "./design/CupHeader"
+import StandingsCards, { type StandingsRow } from "./design/StandingsCards"
+import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
+import { RecordGrid, type RecordCard } from "./design/RecordTile"
+import { splitRecordDate } from "./design/recordText"
 
 const FplChart = dynamicImport(() => import("./FplChart"), { ssr: false })
-const PieChart = dynamicImport(() => import("./PieChart"), { ssr: false })
 
 const seasons = [
   "2026/27",
@@ -71,19 +67,10 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
   ],
 }
 
-function StatCardTile({ card }: { card: StatCard }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="h-14 flex items-center">
-        {card.value ? (
-          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
-        ) : card.player ? (
-          <Image src={PLAYER_AVATARS[card.player]} alt={card.player} width={56} height={56} className="rounded-full object-cover w-14 h-14" />
-        ) : null}
-      </div>
-      <p className="text-sm text-gray-600">{card.description}</p>
-    </div>
-  )
+/** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
+function toRecordCard(card: StatCard): RecordCard {
+  const { text, when } = splitRecordDate(card.description)
+  return { value: card.value, text, when, who: card.player ? [card.player] : [] }
 }
 
 // Define types for the standings data
@@ -487,116 +474,100 @@ export default function FplSeasonTabs({
       }))
   }
 
+  /** Processed table rows carry the bear in their colour — the cards want the name. */
+  const toRows = (data: any[]): StandingsRow[] =>
+    data.map((row) => {
+      const metrics: { label: string; value: string | number }[] = [{ label: "GW", value: row.games }]
+      if (row.wins !== undefined) metrics.push({ label: "WINS", value: row.wins })
+      if (row.winPercent !== undefined) metrics.push({ label: "WIN %", value: row.winPercent })
+      if (row.seasonsWon !== undefined) metrics.push({ label: "TITLES", value: row.seasonsWon })
+      metrics.push({ label: "GAP", value: row.difference === "-" ? "—" : row.difference })
+      return { name: playerNameFromColor(row.hoverColor), points: row.points, metrics }
+    })
+
+  const gameweeksPlayed = (data: any[]) => Math.max(...data.map((row) => row.games ?? 0), 0)
+
+  /** Standings + chart + wins split, the shape every played season shares. */
+  const renderSeason = (
+    data: any[],
+    chartData: any[],
+    pieData: any[],
+    highlights: { src: string; alt: string; caption: string }[],
+  ) => {
+    const played = gameweeksPlayed(data)
+    return (
+      <>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
+          <StandingsCards rows={toRows(data)} />
+        </section>
+
+        <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
+          <Panel
+            title="Season progress"
+            aside={<BearLegend names={toRows(data).map((row) => row.name)} />}
+            className="min-w-0 flex-[999_1_560px]"
+          >
+            <FplChart entries={chartData} />
+          </Panel>
+          <WinsSplit
+            title="Gameweek wins"
+            rows={pieData.map((slice) => ({ name: slice.name, wins: slice.value }))}
+            total={played}
+            unit="GW"
+          />
+        </section>
+
+        {highlights.length > 0 && (
+          <section className="mx-auto max-w-page px-8 pt-10">
+            <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
+            <ImageCarousel images={highlights} />
+          </section>
+        )}
+      </>
+    )
+  }
+
   // Render content based on active tab
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
-      return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={currentSeasonData} />
-
-          <section className="mt-12">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
-                <FplChart entries={currentSeasonChartData} />
-              </div>
-              <div className="w-full md:w-1/3">
-                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
-                <PieChart data={currentSeasonPieData} />
-              </div>
-            </div>
-          </section>
-
-          {currentSeasonHighlights.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-              <ImageCarousel images={currentSeasonHighlights} />
-            </section>
-          )}
-        </>
-      )
+      return renderSeason(currentSeasonData, currentSeasonChartData, currentSeasonPieData, currentSeasonHighlights)
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from fplEntry2526
-      return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={historicalSeasonData} />
-
-          <section className="mt-12">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
-                <FplChart entries={historicalSeasonChartData} />
-              </div>
-              <div className="w-full md:w-1/3">
-                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
-                <PieChart data={historicalSeasonPieData} />
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-            <ImageCarousel images={historicalSeasonHighlights} />
-          </section>
-        </>
+      return renderSeason(
+        historicalSeasonData,
+        historicalSeasonChartData,
+        historicalSeasonPieData,
+        historicalSeasonHighlights,
       )
     } else if (activeSeason === "2024/25") {
-      return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={season2425Data} />
-
-          <section className="mt-12">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="w-full md:w-2/3">
-                <h2 className="text-[16px] font-bold mb-6">Season Progress</h2>
-                <FplChart entries={season2425ChartData} />
-              </div>
-              <div className="w-full md:w-1/3">
-                <h2 className="text-[16px] font-bold mb-6">Wins Distribution</h2>
-                <PieChart data={season2425PieData} />
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-            <ImageCarousel images={season2425Highlights} />
-          </section>
-        </>
-      )
+      return renderSeason(season2425Data, season2425ChartData, season2425PieData, season2425Highlights)
     } else if (pastSeasonsData[activeSeason]) {
       // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
-      const pastColumns = columns.filter((col) => col.accessor !== "wins" && col.accessor !== "winPercent")
       return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={pastColumns} data={seasonData.standings} />
-        </>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
+          <StandingsCards rows={toRows(seasonData.standings)} />
+        </section>
       )
     } else if (activeSeason === "All Time") {
       const allTimeData = computeAllTimeStandings()
       return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
-          <DataTable columns={allTimeColumns} data={allTimeData} />
-        </>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <h2 className="mb-4 font-display text-2xl font-bold">All time standings</h2>
+          <StandingsCards rows={toRows(allTimeData)} />
+        </section>
       )
     } else {
       // For other past seasons, show placeholder content that will be replaced with static data later
       return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <p className="text-gray-500 italic mb-8">Historical data for the {activeSeason} season will be added soon.</p>
-
-          <div className="bg-gray-100 p-8 rounded-lg text-center">
-            <h3 className="text-lg font-medium text-gray-700 mb-4">Season {activeSeason} Archive</h3>
-            <p className="text-gray-600">This section will contain the standings from the {activeSeason} FPL season.</p>
-          </div>
-        </>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <EmptyPanel
+            title={`Season ${activeSeason} archive`}
+            text={`Historical data for the ${activeSeason} season will be added soon.`}
+          />
+        </section>
       )
     }
   }
@@ -605,70 +576,60 @@ export default function FplSeasonTabs({
     const highlights = seasonHighlightCards[activeSeason]
     if (highlights && highlights.length > 0) {
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
-        </div>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <RecordGrid cards={highlights.map(toRecordCard)} />
+        </section>
       )
     }
-    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
+    return (
+      <section className="mx-auto max-w-page px-8 pt-10">
+        <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+      </section>
+    )
   }
 
   const renderBrecordsContent = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {fplRecordCards.map((record, i) => <StatCardTile key={i} card={record} />)}
-    </div>
+    <section className="mx-auto max-w-page px-8 pt-10">
+      <RecordGrid cards={fplRecordCards.map(toRecordCard)} />
+    </section>
   )
 
-  return (
-    <>
-      {/* Page header + season dropdown */}
-      <div className="mb-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-title font-bold">{title}</h1>
-          <select
-            value={activeSeason}
-            onChange={(e) => {
-              const season = e.target.value as Season
-              setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
-            }}
-            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
-          >
-            {seasons.map((season) => (
-              <option key={season} value={season}>
-                {season}
-              </option>
-            ))}
-          </select>
-        </div>
-        <p className="text-basic text-gray-600 mt-4">{description}</p>
-      </div>
+  const standingsForSeason =
+    activeSeason === "2026/27"
+      ? currentSeasonData
+      : activeSeason === "2025/26"
+        ? historicalSeasonData
+        : activeSeason === "2024/25"
+          ? season2425Data
+          : (pastSeasonsData[activeSeason]?.standings ?? [])
+  const played = gameweeksPlayed(standingsForSeason)
 
-      {/* Page tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+  return (
+    <div className="pb-24">
+      <CupHeader
+        eyebrow={
+          activeSeason === "All Time"
+            ? "Cup · All time"
+            : `Cup · ${activeSeason}${played > 0 ? ` · Gameweek ${played} of ${GAMEWEEKS_IN_SEASON}` : ""}`
+        }
+        title={title}
+        tagline={`“${description}”`}
+        seasons={seasons}
+        activeSeason={activeSeason}
+        onSeasonChange={(season) => {
+          setActiveSeason(season as Season)
+          if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
+        }}
+        selectId="season-fpl"
+        tabs={pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time"))}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as PageTab)}
+      />
 
       {/* Render content based on active page tab */}
       {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
-    </>
+    </div>
   )
 }

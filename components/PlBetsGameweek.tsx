@@ -52,35 +52,38 @@ function formatKickoff(kickoff: string): string {
 
 /** Live and Half Time share a colour — one is a pause inside the other. */
 const STATUS_STYLES: Record<string, string> = {
-  Open: "bg-green-50 text-green-600",
-  Finished: "bg-green-700 text-white",
-  Live: "bg-blue-50 text-blue-700",
-  "Half Time": "bg-blue-50 text-blue-700",
-  Postponed: "bg-red-50 text-red-700",
-  Locked: "bg-gray-100 text-gray-500",
+  Open: "pill-open",
+  Finished: "bg-surface-3 text-ink-2",
+  Live: "pill-live",
+  "Half Time": "pill-live",
+  Postponed: "bg-[rgba(255,181,71,0.14)] text-warning",
+  Locked: "bg-surface-3 text-ink-dim",
 }
 
 function StatusLabel({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium whitespace-nowrap ${
-        STATUS_STYLES[status] ?? "bg-gray-100 text-gray-500"
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-xs uppercase tracking-[0.08em] ${
+        STATUS_STYLES[status] ?? "bg-surface-3 text-ink-dim"
       }`}
     >
+      {(status === "Live" || status === "Half Time") && (
+        <span aria-hidden="true" className="dot blink h-1.5 w-1.5 rounded-full" />
+      )}
       {status}
     </span>
   )
 }
 
-/** Settled bet: hits get the same pills as the statuses — exact score reads
- *  like Finished, a correct outcome like Open — and a miss is struck through. */
-const BET_PILL = "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium whitespace-nowrap"
+/** Settled bet: an exact score is a white chip, a right outcome a grey one,
+ *  and a miss is struck through. */
+const BET_PILL = "inline-block min-w-[40px] rounded-lg px-2 py-1 font-mono text-sm font-medium"
 
 function betStyle(points: number | null): string {
-  if (points === null) return ""
-  if (points >= 3) return `${BET_PILL} ${STATUS_STYLES.Finished}`
-  if (points === 1) return `${BET_PILL} ${STATUS_STYLES.Open}`
-  return "line-through text-gray-400"
+  if (points === null) return "font-mono text-sm"
+  if (points >= 3) return `${BET_PILL} bg-ink text-night`
+  if (points === 1) return `${BET_PILL} bg-chip text-ink`
+  return `${BET_PILL} text-ink-dim line-through`
 }
 
 function BetCell({
@@ -137,7 +140,7 @@ function BetCell({
     return (
       <div className="flex items-center justify-center px-2 py-1">
         {bet && (
-          <span className={`tabular-nums ${finished ? betStyle(bet.points) : ""}`}>
+          <span className={finished ? betStyle(bet.points) : "font-mono text-sm"}>
             {bet.scoreHome}:{bet.scoreAway}
           </span>
         )}
@@ -148,11 +151,11 @@ function BetCell({
   // Saved and not editing: show score + Edit button
   if (bet && !editing) {
     return (
-      <div className="relative flex w-[76px] mx-auto items-center justify-center group">
-        <span className="tabular-nums">{bet.scoreHome}:{bet.scoreAway}</span>
+      <div className="group relative mx-auto flex w-[76px] items-center justify-center">
+        <span className="font-mono text-sm">{bet.scoreHome}:{bet.scoreAway}</span>
         <button
           onClick={() => setEditing(true)}
-          className="absolute left-full ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-700"
+          className="absolute left-full ml-1 text-ink-dim opacity-0 transition-opacity hover:text-ink group-hover:opacity-100"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -165,8 +168,10 @@ function BetCell({
 
   // Editing or no bet yet: show inputs + Save
   const showSave = home !== "" || away !== "" || bet !== undefined
+  const betInput =
+    "w-9 rounded-md border border-hairline-strong bg-surface-2 px-1 py-0.5 text-center font-mono text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
   return (
-    <div className="relative flex w-[76px] mx-auto items-center justify-center gap-1">
+    <div className="relative mx-auto flex w-[76px] items-center justify-center gap-1">
       <input
         type="number"
         min="0"
@@ -176,9 +181,9 @@ function BetCell({
         // A focused number input changes value on wheel by default — drop focus instead
         onWheel={(e) => e.currentTarget.blur()}
         placeholder=""
-        className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className={betInput}
       />
-      <span className="text-gray-300 text-xs">:</span>
+      <span className="text-xs text-ink-dim">:</span>
       <input
         type="number"
         min="0"
@@ -187,13 +192,13 @@ function BetCell({
         onChange={(e) => setAway(e.target.value.slice(0, 2))}
         onWheel={(e) => e.currentTarget.blur()}
         placeholder=""
-        className="w-9 text-center border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className={betInput}
       />
-      <div className="absolute left-full flex items-center gap-0.5 ml-1">
+      <div className="absolute left-full ml-1 flex items-center gap-0.5">
         <button
           onClick={handleSave}
           disabled={saving || (home !== "" && away === "") || (home === "" && away !== "")}
-          className={`text-green-500 hover:text-green-700 disabled:opacity-30 transition-colors ${showSave ? "" : "invisible"}`}
+          className={`text-[color:var(--accent-text)] transition-colors hover:text-ink disabled:opacity-30 ${showSave ? "" : "invisible"}`}
         >
           {saving ? "…" : (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -269,78 +274,96 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
   }
 
 
+  const navButton =
+    "inline-flex min-h-[44px] items-center justify-center rounded-full border border-hairline-strong px-4 text-sm text-ink transition-colors hover:border-ink disabled:opacity-30"
+
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-        <h2 className="text-[16px] font-bold leading-none m-0">Gameweek {gameweek}</h2>
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={() => setGameweek(1)}
-            disabled={gameweek === 1}
-            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-thin"
-          >
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="m-0 font-display text-2xl font-bold">Gameweek {gameweek}</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={() => setGameweek(1)} disabled={gameweek === 1} className={navButton}>
             «
           </button>
           <button
             onClick={() => setGameweek((g) => Math.max(1, g - 1))}
             disabled={gameweek === 1}
-            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className={navButton}
           >
-            Prev
+            ← Prev
           </button>
           <button
             onClick={() => setGameweek(initialGameweek)}
             disabled={gameweek === initialGameweek}
-            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className={`${navButton} border-ink bg-ink font-semibold text-night hover:border-ink`}
           >
             Current
           </button>
           <button
             onClick={() => setGameweek((g) => Math.min(38, g + 1))}
             disabled={gameweek === 38}
-            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className={navButton}
           >
-            Next
+            Next →
           </button>
-          <button
-            onClick={() => setGameweek(38)}
-            disabled={gameweek === 38}
-            className="flex items-center justify-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 disabled:opacity-30 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-thin"
-          >
+          <button onClick={() => setGameweek(38)} disabled={gameweek === 38} className={navButton}>
             »
           </button>
-          <button onClick={handleSync} disabled={syncing} className="hidden px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-500 hover:text-gray-800">
+          <button onClick={handleSync} disabled={syncing} className={`hidden ${navButton}`}>
             {syncing ? "Syncing..." : "Sync"}
           </button>
         </div>
       </div>
 
-      {toast && <p className="text-sm text-green-600 mb-3">{toast}</p>}
+      {toast && <p className="mb-3 font-mono text-sm text-[color:var(--accent-text)]">{toast}</p>}
+
+      <div className="mb-4 flex flex-wrap gap-5 text-[13px] text-ink-2">
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden="true" className="rounded-md bg-ink px-2 py-0.5 font-mono text-xs text-night">2:0</span>
+          Exact score
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden="true" className="rounded-md bg-chip px-2 py-0.5 font-mono text-xs">2:1</span>
+          Right outcome
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden="true" className="px-2 py-0.5 font-mono text-xs text-ink-dim line-through">1:1</span>
+          Miss
+        </span>
+      </div>
 
       {matches.length === 0 ? (
-        <p className="text-sm text-gray-400">No fixtures for GW{gameweek}. Click <strong>Sync</strong> to fetch.</p>
+        <p className="text-sm text-ink-muted">No fixtures for GW{gameweek}.</p>
       ) : (
-        <div className={`bets-gameweek-table overflow-x-auto rounded-lg transition-opacity duration-150 ${refreshing ? "opacity-50" : "opacity-100"}`}>
-          <table className="min-w-max w-full bg-white">
+        <div
+          className={`bets-gameweek-table overflow-x-auto rounded-[20px] border border-hairline bg-surface transition-opacity duration-150 ${
+            refreshing ? "opacity-50" : "opacity-100"
+          }`}
+        >
+          <table className="w-full min-w-max">
             <thead>
-              <tr className="bg-gray-200 text-gray-600 uppercase text-xs md:text-sm leading-normal h-[45px]">
-                <th className="py-2 px-4 text-left w-[130px]">Date</th>
-                <th className="py-2 px-4 text-left whitespace-nowrap w-[170px]">Home</th>
-                <th className="py-2 px-2 text-center whitespace-nowrap w-px">Score</th>
-                <th className="py-2 px-4 text-right whitespace-nowrap w-[170px]">Away</th>
-                <th className="py-2 px-4 text-center whitespace-nowrap w-[170px]">Status</th>
+              <tr className="font-mono text-xs uppercase tracking-[0.08em] text-ink-muted">
+                <th className="w-[130px] border-b border-hairline px-5 py-3.5 text-left font-medium">Kick-off</th>
+                <th className="w-[170px] whitespace-nowrap border-b border-hairline px-3 py-3.5 text-left font-medium">Home</th>
+                <th className="w-px whitespace-nowrap border-b border-hairline px-2 py-3.5 text-center font-medium">Score</th>
+                <th className="w-[170px] whitespace-nowrap border-b border-hairline px-3 py-3.5 text-right font-medium">Away</th>
+                <th className="w-[170px] whitespace-nowrap border-b border-hairline px-4 py-3.5 text-center font-medium">Status</th>
                 {PLAYERS.map((p) => (
-                  <th key={p} className="py-2 px-4 text-center whitespace-nowrap w-[170px]">
-                    <span className="relative inline-block text-xs md:text-sm">
+                  <th key={p} className="w-[170px] whitespace-nowrap border-b border-hairline px-4 py-3.5 text-center font-medium">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: PLAYER_COLORS[p] }}
+                      />
                       {p}
-                      <span className="absolute bottom-[-2px] left-0 w-[0.85em] h-[2px]" style={{ backgroundColor: PLAYER_COLORS[p] }} />
                     </span>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="text-gray-600 text-[12px] md:text-sm font-light">
+            <tbody className="text-sm text-ink-2">
               {matches.map((match) => {
                 const locked = isLocked(match.kickoff)
                 const finished = match.status === "FINISHED"
@@ -348,32 +371,36 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                 const inPlay = match.status === "IN_PLAY" || match.status === "PAUSED"
                 const showScore = (finished || inPlay) && match.scoreHome !== null && match.scoreAway !== null
                 return (
-                  <tr key={match.matchId} className="border-b border-gray-200 h-[45px]">
-                    <td className="py-2 px-4 w-[130px]">{formatKickoff(match.kickoff)}</td>
-                    <td className="py-2 px-4 whitespace-nowrap">
-                      <span className="flex items-center justify-start gap-1.5 px-1">
-                        {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="shrink-0 object-contain" />}
-                        <span className={finished && match.scoreHome! > match.scoreAway! ? "font-bold" : ""}>{match.homeTeam}</span>
+                  <tr key={match.matchId} className="h-[52px]">
+                    <td className="w-[130px] whitespace-nowrap border-b border-hairline-row px-5 py-3 font-mono text-[13px] text-ink-muted">
+                      {formatKickoff(match.kickoff)}
+                    </td>
+                    <td className="whitespace-nowrap border-b border-hairline-row px-3 py-3">
+                      <span className="flex items-center justify-start gap-2">
+                        {match.homeCrest && <Image src={match.homeCrest} alt={match.homeTeam} width={18} height={18} className="h-[18px] w-[18px] shrink-0 object-contain" />}
+                        <span className={finished && match.scoreHome! > match.scoreAway! ? "font-semibold text-ink" : ""}>{match.homeTeam}</span>
                       </span>
                     </td>
-                    <td className="py-2 px-2 text-center whitespace-nowrap tabular-nums">
+                    <td className="whitespace-nowrap border-b border-hairline-row px-2 py-3 text-center">
                       {showScore ? (
-                        <>
-                          <span className={inPlay ? "text-blue-700" : finished && match.scoreHome! > match.scoreAway! ? "font-bold" : "font-light"}>{match.scoreHome}</span>
-                          <span className={`mx-0.5 ${inPlay ? "text-blue-700" : "text-gray-300"}`}>:</span>
-                          <span className={inPlay ? "text-blue-700" : finished && match.scoreAway! > match.scoreHome! ? "font-bold" : "font-light"}>{match.scoreAway}</span>
-                        </>
+                        <span
+                          className={`inline-block rounded-lg px-2.5 py-1 font-mono text-[15px] font-medium ${
+                            inPlay ? "pill-live" : "bg-surface-3 text-ink"
+                          }`}
+                        >
+                          {match.scoreHome}:{match.scoreAway}
+                        </span>
                       ) : (
-                        <span className="text-gray-300">vs</span>
+                        <span className="font-mono text-xs text-ink-dim">vs</span>
                       )}
                     </td>
-                    <td className="py-2 px-4 whitespace-nowrap">
-                      <span className="flex items-center justify-end gap-1.5 px-1">
-                        <span className={finished && match.scoreAway! > match.scoreHome! ? "font-bold" : ""}>{match.awayTeam}</span>
-                        {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="shrink-0 object-contain" />}
+                    <td className="whitespace-nowrap border-b border-hairline-row px-3 py-3">
+                      <span className="flex items-center justify-end gap-2">
+                        <span className={finished && match.scoreAway! > match.scoreHome! ? "font-semibold text-ink" : ""}>{match.awayTeam}</span>
+                        {match.awayCrest && <Image src={match.awayCrest} alt={match.awayTeam} width={18} height={18} className="h-[18px] w-[18px] shrink-0 object-contain" />}
                       </span>
                     </td>
-                    <td className="py-2 px-4 text-center whitespace-nowrap">
+                    <td className="whitespace-nowrap border-b border-hairline-row px-4 py-3 text-center">
                       <StatusLabel
                         status={
                           finished
@@ -392,7 +419,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                       />
                     </td>
                     {PLAYERS.map((player) => (
-                      <td key={player} className="py-2 px-4">
+                      <td key={player} className="border-b border-hairline-row px-4 py-3 text-center">
                         <BetCell
                           match={match}
                           player={player}

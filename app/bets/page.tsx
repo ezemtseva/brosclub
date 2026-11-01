@@ -10,7 +10,6 @@ import PlayerCell from "../../components/PlayerCell"
 export const dynamic = 'force-dynamic'
 
 const BetsChart = dynamicImport(() => import("../../components/BetsChart"), { ssr: false })
-const PieChart = dynamicImport(() => import("../../components/PieChart"), { ssr: false })
 
 const columns = [
   { header: "#", accessor: "position" },
@@ -180,7 +179,7 @@ export default async function BetsPage() {
   await settleAndRecalculate().catch(console.error)
 
   return (
-    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+    <>
       <AutoRefresh intervalMs={30000} />
 
       <BetsSeasonTabs
@@ -199,6 +198,6 @@ export default async function BetsPage() {
         initialGameweek={initialGameweek}
         initialMatches={initialMatches.map((m: any) => ({ ...m, kickoff: m.kickoff instanceof Date ? m.kickoff.toISOString() : m.kickoff }))}
       />
-    </div>
+    </>
   )
 }

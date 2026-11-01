@@ -61,7 +61,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     const data = payload[0].payload
     const winText = data.value === 1 ? "win" : "wins"
     return (
-      <div className="bg-white border border-gray-200 p-2 shadow-md rounded">
+      <div className="rounded-xl border border-hairline-strong bg-surface-2 p-2 shadow-lg">
         <p style={{ color: data.color }}>{`${data.name}: ${data.value} ${winText}`}</p>
       </div>
     )

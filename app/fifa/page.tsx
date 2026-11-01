@@ -126,17 +126,22 @@ function getTeamForm(team: string, matches: MatchRecord[]) {
       {results.map(({ result, scored, conceded, opponent }, i) => (
         <span key={i} className="relative group">
           <span
-            className={`w-6 h-6 text-[11px] font-bold inline-flex items-center justify-center rounded text-white leading-none ${
-              result === "W" ? "bg-green-500" : result === "D" ? "bg-gray-400" : "bg-red-400"
+            // Win is a filled chip, a draw stays muted and a loss is an outline
+            className={`inline-flex h-6 w-6 items-center justify-center rounded-md font-mono text-[12px] font-medium leading-none ${
+              result === "W"
+                ? "bg-ink text-night"
+                : result === "D"
+                  ? "bg-surface-3 text-ink-2"
+                  : "border border-hairline-strong text-ink-dim"
             }`}
           >
             {result}
           </span>
-          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-50">
-            <span className="bg-gray-900 text-white text-[10px] font-medium rounded px-2 py-1 whitespace-nowrap">
+          <span className="absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 flex-col items-center pointer-events-none group-hover:flex">
+            <span className="whitespace-nowrap rounded-md border border-hairline-strong bg-surface-2 px-2 py-1 font-mono text-[10px] text-ink">
               {scored}–{conceded} vs {opponent}
             </span>
-            <span className="w-1.5 h-1.5 bg-gray-900 rotate-45 -mt-1" />
+            <span className="-mt-1 h-1.5 w-1.5 rotate-45 border-b border-r border-hairline-strong bg-surface-2" />
           </span>
         </span>
       ))}
@@ -220,7 +225,9 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
               alt={teamName}
               width={24}
               height={24}
-              className="rounded-full"
+              // Fixed box + object-contain: preflight's height:auto would stretch
+              // a non-square crest and push the row open
+              className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
             />
             <span className="relative">
               <span className="md:hidden">{shortenTeamName(teamName)}</span>
@@ -267,7 +274,7 @@ function processFifaData2024(entries: any[]) {
             alt={teamName}
             width={24}
             height={24}
-            className="rounded-full"
+            className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
           />
           <span className="relative">
             {teamName}
@@ -970,7 +977,7 @@ export default async function FIFAPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+    <>
       <AutoRefresh intervalMs={30000} />
 
       <FifaSeasonTabs
@@ -997,6 +1004,6 @@ export default async function FIFAPage() {
         currentRawEntries={currentEntries}
         historicalRawEntries={historicalEntries}
       />
-    </div>
+    </>
   )
 }

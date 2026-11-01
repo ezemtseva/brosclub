@@ -21,9 +21,22 @@ export function shortenTeamName(name: string): string {
 }
 
 export const PLAYER_COLORS: Record<string, string> = {
-  Vanilla: "#FA5053",
-  Choco:   "#007FFF",
-  Panda:   "#00E893",
+  Vanilla: "#FF4D6D",
+  Choco:   "#4C8DFF",
+  Panda:   "#3DF5A0",
+}
+
+/** Same colours at 14% — the fill behind a player chip. */
+export const PLAYER_TINTS: Record<string, string> = {
+  Vanilla: "rgba(255,77,109,0.14)",
+  Choco:   "rgba(76,141,255,0.14)",
+  Panda:   "rgba(61,245,160,0.14)",
+}
+
+export const PLAYER_INITIALS: Record<string, string> = {
+  Vanilla: "V",
+  Choco:   "C",
+  Panda:   "P",
 }
 
 export const teamColors = {

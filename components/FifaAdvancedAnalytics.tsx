@@ -444,19 +444,19 @@ function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" | "L"; scored?: number; conceded?: number; opponent?: string }) {
-  const cls = result === "W" ? "bg-green-500" : result === "D" ? "bg-gray-400" : "bg-red-400"
+  const cls = result === "W" ? "bg-ink text-night" : result === "D" ? "bg-surface-3 text-ink-2" : "border border-hairline-strong text-ink-dim"
   const hasTooltip = scored !== undefined && conceded !== undefined && opponent
   return (
     <span className="relative group">
-      <span className={`w-6 h-6 text-[11px] font-bold inline-flex items-center justify-center rounded text-white leading-none ${cls}`}>
+      <span className={`inline-flex h-6 w-6 items-center justify-center rounded-md font-mono text-[12px] font-medium leading-none ${cls}`}>
         {result}
       </span>
       {hasTooltip && (
         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-50">
-          <span className="bg-gray-900 text-white text-[10px] font-medium rounded px-2 py-1 whitespace-nowrap">
+          <span className="bg-accent text-accent-foreground text-[10px] font-medium rounded px-2 py-1 whitespace-nowrap">
             {scored}–{conceded} vs {opponent}
           </span>
-          <span className="w-1.5 h-1.5 bg-gray-900 rotate-45 -mt-1" />
+          <span className="w-1.5 h-1.5 bg-accent rotate-45 -mt-1" />
         </span>
       )}
     </span>
@@ -472,7 +472,7 @@ function PlayerStatsCard({ s }: { s: PlayerStats }) {
   const formPPG = last5.length > 0 ? (last5Pts / last5.length).toFixed(2) : "0.00"
 
   return (
-    <div className="rounded-2xl p-5 flex flex-col gap-4 shadow-sm border bg-gray-50 border-gray-100 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+    <div className="rounded-2xl p-5 flex flex-col gap-4 shadow-sm border bg-surface-2 border-hairline transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <Image
@@ -483,47 +483,47 @@ function PlayerStatsCard({ s }: { s: PlayerStats }) {
             className="rounded-full object-cover w-14 h-14"
           />
           <div>
-            <div className="font-bold text-xl text-gray-900">{s.player}</div>
-            <div className="text-xs text-gray-500 mt-1">{formPPG} PPG</div>
+            <div className="font-bold text-xl text-ink">{s.player}</div>
+            <div className="text-xs text-ink-muted mt-1">{formPPG} PPG</div>
           </div>
         </div>
         <div className="text-right">
           <div className="text-4xl font-bold leading-none" style={{ color: s.color }}>{s.pts}</div>
-          <div className="text-[11px] text-gray-400 uppercase mt-1.5">Points in {s.played} games</div>
+          <div className="text-[11px] text-ink-dim uppercase mt-1.5">Points in {s.played} games</div>
         </div>
       </div>
 
       <div>
-        <div className="h-2 rounded-full bg-gray-200 overflow-hidden flex">
+        <div className="h-2 rounded-full bg-surface-3 overflow-hidden flex">
           <div className="h-full" style={{ width: `${winRate * 100}%`, backgroundColor: s.color }} />
-          <div className="h-full bg-gray-400" style={{ width: `${drawRate * 100}%` }} />
+          <div className="h-full bg-surface-3" style={{ width: `${drawRate * 100}%` }} />
         </div>
         <div className="relative text-xs mt-1 h-4">
           <span className="absolute left-0" style={{ color: s.color }}>{s.wins}W</span>
           <span
-            className="absolute -translate-x-1/2 text-gray-400"
+            className="absolute -translate-x-1/2 text-ink-dim"
             style={{ left: `${(winRate + drawRate / 2) * 100}%` }}
           >
             {s.draws}D
           </span>
-          <span className="absolute right-0 text-gray-700">{s.losses}L</span>
+          <span className="absolute right-0 text-ink-2">{s.losses}L</span>
         </div>
       </div>
 
       <div>
-        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+        <div className="h-2 rounded-full bg-surface-3 overflow-hidden">
           <div className="h-full rounded-full" style={{ width: `${goalShare * 100}%`, backgroundColor: s.color }} />
         </div>
         <div className="flex items-center justify-between text-xs mt-1">
           <span style={{ color: s.color }}>{s.gf}GS</span>
-          <span className="text-gray-700">{s.ga}GC</span>
+          <span className="text-ink-2">{s.ga}GC</span>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         {s.form.map((f, i) => <FormBadge key={i} result={f.result} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />)}
         {Array.from({ length: 10 - s.form.length }).map((_, i) => (
-          <span key={"pad" + i} className="w-6 h-6 rounded bg-gray-100" />
+          <span key={"pad" + i} className="w-6 h-6 rounded bg-surface-2" />
         ))}
       </div>
     </div>
@@ -539,15 +539,15 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
         const r = matrix[pA][pB]
         const total = r.wins + r.draws + r.losses
         return (
-          <div key={pA + pB} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+          <div key={pA + pB} className="bg-surface-2 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Image src={PLAYER_AVATARS[pA]} alt={pA} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
-                <span className="font-bold text-base text-gray-900">{pA}</span>
+                <span className="font-bold text-base text-ink">{pA}</span>
               </div>
-              <span className="text-gray-400">{total} games</span>
+              <span className="text-ink-dim">{total} games</span>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-base text-gray-900">{pB}</span>
+                <span className="font-bold text-base text-ink">{pB}</span>
                 <Image src={PLAYER_AVATARS[pB]} alt={pB} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
               </div>
             </div>
@@ -556,12 +556,12 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
               <>
                 <div className="flex text-lg mb-1">
                   <div className="text-left" style={{ width: `${(r.wins / total) * 100}%`, color: PLAYER_COLORS[pA] }}>{r.wins}W</div>
-                  <div className="text-center text-gray-400" style={{ width: `${(r.draws / total) * 100}%` }}>{r.draws}D</div>
+                  <div className="text-center text-ink-dim" style={{ width: `${(r.draws / total) * 100}%` }}>{r.draws}D</div>
                   <div className="text-right" style={{ width: `${(r.losses / total) * 100}%`, color: PLAYER_COLORS[pB] }}>{r.losses}W</div>
                 </div>
                 <div className="flex rounded-full overflow-hidden h-2 mb-2">
                   <div style={{ width: `${(r.wins / total) * 100}%`, backgroundColor: PLAYER_COLORS[pA] }} />
-                  <div style={{ width: `${(r.draws / total) * 100}%` }} className="bg-gray-200" />
+                  <div style={{ width: `${(r.draws / total) * 100}%` }} className="bg-surface-3" />
                   <div style={{ width: `${(r.losses / total) * 100}%`, backgroundColor: PLAYER_COLORS[pB] }} />
                 </div>
               </>
@@ -589,7 +589,7 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
   return (
     <div className="flex flex-col gap-3">
       {projections.map((t, i) => (
-        <div key={t.team} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 flex flex-col gap-2">
+        <div key={t.team} className="bg-surface-2 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 flex flex-col gap-2">
           {/* Row 1: team + points */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -604,7 +604,7 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
                   className={`object-contain ${t.team === "Atletico Madrid" ? "w-7 h-7" : "w-9 h-9"}`}
                 />
               </div>
-              <span className="relative text-xl font-light text-gray-600">
+              <span className="relative text-xl font-light text-ink-2">
                 {t.team}
                 <span
                   className="absolute bottom-0 left-0 h-[2px]"
@@ -614,27 +614,27 @@ function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProje
             </div>
             <div className="flex items-center gap-1">
               {trendIcon(t.trend)}
-              <span className="text-[2.25rem] font-bold leading-none text-gray-800">{Math.round(t.projectedPoints)}</span>
+              <span className="text-[2.25rem] font-bold leading-none text-ink">{Math.round(t.projectedPoints)}</span>
             </div>
           </div>
 
           {/* Row 2: stats */}
-          <div className="flex items-center justify-between text-[9px] md:text-xs text-gray-500 md:pl-[44px]">
+          <div className="flex items-center justify-between text-[9px] md:text-xs text-ink-muted md:pl-[44px]">
             <span>
               <span className="md:hidden">Now: {t.currentPoints} pts</span>
-              <span className="hidden md:inline">Now: <span className="font-semibold text-gray-700">{t.currentPoints} pts</span> in {t.currentGames} games</span>
+              <span className="hidden md:inline">Now: <span className="font-semibold text-ink-2">{t.currentPoints} pts</span> in {t.currentGames} games</span>
             </span>
             {t.avgOpponentStrength !== null && (
-              <span>Opp: <span className="font-semibold text-gray-700">{t.avgOpponentStrength.toFixed(2)}</span></span>
+              <span>Opp: <span className="font-semibold text-ink-2">{t.avgOpponentStrength.toFixed(2)}</span></span>
             )}
             <span>
               <span className="md:hidden">PPG: {t.formPPG.toFixed(2)}</span>
-              <span className="hidden md:inline">Form PPG: <span className="font-semibold text-gray-700">{t.formPPG.toFixed(2)}</span></span>
+              <span className="hidden md:inline">Form PPG: <span className="font-semibold text-ink-2">{t.formPPG.toFixed(2)}</span></span>
             </span>
           </div>
         </div>
       ))}
-      <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+      <p className="text-xs text-ink-dim mt-2 leading-relaxed">
         Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
       </p>
     </div>
@@ -651,9 +651,9 @@ function StatCard({
   description: React.ReactNode
 }) {
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-row-reverse items-center justify-between gap-3 sm:flex-col sm:items-start sm:justify-start sm:gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+    <div className="bg-surface-2 border border-hairline-strong rounded-2xl p-5 flex flex-row-reverse items-center justify-between gap-3 sm:flex-col sm:items-start sm:justify-start sm:gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
       <div className="text-3xl font-bold leading-none shrink-0" style={{ color: valueColor ?? "#1f2937" }}>{value}</div>
-      <p className="text-sm text-gray-600">{description}</p>
+      <p className="text-sm text-ink-2">{description}</p>
     </div>
   )
 }
@@ -811,21 +811,21 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {predictions.map(({ pair, probA, probDraw, probB }) => (
-        <div key={pair.join("v")} className="bg-gray-50 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+        <div key={pair.join("v")} className="bg-surface-2 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
           <div className="flex justify-between items-center mb-3">
             <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pair[0]] }}>{pair[0]}</span>
-            <span className="text-[10px] text-gray-200">·</span>
+            <span className="text-[10px] text-ink-dim">·</span>
             <span className="font-bold text-base" style={{ color: PLAYER_COLORS[pair[1]] }}>{pair[1]}</span>
           </div>
           <div className="flex h-3 rounded-full overflow-hidden">
             <div style={{ width: `${probA}%`, backgroundColor: PLAYER_COLORS[pair[0]] }} />
-            <div style={{ width: `${probDraw}%` }} className="bg-gray-300" />
+            <div style={{ width: `${probDraw}%` }} className="bg-surface-3" />
             <div style={{ width: `${probB}%`, backgroundColor: PLAYER_COLORS[pair[1]] }} />
           </div>
           <div className="relative flex justify-between mt-1.5 text-xs">
             <span className="font-medium" style={{ color: PLAYER_COLORS[pair[0]] }}>{probA}%</span>
             <span
-              className="absolute -translate-x-1/2 text-gray-400"
+              className="absolute -translate-x-1/2 text-ink-dim"
               style={{ left: `${probA + probDraw / 2}%` }}
             >
               {probDraw}%
@@ -842,7 +842,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
 
 export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos }: FifaAdvancedAnalyticsProps) {
   if (matches.length === 0) {
-    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
+    return <p className="text-ink-muted text-center italic mt-32">No insights yet</p>
   }
 
   const stats = computePlayerStats(matches, playerTeams)
@@ -883,7 +883,7 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
       {false && <section>
         <h3 className="text-[16px] font-bold mb-2">Predictions</h3>
         <div className="flex items-baseline gap-3 mb-4">
-          <p className="text-xs text-gray-400">Based on H2H record (60%) and last 5 games form (40%)</p>
+          <p className="text-xs text-ink-dim">Based on H2H record (60%) and last 5 games form (40%)</p>
           {(() => {
             const withPred = matches.filter((m) => m.prediction != null && m.prediction !== "")
             if (withPred.length === 0) return null
@@ -892,7 +892,7 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
               return m.prediction === actual
             }).length
             return (
-              <span className="text-xs text-gray-400 whitespace-nowrap">
+              <span className="text-xs text-ink-dim whitespace-nowrap">
                 · Prediction accuracy: {Math.round((correct / withPred.length) * 100)}%
               </span>
             )

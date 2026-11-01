@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PLAYER_COLORS } from '../lib/teamColors'
+import { useChartColors } from '../lib/useChartColors'
 import { ChartTooltip } from './ChartTooltip'
 
 type PokerEntry = {
@@ -22,6 +23,7 @@ type PokerChartProps = {
 }
 
 export default function PokerChart({ entries }: PokerChartProps) {
+  const colors = useChartColors()
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -60,24 +62,28 @@ export default function PokerChart({ entries }: PokerChartProps) {
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="games" 
-            type="number" 
-            domain={[0, 44]} 
+          <CartesianGrid stroke={colors.grid} vertical={false} />
+          <XAxis
+            dataKey="games"
+            type="number"
+            domain={[0, 44]}
             ticks={Array.from({ length: 23 }, (_, i) => i * 2)}
+            stroke={colors.grid}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
-          <YAxis 
+          <YAxis
             type="number"
             domain={[0, 85]}
             ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85]}
             interval={0}
-            width={40}
+            width={44}
+            stroke={colors.grid}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
-          <Tooltip content={<ChartTooltip />} />
-          <Line type="monotone" dataKey="Vanilla" stroke={PLAYER_COLORS.Vanilla} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
-          <Line type="monotone" dataKey="Choco" stroke={PLAYER_COLORS.Choco} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
-          <Line type="monotone" dataKey="Panda" stroke={PLAYER_COLORS.Panda} dot={{ r: 1 }} activeDot={{ r: 4 }} connectNulls />
+          <Tooltip content={<ChartTooltip />} cursor={{ stroke: colors.cursor }} />
+          <Line type="monotone" dataKey="Vanilla" stroke={PLAYER_COLORS.Vanilla} strokeWidth={3} dot={false} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Choco" stroke={PLAYER_COLORS.Choco} strokeWidth={3} dot={false} activeDot={{ r: 4 }} connectNulls />
+          <Line type="monotone" dataKey="Panda" stroke={PLAYER_COLORS.Panda} strokeWidth={3} dot={false} activeDot={{ r: 4 }} connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </div>

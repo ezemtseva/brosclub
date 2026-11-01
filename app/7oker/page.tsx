@@ -224,7 +224,7 @@ export default async function SevenOkerPage() {
   ]
 
   return (
-    <div className="container mx-auto px-3 py-2 md:px-4 md:py-4">
+    <>
       <AutoRefresh intervalMs={30000} />
 
       <SevenOkerSeasonTabs
@@ -234,7 +234,7 @@ export default async function SevenOkerPage() {
             III season of our beloved local{" "}
             <Link
               href="https://bearos-poker.vercel.app/"
-              className="text-blue-500 hover:underline"
+              className="link-accent"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -257,6 +257,6 @@ export default async function SevenOkerPage() {
         season2425Highlights={season2425Highlights}
         columns={columns}
       />
-    </div>
+    </>
   )
 }

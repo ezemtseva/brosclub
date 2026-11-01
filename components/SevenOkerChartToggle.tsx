@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
+import { Panel, BearLegend, WinsSplit } from "./design/Panels"
 
 const SevenOkerChart = dynamic(() => import("./SevenOkerChart"), { ssr: false })
-const PieChart = dynamic(() => import("./PieChart"), { ssr: false })
 
 type SevenOkerEntry = {
   id?: number
@@ -20,75 +20,49 @@ type SevenOkerEntry = {
 type SevenOkerChartToggleProps = {
   entries: SevenOkerEntry[]
   pieChartData: any[]
+  /** Games played this season — the wins panel shows wins out of this */
+  games: number
 }
 
-export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOkerChartToggleProps) {
+export default function SevenOkerChartToggle({ entries, pieChartData, games }: SevenOkerChartToggleProps) {
   const [chartView, setChartView] = useState<"points" | "gamepoints">("points")
 
-  return (
-    <>
-      {/* Mobile: title + buttons on one line */}
-      <div className="flex items-center justify-between mb-6 md:hidden">
-        <h2 className="text-title font-bold whitespace-nowrap">Season Progress</h2>
-        <div className="flex gap-2">
-          <button
-            className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
-              chartView === "points"
-                ? "border-gray-400 text-gray-800 bg-gray-50"
-                : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
-            }`}
-            onClick={() => setChartView("points")}
-          >
-            Points
-          </button>
-          <button
-            className={`px-3 py-1.5 text-sm border rounded-lg transition-colors whitespace-nowrap ${
-              chartView === "gamepoints"
-                ? "border-gray-400 text-gray-800 bg-gray-50"
-                : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
-            }`}
-            onClick={() => setChartView("gamepoints")}
-          >
-            Game Points
-          </button>
-        </div>
-      </div>
+  const toggle = (view: "points" | "gamepoints", label: string) => (
+    <button
+      type="button"
+      aria-pressed={chartView === view}
+      onClick={() => setChartView(view)}
+      className={`min-h-9 whitespace-nowrap rounded-full px-3.5 text-[13px] transition-colors ${
+        chartView === view ? "bg-ink font-semibold text-night" : "text-ink-2 hover:text-ink"
+      }`}
+    >
+      {label}
+    </button>
+  )
 
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-2/3">
-          <div className="hidden md:flex items-center justify-between mb-4">
-            <h2 className="text-title font-bold">Season Progress</h2>
-            <div className="flex gap-2">
-              <button
-                className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${
-                  chartView === "points"
-                    ? "border-gray-400 text-gray-800 bg-gray-50"
-                    : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
-                }`}
-                onClick={() => setChartView("points")}
-              >
-                Points
-              </button>
-              <button
-                className={`px-3 py-1.5 text-sm border rounded-lg transition-colors whitespace-nowrap ${
-                  chartView === "gamepoints"
-                    ? "border-gray-400 text-gray-800 bg-gray-50"
-                    : "border-gray-300 text-gray-500 hover:text-gray-800 hover:bg-gray-50"
-                }`}
-                onClick={() => setChartView("gamepoints")}
-              >
-                Game Points
-              </button>
-            </div>
+  return (
+    <div className="flex flex-wrap gap-6">
+      <Panel
+        title="Season progress"
+        aside={
+          <div role="group" aria-label="Chart metric" className="flex rounded-full bg-track p-1">
+            {toggle("points", "Points")}
+            {toggle("gamepoints", "Game points")}
           </div>
-          <SevenOkerChart entries={entries} dataKey={chartView} />
+        }
+        className="min-w-0 flex-[999_1_560px]"
+      >
+        <SevenOkerChart entries={entries} dataKey={chartView} />
+        <div className="mt-3">
+          <BearLegend names={pieChartData.map((slice) => slice.name)} />
         </div>
-        <div className="w-full md:w-1/3">
-          <h2 className="text-title font-bold mb-6">Wins Distribution</h2>
-          <PieChart data={pieChartData} />
-        </div>
-      </div>
-    </>
+      </Panel>
+      <WinsSplit
+        title="Wins"
+        rows={pieChartData.map((slice) => ({ name: slice.name, wins: slice.value }))}
+        total={games}
+        unit="games"
+      />
+    </div>
   )
 }
-

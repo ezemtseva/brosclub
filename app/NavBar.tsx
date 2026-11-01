@@ -3,80 +3,68 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { CURRENT_SEASON_LABEL } from "../lib/season"
+import ThemeToggle from "../components/ThemeToggle"
 
 const mainNavItems = [
   { href: "/fifa", label: "FIFA" },
   { href: "/fpl", label: "FPL" },
-  { href: "/bets", label: "BETS" },
-  { href: "/7oker", label: "7OKER" },
-  { href: "/poker", label: "HOLDEM" },
+  { href: "/bets", label: "Bets" },
+  { href: "/7oker", label: "7oker" },
+  { href: "/poker", label: "Hold'em" },
 ]
 
 export default function NavBar() {
   const pathname = usePathname()
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  const renderNavLink = (href: string, label: string, onClick?: () => void) => (
-    <Link
-      key={href}
-      href={href}
-      onClick={onClick}
-      className={`px-3 py-2 text-sm font-medium relative ${
-        pathname === href ? "text-white" : "text-gray-300 hover:text-white"
-      }`}
-    >
-      {label}
-      {pathname === href && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white"></span>}
-    </Link>
-  )
 
   return (
-    <nav className="bg-gray-800 text-white">
-      {/* Desktop / top bar */}
-      <div className="container mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
-        {/* Logo */}
-        <div className="justify-self-start">
-          <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-            <Image src="/imgs/logo.png" alt="Bearos Club logo" width={36} height={36} className="rounded-full" />
-            <span className="hidden sm:inline uppercase">Bearos Club</span>
-          </Link>
+    <header className="border-b border-hairline">
+      <nav
+        aria-label="Main"
+        className="mx-auto flex max-w-page flex-wrap items-center justify-between gap-4 px-8 py-[18px]"
+      >
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/imgs/bearos-logo-tight.svg"
+            alt=""
+            aria-hidden="true"
+            width={36}
+            height={36}
+            // Served as-is: the optimiser does not touch SVG
+            unoptimized
+            className="h-9 w-9 shrink-0"
+          />
+          <span className="font-display text-[15px] font-bold tracking-[0.04em]">BEAROS CLUB</span>
+        </Link>
+
+        <div className="flex flex-wrap items-center gap-1">
+          {mainNavItems.map((item) => {
+            const active = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-full px-[14px] py-[10px] text-sm ${
+                  active
+                    ? "bg-ink font-semibold text-night"
+                    : "font-medium text-ink hover:text-[color:var(--accent-text)]"
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </div>
 
-        {/* Desktop nav — hidden on mobile */}
-        <div className="hidden md:flex space-x-1">
-          {mainNavItems.map((item) => renderNavLink(item.href, item.label))}
-        </div>
-
-        {/* Hamburger button — visible on mobile */}
-        <div className="col-start-3 justify-self-end">
-          <button
-            className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile dropdown menu */}
-      {menuOpen && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-          <div className="md:hidden border-t border-gray-700 px-4 py-2 flex flex-col relative z-20">
-            {mainNavItems.map((item) => renderNavLink(item.href, item.label, () => setMenuOpen(false)))}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <div className="flex items-center gap-2 rounded-full border border-hairline-strong px-[14px] py-2 font-mono text-[13px] text-ink-2">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+            {CURRENT_SEASON_LABEL}
           </div>
-        </>
-      )}
-    </nav>
+        </div>
+      </nav>
+    </header>
   )
 }

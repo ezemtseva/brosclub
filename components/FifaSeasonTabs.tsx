@@ -13,6 +13,10 @@ import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
 import { countryOf, flagUrl } from "../lib/teamCountries"
 import { CURRENT_FIFA_SEASON as FIFA_SEASON } from "../lib/fifaSeason"
 import PlayerCell from "./PlayerCell"
+import CupHeader from "./design/CupHeader"
+import { EmptyPanel } from "./design/Panels"
+import { RecordGrid, type RecordCard } from "./design/RecordTile"
+import { splitRecordDate } from "./design/recordText"
 
 // Define the seasons array with all the required seasons
 const seasons = [
@@ -41,13 +45,15 @@ const PLAYER_AVATARS: Record<string, string> = {
 
 type FifaRecordCard = {
   value?: string
+  // A club crest shown in place of the value, for records that belong to a team
+  logo?: string
   player?: keyof typeof PLAYER_COLORS
   description: string
 }
 
 const fifaRecordCards: FifaRecordCard[] = [
   { value: "8 h 18 m", description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
-  { value: "x3", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020/21, 2021/22, 2024/25)" },
+  { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020/21, 2021/22, 2024/25)" },
   { value: "73.21%", player: "Vanilla", description: "Vanilla holds the highest win rate in a season (2024/25)" },
   { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team in a season (2024/25)" },
   { player: "Choco", description: "Choco is the first to score a goal by a goalkeeper, Atletico Madrid (2017)" },
@@ -113,19 +119,10 @@ function CountryFlag({ team }: { team: string }) {
   )
 }
 
-function SeasonHighlightCardTile({ card }: { card: SeasonHighlightCard }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="h-14 flex items-center">
-        {card.value ? (
-          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
-        ) : card.player ? (
-          <Image src={PLAYER_AVATARS[card.player]} alt={card.player} width={56} height={56} className="rounded-full object-cover w-14 h-14" />
-        ) : null}
-      </div>
-      <p className="text-sm text-gray-600">{card.description}</p>
-    </div>
-  )
+/** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
+function toRecordCard(card: FifaRecordCard): RecordCard {
+  const { text, when } = splitRecordDate(card.description)
+  return { value: card.value, logo: card.logo, text, when, who: card.player ? [card.player] : [] }
 }
 
 // Define types for season data
@@ -174,7 +171,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Marseille",
-        logo: "/imgs/fifa/mar.png",
+        logo: "/imgs/fifa/mar1.png",
         games: 28,
         wins: 25,
         draws: 0,
@@ -304,7 +301,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 28,
         wins: 17,
         draws: 7,
@@ -395,7 +392,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 25,
         wins: 11,
         draws: 5,
@@ -421,7 +418,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 25,
         wins: 11,
         draws: 2,
@@ -724,7 +721,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 44,
         wins: 31,
         draws: 7,
@@ -789,7 +786,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 44,
         wins: 30,
         draws: 4,
@@ -1101,7 +1098,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 44,
         wins: 9,
         draws: 5,
@@ -1262,7 +1259,7 @@ const pastSeasonsData: PastSeasonsData = {
     standings: [
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 27,
         wins: 23,
         draws: 2,
@@ -1353,7 +1350,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 15,
         wins: 7,
         draws: 4,
@@ -1379,7 +1376,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 15,
         wins: 5,
         draws: 5,
@@ -1578,7 +1575,7 @@ const pastSeasonsData: PastSeasonsData = {
     standings: [
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 40,
         wins: 32,
         draws: 6,
@@ -1708,7 +1705,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 40,
         wins: 22,
         draws: 7,
@@ -1812,7 +1809,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 40,
         wins: 16,
         draws: 3,
@@ -1998,7 +1995,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 32,
         wins: 24,
         draws: 3,
@@ -2050,7 +2047,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 32,
         wins: 21,
         draws: 5,
@@ -2154,7 +2151,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 32,
         wins: 16,
         draws: 4,
@@ -2407,7 +2404,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 42,
         wins: 18,
         draws: 10,
@@ -2524,7 +2521,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 40,
         wins: 16,
         draws: 8,
@@ -2563,7 +2560,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 40,
         wins: 14,
         draws: 13,
@@ -2732,7 +2729,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Marseille",
-        logo: "/imgs/fifa/mar.png",
+        logo: "/imgs/fifa/mar1.png",
         games: 40,
         wins: 7,
         draws: 12,
@@ -2814,7 +2811,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 40,
         wins: 19,
         draws: 14,
@@ -3074,7 +3071,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 40,
         wins: 12,
         draws: 11,
@@ -3113,7 +3110,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 40,
         wins: 12,
         draws: 5,
@@ -3182,7 +3179,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Liverpool",
-        logo: "/imgs/fifa/liv.png",
+        logo: "/imgs/fifa/liv1.png",
         games: 32,
         wins: 16,
         draws: 8,
@@ -3221,7 +3218,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Napoli",
-        logo: "/imgs/fifa/nap.png",
+        logo: "/imgs/fifa/nap1.png",
         games: 32,
         wins: 16,
         draws: 5,
@@ -3442,7 +3439,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Chelsea",
-        logo: "/imgs/fifa/che.png",
+        logo: "/imgs/fifa/che1.png",
         games: 32,
         wins: 9,
         draws: 6,
@@ -3998,7 +3995,7 @@ export default function FifaSeasonTabs({
               alt={entry.teamName}
               width={24}
               height={24}
-              className="rounded-full"
+              className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
             />
             <span>
               <span className="md:hidden">{shortenTeamName(entry.teamName)}</span>
@@ -4040,7 +4037,7 @@ export default function FifaSeasonTabs({
             alt={teamName}
             width={24}
             height={24}
-            className="rounded-full"
+            className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
           />
           <span className="relative">
             <span className="md:hidden">{shortenTeamName(teamName)}</span>
@@ -4074,12 +4071,12 @@ export default function FifaSeasonTabs({
           <div className="flex flex-col lg:flex-row justify-between gap-6">
             {/* Standings column */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-[16px] font-bold leading-none m-0">Standings</h2>
+              <div className="mb-4 flex h-11 items-center justify-between">
+                <h2 className="m-0 font-display text-2xl font-bold leading-none">Standings</h2>
                 {/* Desktop: gear icon */}
                 <button
                   onClick={() => setConfigOpen(true)}
-                  className="hidden md:block text-gray-500 hover:text-gray-700 transition-colors leading-none"
+                  className="hidden leading-none text-ink-muted transition-colors hover:text-ink md:block"
                   style={{ fontSize: "1.75rem" }}
                   title="Configure player teams"
                 >
@@ -4088,9 +4085,9 @@ export default function FifaSeasonTabs({
                 {/* Mobile: Add Game button */}
                 <button
                   onClick={() => setDialogOpen(true)}
-                  className="flex md:hidden items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
+                  className="flex min-h-[44px] items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:hidden"
                 >
-                  <span className="text-base leading-none">+</span> Add Game
+                  + Add game
                 </button>
               </div>
               <div className="fifa-standings-table">
@@ -4100,22 +4097,21 @@ export default function FifaSeasonTabs({
 
             {/* Results column */}
             <div className="w-full lg:shrink-0 lg:w-[480px]">
-              <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-[16px] font-bold leading-none m-0">Results</h2>
+              <div className="mb-4 flex h-11 items-center justify-between gap-3">
+                <h2 className="m-0 font-display text-2xl font-bold leading-none">Results</h2>
                 <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    placeholder="Search by team"
+                    type="search"
+                    placeholder="Search by club"
                     value={resultsSearch}
                     onChange={(e) => setResultsSearch(e.target.value)}
-                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:italic"
-                    style={{ width: "120px", height: "30px" }}
+                    className="min-h-[44px] w-[160px] rounded-xl border border-hairline-strong bg-surface-2 px-4 text-[15px] text-ink placeholder:text-ink-dim focus:outline-none focus:ring-1 focus:ring-accent"
                   />
                   <button
                     onClick={() => setDialogOpen(true)}
-                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors border border-transparent whitespace-nowrap"
+                    className="hidden min-h-[44px] items-center whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:flex"
                   >
-                    <span className="text-base leading-none">+</span> Add Game
+                    + Add game
                   </button>
                 </div>
               </div>
@@ -4131,7 +4127,7 @@ export default function FifaSeasonTabs({
 
           {currentSeasonHighlights.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
+              <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
               <div className="">
                 <VideoCarousel videos={currentSeasonHighlights} />
               </div>
@@ -4157,7 +4153,7 @@ export default function FifaSeasonTabs({
             {/* Standings column */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-[16px] font-bold leading-none m-0">Standings</h2>
+                <h2 className="m-0 font-display text-2xl font-bold leading-none">Standings</h2>
               </div>
               <div className="fifa-standings-table">
                 <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} />
@@ -4166,15 +4162,14 @@ export default function FifaSeasonTabs({
 
             {/* Results column */}
             <div className="w-full lg:shrink-0 lg:w-[480px]">
-              <div className="flex items-center justify-between mb-4 h-9">
-                <h2 className="text-[16px] font-bold leading-none m-0">Results</h2>
+              <div className="mb-4 flex h-11 items-center justify-between gap-3">
+                <h2 className="m-0 font-display text-2xl font-bold leading-none">Results</h2>
                 <input
-                  type="text"
-                  placeholder="Search by team"
+                  type="search"
+                  placeholder="Search by club"
                   value={lastSeasonSearch}
                   onChange={(e) => setLastSeasonSearch(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:italic"
-                  style={{ width: "120px", height: "30px" }}
+                  className="min-h-[44px] w-[160px] rounded-xl border border-hairline-strong bg-surface-2 px-4 text-[15px] text-ink placeholder:text-ink-dim focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>
               <div className="fifa-results-table">
@@ -4189,7 +4184,7 @@ export default function FifaSeasonTabs({
 
           {lastSeasonHighlights.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
+              <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
               <div className="">
                 <VideoCarousel videos={lastSeasonHighlights} />
               </div>
@@ -4208,7 +4203,7 @@ export default function FifaSeasonTabs({
           </div>
 
           <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
+            <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
             <div className="">
               <VideoCarousel videos={historicalSeasonHighlights} />
             </div>
@@ -4220,12 +4215,12 @@ export default function FifaSeasonTabs({
       const allTimePlayerData = computeAllTimePlayerStandings()
       return (
         <>
-          <h2 className="text-[16px] font-bold mb-6">Standings by Team</h2>
+          <h2 className="mb-4 font-display text-2xl font-bold">Standings by Team</h2>
           <div className="fifa-standings-table">
             <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Standings by Player</h2>
+            <h2 className="mb-4 font-display text-2xl font-bold">Standings by Player</h2>
             <div className="fifa-standings-table">
               <DataTable columns={allTimePlayerColumns} mobileColumns={allTimePlayerColumnsMobile} data={allTimePlayerData} />
             </div>
@@ -4242,13 +4237,13 @@ export default function FifaSeasonTabs({
 
       return (
         <>
-          {seasonDescription && <p className="text-basic text-gray-600 mb-8">{seasonDescription}</p>}
+          {seasonDescription && <p className="mb-6 text-[18px] text-ink-2">{seasonDescription}</p>}
 
           <div className="fifa-standings-table">
             {pastSeasonData.length > 0 ? (
               <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={pastSeasonData} />
             ) : (
-              <p className="text-gray-500 italic py-4">No data available for {activeSeason} season.</p>
+              <EmptyPanel title={`Season ${activeSeason}`} text={`No data available for the ${activeSeason} season.`} />
             )}
           </div>
         </>
@@ -4272,70 +4267,35 @@ export default function FifaSeasonTabs({
     }
     const highlights = seasonHighlightCards[activeSeason]
     if (highlights && highlights.length > 0) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {highlights.map((card, i) => <SeasonHighlightCardTile key={i} card={card} />)}
-        </div>
-      )
+      return <RecordGrid cards={highlights.map(toRecordCard)} />
     }
-    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
+    return <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
   }
 
-  const renderBrecordsContent = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {fifaRecordCards.map((record, i) => <SeasonHighlightCardTile key={i} card={record} />)}
-    </div>
-  )
+  const renderBrecordsContent = () => <RecordGrid cards={fifaRecordCards.map(toRecordCard)} />
 
   return (
-    <>
-      {/* Page header + season dropdown */}
-      <div className="mb-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-title font-bold">{title}</h1>
-          <select
-            value={activeSeason}
-            onChange={(e) => {
-              const season = e.target.value as Season
-              setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
-            }}
-            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
-          >
-            {seasons.map((season) => (
-              <option key={season} value={season}>
-                {season}
-              </option>
-            ))}
-          </select>
-        </div>
-        <p className="text-basic text-gray-600 mt-4">{description}</p>
-      </div>
+    <div className="pb-24">
+      <CupHeader
+        eyebrow={activeSeason === "All Time" ? "Cup · All time" : `Cup · ${activeSeason}`}
+        title={title}
+        tagline={`“${description}”`}
+        seasons={seasons}
+        activeSeason={activeSeason}
+        onSeasonChange={(season) => {
+          setActiveSeason(season as Season)
+          if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
+        }}
+        selectId="season-fifa"
+        tabs={pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time"))}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as PageTab)}
+      />
 
-      {/* Page tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
+      <div className="mx-auto max-w-page px-8 pt-10">
       {activeTab === "Summary" && activeSeason !== "2026/27" && activeSeason !== "2025/26" && activeSeason !== "All Time" && (
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[16px] font-bold">Standings</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-display text-2xl font-bold">Standings</h2>
         </div>
       )}
 
@@ -4363,7 +4323,7 @@ export default function FifaSeasonTabs({
       )}
 
       {showToast && (
-        <div className="fixed top-16 right-4 z-50 bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+        <div className="fixed right-4 top-16 z-50 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground shadow-lg">
           Match added ✓
         </div>
       )}
@@ -4372,6 +4332,7 @@ export default function FifaSeasonTabs({
       {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
-    </>
+      </div>
+    </div>
   )
 }

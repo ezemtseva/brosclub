@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import { useChartColors } from "../lib/useChartColors"
 import { ChartTooltip } from "./ChartTooltip"
 
 type SevenOkerEntry = {
@@ -38,6 +39,7 @@ export default function SevenOkerChart({
   entries,
   dataKey = "points",
 }: SevenOkerChartProps) {
+  const colors = useChartColors()
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [yAxisDomain, setYAxisDomain] = useState<[number, number]>([0, 30])
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([])
@@ -112,7 +114,7 @@ export default function SevenOkerChart({
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid stroke={colors.grid} vertical={false} />
 
           {/* Сохраняем фиксированную сетку как у тебя */}
           <XAxis
@@ -123,6 +125,8 @@ export default function SevenOkerChart({
             allowDecimals={false}
             allowDataOverflow
             interval={0}
+            stroke={colors.grid}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
 
           <YAxis
@@ -131,15 +135,18 @@ export default function SevenOkerChart({
             ticks={yAxisTicks}
             interval={0}
             width={50}
+            stroke={colors.grid}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
 
-          <Tooltip content={<ChartTooltip />} />
+          <Tooltip content={<ChartTooltip />} cursor={{ stroke: colors.cursor }} />
 
           <Line
             type="monotone"
             dataKey="Vanilla"
             stroke={PLAYER_COLORS.Vanilla}
-            dot={{ r: 1 }}
+            strokeWidth={3}
+            dot={false}
             activeDot={{ r: 4 }}
             connectNulls
           />
@@ -147,7 +154,8 @@ export default function SevenOkerChart({
             type="monotone"
             dataKey="Choco"
             stroke={PLAYER_COLORS.Choco}
-            dot={{ r: 1 }}
+            strokeWidth={3}
+            dot={false}
             activeDot={{ r: 4 }}
             connectNulls
           />
@@ -155,7 +163,8 @@ export default function SevenOkerChart({
             type="monotone"
             dataKey="Panda"
             stroke={PLAYER_COLORS.Panda}
-            dot={{ r: 1 }}
+            strokeWidth={3}
+            dot={false}
             activeDot={{ r: 4 }}
             connectNulls
           />

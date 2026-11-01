@@ -3,6 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  /* Redesign tokens — dark is the default, html.light swaps them.
+     See design-handoff/HANDOFF.md and design-light-handoff/HANDOFF.md */
+  :root {
+    --night: #0b0c0f;
+    --band: #0f1014;
+    --surface: #121419;
+    --surface-2: #15171c;
+    --surface-3: #1f2229;
+    --hairline: #22252c;
+    --hairline-strong: #2e323b;
+    --hairline-row: #1c1f25;
+    --ink: #f4f4f2;
+    --ink-2: #c9cbd1;
+    --ink-muted: #9a9da6;
+    --ink-dim: #8e929b;
+    /* Bar and meter tracks, and the fill behind a "right outcome" chip */
+    --track: #1b1e24;
+    --chip: #2a2e36;
+    --lime: #d7ff3f;
+    /* The active tab underline follows the accent in dark, the text colour in light */
+    --tab-line: #d7ff3f;
+    /* Lime is unreadable as text on white, so light gets a darker olive */
+    --accent-text: #d7ff3f;
+    /* Panel behind a club leader on the home page — never a bear colour */
+    --club-panel: #c9cbd1;
+    --warning-text: #ffb547;
+    --warning-border: #ffb547;
+    --warning-bg: transparent;
+  }
+
+  html.light {
+    --night: #f7f8fa;
+    --band: #f0f2f5;
+    --surface: #ffffff;
+    --surface-2: #ffffff;
+    --surface-3: #f1f3f6;
+    --hairline: #e3e6eb;
+    --hairline-strong: #d2d6dd;
+    --hairline-row: #eef0f3;
+    --ink: #111214;
+    --ink-2: #41454e;
+    --ink-muted: #6a6f7a;
+    --ink-dim: #858a94;
+    --track: #edeff2;
+    --chip: #e3e6eb;
+    --tab-line: #111214;
+    --accent-text: #5c6b00;
+    --club-panel: #c9cdd4;
+    --warning-text: #9a5b00;
+    --warning-border: #b26a00;
+    --warning-bg: #fff1dc;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -51,11 +104,11 @@
 
 @layer base {
   html {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   body {
-    @apply text-base;
+    @apply bg-night text-ink text-base;
   }
 
   h1,
@@ -64,15 +117,81 @@
   h4,
   h5,
   h6 {
-    @apply text-title font-bold;
+    @apply font-display font-bold;
   }
 
-  p,
-  div,
-  span,
-  li {
-    @apply text-base;
+  /* Mono labels and stats keep their tabular figures lined up */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
+}
+
+/* ---- Pieces the two themes draw differently ------------------------------
+   Lime is never text on light, so every accent-coloured element has a light
+   counterpart here instead of a second set of classes in the markup. */
+
+/* "Sunday." — lime letters in dark, a lime highlighter in light */
+.accent-word {
+  color: var(--lime);
+}
+html.light .accent-word {
+  color: var(--ink);
+  background: var(--lime);
+  padding: 0 0.1em;
+  border-radius: 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* A link inside body copy: lime text in dark, lime underline in light */
+.link-accent {
+  color: var(--lime);
+  text-decoration: underline;
+}
+html.light .link-accent {
+  color: var(--ink);
+  text-decoration-color: var(--lime);
+  text-decoration-thickness: 4px;
+  text-underline-offset: 2px;
+}
+
+/* An open fixture: dashed outline in dark, a solid lime pill in light */
+.pill-open {
+  border: 1px dashed #3a3e47;
+  color: var(--lime);
+}
+html.light .pill-open {
+  border: 1px solid var(--ink);
+  background: var(--lime);
+  color: var(--ink);
+}
+
+/* A match in play, and its blinking dot */
+.pill-live {
+  background: rgba(215, 255, 63, 0.14);
+  color: var(--lime);
+}
+html.light .pill-live {
+  background: var(--lime);
+  color: var(--ink);
+}
+.pill-live .dot {
+  background: var(--lime);
+}
+html.light .pill-live .dot {
+  background: var(--ink);
+}
+
+/* Hold'em's "Suspended" badge */
+.badge-suspended {
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+/* Big season numbers take the bear's colour in dark and plain ink in light */
+html.light .stat-number {
+  color: var(--ink) !important;
 }
 
 /* History table styles */
@@ -97,7 +216,7 @@
 .history-table thead {
   position: sticky;
   top: 0;
-  background-color: #f3f4f6; /* bg-gray-100 */
+  background-color: #121419; /* surface */
   z-index: 1;
 }
 
@@ -146,7 +265,7 @@
 .season-select {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239A9DA6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 9px center;
   background-size: 11px 11px;

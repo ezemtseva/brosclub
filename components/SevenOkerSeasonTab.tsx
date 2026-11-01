@@ -4,12 +4,16 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import DataTable from "./DataTable"
 import ImageCarousel from "./ImageCarousel"
 import SevenOkerChartToggle from "./SevenOkerChartToggle"
 import AddGameDialog from "./AddGameDialog"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
+import CupHeader from "./design/CupHeader"
+import StandingsCards, { type StandingsRow } from "./design/StandingsCards"
+import { EmptyPanel } from "./design/Panels"
+import { RecordGrid, type RecordCard } from "./design/RecordTile"
+import { splitRecordDate } from "./design/recordText"
 
 // Define the seasons array
 const seasons = ["2026/27", "2025/26", "2024/25", "All Time"] as const
@@ -40,7 +44,7 @@ type StatCard = {
 
 const sevenOkerRecordCards: StatCard[] = [
   { player: "Vanilla", description: "Vanilla won the first ever 7oker game (29.03.2025)" },
-  { value: "71", player: "Panda", description: "Panda won the first season — took him 71 games to reach 100 points" },
+  { player: "Panda", description: "Panda won the first season — took him 71 games to reach 100 points" },
   { player: "Choco", description: "Choco was the first to win a game by golden round against Panda (2024/25)" },
   { value: "5", description: "Vanilla and Choco share the longest winning streak — 5 games (2024/25 and 2025/26)" },
   { value: "298", player: "Panda", description: "Panda scored the biggest amount of points in a single game (2025/26)" },
@@ -64,25 +68,10 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
   ],
 }
 
-function StatCardTile({ card }: { card: StatCard }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="h-14 flex items-center">
-        {card.value ? (
-          <div className="text-3xl font-bold leading-none" style={{ color: card.player ? PLAYER_COLORS[card.player] : "#1f2937" }}>{card.value}</div>
-        ) : card.player ? (
-          <Image
-            src={PLAYER_AVATARS[card.player]}
-            alt={card.player}
-            width={56}
-            height={56}
-            className="rounded-full object-cover w-14 h-14"
-          />
-        ) : null}
-      </div>
-      <p className="text-sm text-gray-600">{card.description}</p>
-    </div>
-  )
+/** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
+function toRecordCard(card: StatCard): RecordCard {
+  const { text, when } = splitRecordDate(card.description)
+  return { value: card.value, text, when, who: card.player ? [card.player] : [] }
 }
 
 /**
@@ -237,169 +226,146 @@ export default function SevenOkerSeasonTabs({
   const gamesPlayed = currentSeasonData.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
   const nextGameNumber = gamesPlayed + 1
 
+  /** Processed table rows carry the bear in their colour — the cards want the name. */
+  const toRows = (data: any[]): StandingsRow[] =>
+    data.map((row) => {
+      const metrics: { label: string; value: string | number }[] = [{ label: "G", value: row.games }]
+      if (row.wins !== undefined) metrics.push({ label: "WINS", value: row.wins })
+      if (row.winPercentage !== undefined) metrics.push({ label: "WIN %", value: row.winPercentage })
+      if (row.gamepoints !== undefined) metrics.push({ label: "GP", value: row.gamepoints })
+      if (row.seasonsWon !== undefined) metrics.push({ label: "TITLES", value: row.seasonsWon })
+      metrics.push({ label: "GAP", value: row.difference === "-" ? "—" : row.difference })
+      return { name: playerNameFromColor(row.hoverColor), points: row.points, metrics }
+    })
+
+  const gamesIn = (data: any[]) => data.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
+
+  /** Standings + chart, the shape every played season shares. */
+  const renderSeason = (
+    data: any[],
+    chartData: any[],
+    pieData: any[],
+    highlights: any[],
+    extras?: React.ReactNode,
+  ) => (
+    <>
+      <section className="mx-auto max-w-page px-8 pt-10">
+        <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
+        {extras}
+        <StandingsCards rows={toRows(data)} />
+      </section>
+
+      <section className="mx-auto max-w-page px-8 pt-10">
+        <SevenOkerChartToggle entries={chartData} pieChartData={pieData} games={gamesIn(data)} />
+      </section>
+
+      {highlights.length > 0 && (
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
+          <ImageCarousel images={highlights} />
+        </section>
+      )}
+    </>
+  )
+
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
-      return (
-        <>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-[16px] font-bold">Standings</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setSeatingOpen((open) => !open)}
-                className="w-[102px] py-1.5 text-sm text-center border border-gray-300 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors"
-              >
-                {seatingOpen ? "Hide seating" : "Show seating"}
-              </button>
-              <button
-                onClick={() => setDialogOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                <span className="text-base leading-none">+</span> Add Game
-              </button>
-            </div>
+      const [first, second, third] = seatingForGame(nextGameNumber)
+      const who = (name: string) => <span className="font-medium text-ink">{name}</span>
+      return renderSeason(
+        currentSeasonData,
+        currentSeasonChartData,
+        currentSeasonPieData,
+        currentSeasonHighlights,
+        seatingOpen && (
+          <div className="mb-4 rounded-2xl border border-hairline bg-surface-2 px-5 py-4">
+            <span className="text-[15px] text-ink-muted">
+              Game {nextGameNumber}: {who(first)} creates the table, then {who(second)} joins and later {who(third)}
+            </span>
           </div>
-
-          {seatingOpen && (() => {
-            // globals.css forces a size on every span, so each one sets its own
-            const [first, second, third] = seatingForGame(nextGameNumber)
-            const who = (name: string) => <span className="text-sm font-medium text-gray-900">{name}</span>
-            return (
-              <div className="mb-6 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50">
-                <span className="text-sm text-gray-500">
-                  Game {nextGameNumber}: {who(first)} creates the table, then {who(second)} joins and later {who(third)}
-                </span>
-              </div>
-            )
-          })()}
-          <DataTable columns={columns} data={currentSeasonData} />
-
-          <section className="mt-12">
-            <SevenOkerChartToggle entries={currentSeasonChartData} pieChartData={currentSeasonPieData} />
-          </section>
-
-          {currentSeasonHighlights.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-              <div className="">
-                <ImageCarousel images={currentSeasonHighlights} />
-              </div>
-            </section>
-          )}
-        </>
+        ),
       )
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from sevenOkerEntry2526
-      return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={historicalSeasonData} />
-
-          <section className="mt-12">
-            <SevenOkerChartToggle entries={historicalSeasonChartData} pieChartData={historicalSeasonPieData} />
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-            <div className="">
-              <ImageCarousel images={historicalSeasonHighlights} />
-            </div>
-          </section>
-        </>
+      return renderSeason(
+        historicalSeasonData,
+        historicalSeasonChartData,
+        historicalSeasonPieData,
+        historicalSeasonHighlights,
       )
     } else if (activeSeason === "2024/25") {
       // For the 2024/25 season, use the archived data from sevenOkerEntry2024
-      return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">Standings</h2>
-          <DataTable columns={columns} data={season2425Data} />
-
-          <section className="mt-12">
-            <SevenOkerChartToggle entries={season2425ChartData} pieChartData={season2425PieData} />
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-[16px] font-bold mb-6">Highlights</h2>
-            <div className="">
-              <ImageCarousel images={season2425Highlights} />
-            </div>
-          </section>
-        </>
-      )
+      return renderSeason(season2425Data, season2425ChartData, season2425PieData, season2425Highlights)
     } else if (activeSeason === "All Time") {
       const allTimeData = computeAllTimeStandings()
       return (
-        <>
-          <h2 className="text-[16px] font-bold mb-6">All Time Standings</h2>
-          <DataTable columns={allTimeColumns} data={allTimeData} />
-        </>
+        <section className="mx-auto max-w-page px-8 pt-10">
+          <h2 className="mb-4 font-display text-2xl font-bold">All time standings</h2>
+          <StandingsCards rows={toRows(allTimeData)} />
+        </section>
       )
     }
   }
 
   const renderInsightsContent = () => {
     const highlights = seasonHighlightCards[activeSeason]
-    if (highlights && highlights.length > 0) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {highlights.map((card, i) => <StatCardTile key={i} card={card} />)}
-        </div>
-      )
-    }
-    return <p className="text-gray-500 text-center italic mt-32">No insights yet</p>
+    return (
+      <section className="mx-auto max-w-page px-8 pt-10">
+        {highlights && highlights.length > 0 ? (
+          <RecordGrid cards={highlights.map(toRecordCard)} />
+        ) : (
+          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+        )}
+      </section>
+    )
   }
 
   const renderBrecordsContent = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {sevenOkerRecordCards.map((card, i) => <StatCardTile key={i} card={card} />)}
-    </div>
+    <section className="mx-auto max-w-page px-8 pt-10">
+      <RecordGrid cards={sevenOkerRecordCards.map(toRecordCard)} />
+    </section>
   )
 
   return (
-    <>
-      {/* Page header + season dropdown */}
-      <div className="mb-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-title font-bold">{title}</h1>
-          <select
-            value={activeSeason}
-            onChange={(e) => {
-              const season = e.target.value as Season
-              setActiveSeason(season)
-              if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
-            }}
-            className="season-select border border-gray-200 rounded-lg px-3 pr-7 py-1.5 text-sm h-[30px] bg-white focus:outline-none shrink-0 w-[99px] sm:w-auto"
-          >
-            {seasons.map((season) => (
-              <option key={season} value={season}>
-                {season}
-              </option>
-            ))}
-          </select>
-        </div>
-        <p className="text-basic text-gray-600 mt-4">{description}</p>
-      </div>
-
-      {/* Page tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time")).map((tab) => (
+    <div className="pb-24">
+      <CupHeader
+        eyebrow={
+          activeSeason === "All Time"
+            ? "Cup · All time"
+            : `Cup · ${activeSeason} · ${gamesPlayed} games played`
+        }
+        title={title}
+        tagline={<>“{description}”</>}
+        seasons={seasons}
+        activeSeason={activeSeason}
+        onSeasonChange={(season) => {
+          setActiveSeason(season as Season)
+          if (season === "All Time" && activeTab === "Insights") setActiveTab("Summary")
+        }}
+        selectId="season-7oker"
+        tabs={pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time"))}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as PageTab)}
+        actions={
+          activeSeason === "2026/27" && activeTab === "Summary" ? (
+            <>
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-2 px-1 border-b-2 font-medium text-base whitespace-nowrap ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                onClick={() => setSeatingOpen((open) => !open)}
+                className="min-h-[44px] rounded-full border border-hairline-strong px-[18px] text-sm font-medium text-ink transition-colors hover:border-ink"
               >
-                {tab}
+                {seatingOpen ? "Hide seating" : "Show seating"}
               </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+              <button
+                onClick={() => setDialogOpen(true)}
+                className="min-h-[44px] rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+              >
+                + Add game
+              </button>
+            </>
+          ) : null
+        }
+      />
 
       {dialogOpen && (
         <AddGameDialog
@@ -410,7 +376,7 @@ export default function SevenOkerSeasonTabs({
       )}
 
       {showToast && (
-        <div className="fixed top-16 right-4 z-50 bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+        <div className="fixed right-4 top-16 z-50 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground shadow-lg">
           Game added ✓
         </div>
       )}
@@ -419,6 +385,6 @@ export default function SevenOkerSeasonTabs({
       {activeTab === "Summary" && renderStandingsContent()}
       {activeTab === "Insights" && renderInsightsContent()}
       {activeTab === "Brecords" && renderBrecordsContent()}
-    </>
+    </div>
   )
 }

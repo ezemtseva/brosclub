@@ -7,9 +7,6 @@ import { useEffect, useRef, useState } from "react"
 import ThemeToggle, { applyTheme, useTheme } from "../components/ThemeToggle"
 import { applyStandingsView, useStandingsView } from "../lib/standingsView"
 
-/** Pages whose standings switch between cards and a table */
-const STANDINGS_VIEW_PAGES = ["/fpl", "/bets", "/7oker", "/poker"]
-
 const mainNavItems = [
   { href: "/fifa", label: "FIFA" },
   { href: "/fpl", label: "FPL" },
@@ -33,7 +30,6 @@ function OtherMenu({ pathname }: { pathname: string }) {
   const theme = useTheme()
   const next = theme === "dark" ? "light" : "dark"
   const view = useStandingsView()
-  const hasStandingsView = STANDINGS_VIEW_PAGES.includes(pathname)
   const otherItems = mainNavItems.filter((item) => item.phoneInOther)
   const active = otherItems.some((item) => item.href === pathname)
 
@@ -75,18 +71,18 @@ function OtherMenu({ pathname }: { pathname: string }) {
           ))}
           {/* Pages above the rule, settings below */}
           <div role="separator" className="mx-1.5 my-1.5 border-t border-hairline-strong" />
-          {hasStandingsView && (
-            <button
-              type="button"
-              onClick={() => {
-                applyStandingsView(view === "cards" ? "table" : "cards")
-                setOpen(false)
-              }}
-              className={itemClass}
-            >
-              {view === "cards" ? "TABLE VIEW" : "CARD VIEW"}
-            </button>
-          )}
+          {/* Offered on every page: where there are no standings it just stores
+              the choice for the cup pages */}
+          <button
+            type="button"
+            onClick={() => {
+              applyStandingsView(view === "cards" ? "table" : "cards")
+              setOpen(false)
+            }}
+            className={itemClass}
+          >
+            {view === "cards" ? "TABLE VIEW" : "CARD VIEW"}
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -129,7 +125,8 @@ export default function NavBar() {
           <span className="hidden font-display text-[15px] font-bold tracking-[0.04em] md:inline">BEAROS CLUB</span>
         </Link>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end md:flex-none md:flex-wrap md:gap-1">
+        {/* Phones space the tabs with gaps, so the lime pill stays its size */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 md:flex-none md:flex-wrap md:gap-1">
           {mainNavItems.map((item) => (
             <Link
               key={item.href}

@@ -281,7 +281,9 @@ export default function SevenOkerSeasonTabs({
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
       const [first, second, third] = seatingForGame(nextGameNumber)
-      const who = (name: string) => <span className="font-medium text-ink">{name}</span>
+      // The game number bold in the accent (olive in light, where lime can't be read);
+      // the order itself in plain ink
+      const game = <span className="font-bold text-[color:var(--accent-text)]">Game #{nextGameNumber}</span>
       return renderSeason(
         currentSeasonData,
         currentSeasonChartData,
@@ -290,11 +292,11 @@ export default function SevenOkerSeasonTabs({
         seatingOpen && (
           <div className="mb-4 rounded-2xl border border-hairline bg-surface-2 px-5 py-4">
             {/* Phones get the order alone */}
-            <span className="text-[15px] text-ink-muted md:hidden">
-              Game #{nextGameNumber}: {who(first)} → {who(second)} → {who(third)}
+            <span className="text-[15px] text-ink md:hidden">
+              {game}: {first} → {second} → {third}
             </span>
-            <span className="hidden text-[15px] text-ink-muted md:inline">
-              Game {nextGameNumber}: {who(first)} creates the table, then {who(second)} joins and later {who(third)}
+            <span className="hidden text-[15px] text-ink md:inline">
+              {game}: {first} creates the table, then {second} joins and later {third}
             </span>
           </div>
         ),

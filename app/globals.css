@@ -31,6 +31,8 @@
     /* Player cards: the faint diagonal stripes and the thin rules on them */
     --card-stripe: rgba(255, 255, 255, 0.025);
     --card-rule: rgba(244, 244, 242, 0.18);
+    /* Faint figures that sit behind the real ones: rank numerals, score dashes */
+    --ghost: #5a5f6a;
     --warning-text: #ffb547;
     --warning-border: #ffb547;
     --warning-bg: transparent;
@@ -56,6 +58,7 @@
     --club-panel: #c9cdd4;
     --card-stripe: rgba(17, 18, 20, 0.03);
     --card-rule: rgba(17, 18, 20, 0.18);
+    --ghost: #c4c8cf;
     --warning-text: #9a5b00;
     --warning-border: #b26a00;
     --warning-bg: #fff1dc;

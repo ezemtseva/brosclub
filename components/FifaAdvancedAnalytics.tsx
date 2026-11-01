@@ -1,14 +1,9 @@
 "use client"
 
 import React from "react"
-import Image from "next/image"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
-
-const PLAYER_AVATARS: Record<string, string> = {
-  Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
-}
+import { BearAvatar } from "./Bear"
+import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../lib/cardFrame"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -443,12 +438,49 @@ function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" | "L"; scored?: number; conceded?: number; opponent?: string }) {
-  const cls = result === "W" ? "bg-ink text-night" : result === "D" ? "bg-surface-3 text-ink-2" : "border border-hairline-strong text-ink-dim"
+const RANKS = ["1ST", "2ND", "3RD"]
+
+/** Big condensed figure; stat-number turns it to plain ink in the light theme. */
+function BigNumber({ size, color, className, children }: { size: number; color?: string; className?: string; children: React.ReactNode }) {
+  return (
+    <span
+      className={`font-archivo font-black leading-[0.8] ${color ? "stat-number" : ""} ${className ?? ""}`}
+      style={{ fontSize: size, color, fontVariationSettings: ARCHIVO_CONDENSED }}
+    >
+      {children}
+    </span>
+  )
+}
+
+/** The small mono caption under a figure. */
+function Label({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted ${className ?? ""}`}>
+      {children}
+    </span>
+  )
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="mb-4 font-display text-2xl font-bold">{children}</h2>
+}
+
+/** "+4", "−4" with a real minus, "0" */
+const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "0")
+
+const formPoints = (form: { result: "W" | "D" | "L" }[]) =>
+  form.reduce((acc, f) => acc + (f.result === "W" ? 3 : f.result === "D" ? 1 : 0), 0)
+
+function FormBadge({ result, color, scored, conceded, opponent }: { result: "W" | "D" | "L"; color: string; scored?: number; conceded?: number; opponent?: string }) {
+  // A win takes the bear's colour, a draw a neutral fill, a loss only an outline
+  const cls = result === "W" ? "text-[#0B0C0F]" : result === "D" ? "bg-surface-3 text-ink-2" : "border border-hairline-strong text-ink-muted"
   const hasTooltip = scored !== undefined && conceded !== undefined && opponent
   return (
     <span className="relative group">
-      <span className={`inline-flex h-6 w-6 items-center justify-center rounded-md font-mono text-[12px] font-medium leading-none ${cls}`}>
+      <span
+        className={`font-archivo inline-flex h-[26px] w-[26px] items-center justify-center rounded-md text-[15px] font-black leading-none ${cls}`}
+        style={{ background: result === "W" ? color : undefined, fontVariationSettings: ARCHIVO_CONDENSED }}
+      >
         {result}
       </span>
       {hasTooltip && (
@@ -463,70 +495,66 @@ function FormBadge({ result, scored, conceded, opponent }: { result: "W" | "D" |
   )
 }
 
-function PlayerStatsCard({ s }: { s: PlayerStats }) {
-  const winRate = s.played > 0 ? s.wins / s.played : 0
-  const drawRate = s.played > 0 ? s.draws / s.played : 0
-  const goalShare = s.gf + s.ga > 0 ? s.gf / (s.gf + s.ga) : 0
+/** A bear's season, framed in their colour like the standings cards. */
+function PlayerStatsCard({ s, rank }: { s: PlayerStats; rank: number }) {
   const last5 = s.form.slice(0, 5)
-  const last5Pts = last5.reduce((acc, f) => acc + (f.result === "W" ? 3 : f.result === "D" ? 1 : 0), 0)
-  const formPPG = last5.length > 0 ? (last5Pts / last5.length).toFixed(2) : "0.00"
+  const formPPG = last5.length > 0 ? (formPoints(last5) / last5.length).toFixed(2) : "0.00"
+  const isLeader = rank === 0
 
   return (
-    <div className="rounded-2xl p-5 flex flex-col gap-4 shadow-sm border bg-surface-2 border-hairline transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="flex items-start justify-between">
+    <article
+      aria-label={`${RANKS[rank]?.toLowerCase() ?? rank + 1} ${s.player}, ${s.pts} points in ${s.played} games`}
+      className="rounded-[16px] p-[3px]"
+      style={{ clipPath: cardClip(28), background: s.color }}
+    >
+      <div
+        className="flex h-full flex-col gap-[18px] rounded-[13px] bg-surface px-6 pb-6 pt-[22px] text-ink"
+        style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
+      >
         <div className="flex items-center gap-3">
-          <Image
-            src={PLAYER_AVATARS[s.player]}
-            alt={s.player}
-            width={56}
-            height={56}
-            className="rounded-full object-cover w-14 h-14"
-          />
-          <div>
-            <div className="font-bold text-xl text-ink">{s.player}</div>
-            <div className="text-xs text-ink-muted mt-1">{formPPG} PPG</div>
+          <BearAvatar name={s.player} size={44} />
+          <span className="font-display text-xl font-bold">{s.player}</span>
+          <span
+            className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
+              isLeader ? "bg-accent text-accent-foreground" : "bg-surface-3 text-ink-2"
+            }`}
+            style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
+          >
+            {RANKS[rank] ?? `${rank + 1}TH`}
+          </span>
+        </div>
+
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex flex-col gap-2.5">
+            <BigNumber size={112} color={s.color}>{s.pts}</BigNumber>
+            <Label>Pts in {s.played} games</Label>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <BigNumber size={30}>{formPPG}</BigNumber>
+            <Label>Form PPG</Label>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-4xl font-bold leading-none" style={{ color: s.color }}>{s.pts}</div>
-          <div className="text-[11px] text-ink-dim uppercase mt-1.5">Points in {s.played} games</div>
-        </div>
-      </div>
 
-      <div>
-        <div className="h-2 rounded-full bg-surface-3 overflow-hidden flex">
-          <div className="h-full" style={{ width: `${winRate * 100}%`, backgroundColor: s.color }} />
-          <div className="h-full bg-surface-3" style={{ width: `${drawRate * 100}%` }} />
+        <div className="flex flex-wrap gap-1">
+          {s.form.map((f, i) => (
+            <FormBadge key={i} result={f.result} color={s.color} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />
+          ))}
         </div>
-        <div className="relative text-xs mt-1 h-4">
-          <span className="absolute left-0" style={{ color: s.color }}>{s.wins}W</span>
-          <span
-            className="absolute -translate-x-1/2 text-ink-dim"
-            style={{ left: `${(winRate + drawRate / 2) * 100}%` }}
-          >
-            {s.draws}D
-          </span>
-          <span className="absolute right-0 text-ink-2">{s.losses}L</span>
-        </div>
-      </div>
 
-      <div>
-        <div className="h-2 rounded-full bg-surface-3 overflow-hidden">
-          <div className="h-full rounded-full" style={{ width: `${goalShare * 100}%`, backgroundColor: s.color }} />
-        </div>
-        <div className="flex items-center justify-between text-xs mt-1">
-          <span style={{ color: s.color }}>{s.gf}GS</span>
-          <span className="text-ink-2">{s.ga}GC</span>
+        <div className="grid grid-cols-3 gap-3 border-t border-[var(--card-rule)] pt-4">
+          {[
+            { label: "W-D-L", value: `${s.wins}-${s.draws}-${s.losses}` },
+            { label: "Goals", value: `${s.gf}:${s.ga}` },
+            { label: "Goal diff", value: signed(s.gd) },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col gap-1.5">
+              <BigNumber size={30}>{stat.value}</BigNumber>
+              <Label>{stat.label}</Label>
+            </div>
+          ))}
         </div>
       </div>
-
-      <div className="flex items-center justify-between">
-        {s.form.map((f, i) => <FormBadge key={i} result={f.result} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />)}
-        {Array.from({ length: 10 - s.form.length }).map((_, i) => (
-          <span key={"pad" + i} className="w-6 h-6 rounded bg-surface-2" />
-        ))}
-      </div>
-    </div>
+    </article>
   )
 }
 
@@ -534,42 +562,60 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
   const pairs: [PlayerName, PlayerName][] = [["Vanilla", "Choco"], ["Vanilla", "Panda"], ["Choco", "Panda"]]
 
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className="flex flex-col gap-3">
       {pairs.map(([pA, pB]) => {
         const r = matrix[pA][pB]
         const total = r.wins + r.draws + r.losses
+        // Empty segments are left out so their 3px gaps don't pile up
+        const segments = [
+          { key: "a", n: r.wins, color: PLAYER_COLORS[pA] },
+          { key: "d", n: r.draws, color: "var(--ghost)" },
+          { key: "b", n: r.losses, color: PLAYER_COLORS[pB] },
+        ].filter((segment) => segment.n > 0)
         return (
-          <div key={pA + pB} className="bg-surface-2 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Image src={PLAYER_AVATARS[pA]} alt={pA} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
-                <span className="font-bold text-base text-ink">{pA}</span>
+          <div
+            key={pA + pB}
+            role="img"
+            aria-label={`${pA} ${r.wins}, ${pB} ${r.losses}, ${r.draws} draws in ${total} games`}
+            className="rounded-[20px] border border-hairline bg-surface px-[22px] py-5"
+          >
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <BearAvatar name={pA} size={36} />
+                <span className="truncate font-semibold">{pA}</span>
               </div>
-              <span className="text-ink-dim">{total} games</span>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-base text-ink">{pB}</span>
-                <Image src={PLAYER_AVATARS[pB]} alt={pB} width={28} height={28} className="rounded-full object-cover w-7 h-7" />
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-baseline gap-2">
+                  <BigNumber size={64} color={PLAYER_COLORS[pA]}>{r.wins}</BigNumber>
+                  <BigNumber size={64} className="text-[color:var(--ghost)]">–</BigNumber>
+                  <BigNumber size={64} color={PLAYER_COLORS[pB]}>{r.losses}</BigNumber>
+                </div>
+                <Label className="whitespace-nowrap">
+                  {r.draws} draws · {total} games
+                </Label>
+              </div>
+              <div className="flex min-w-0 items-center justify-end gap-2.5">
+                <span className="truncate font-semibold">{pB}</span>
+                <BearAvatar name={pB} size={36} />
               </div>
             </div>
 
-            {total > 0 && (
-              <>
-                <div className="flex text-lg mb-1">
-                  <div className="text-left" style={{ width: `${(r.wins / total) * 100}%`, color: PLAYER_COLORS[pA] }}>{r.wins}W</div>
-                  <div className="text-center text-ink-dim" style={{ width: `${(r.draws / total) * 100}%` }}>{r.draws}D</div>
-                  <div className="text-right" style={{ width: `${(r.losses / total) * 100}%`, color: PLAYER_COLORS[pB] }}>{r.losses}W</div>
-                </div>
-                <div className="flex rounded-full overflow-hidden h-2 mb-2">
-                  <div style={{ width: `${(r.wins / total) * 100}%`, backgroundColor: PLAYER_COLORS[pA] }} />
-                  <div style={{ width: `${(r.draws / total) * 100}%` }} className="bg-surface-3" />
-                  <div style={{ width: `${(r.losses / total) * 100}%`, backgroundColor: PLAYER_COLORS[pB] }} />
-                </div>
-              </>
-            )}
-
-            <div className="flex justify-between text-[10px]">
-              <span style={{ color: PLAYER_COLORS[pA] }}>{r.gf}GS</span>
-              <span style={{ color: PLAYER_COLORS[pB] }}>{r.ga}GS</span>
+            <div aria-hidden="true" className="mt-4 flex h-1.5 gap-[3px]">
+              {segments.length > 0 ? (
+                segments.map((segment) => (
+                  <div
+                    key={segment.key}
+                    className="rounded-full"
+                    style={{ flexGrow: segment.n, flexBasis: 0, background: segment.color }}
+                  />
+                ))
+              ) : (
+                <div className="flex-1 rounded-full bg-track" />
+              )}
+            </div>
+            <div className="mt-2 flex justify-between">
+              <Label>{r.gf} goals</Label>
+              <Label>{r.ga} goals</Label>
             </div>
           </div>
         )
@@ -578,231 +624,131 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
   )
 }
 
-const RANK_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"]
-
-function TopTeamsProjection({ projections, teamLogos }: { projections: TeamProjection[]; teamLogos: Record<string, string> }) {
-  const trendIcon = (t: TeamProjection["trend"]) =>
-    t === "up" ? <span className="text-green-500 text-sm font-bold">↑</span>
-    : t === "down" ? <span className="text-red-400 text-sm font-bold">↓</span>
-    : null
-
+function TopTeamsProjection({ projections }: { projections: TeamProjection[] }) {
   return (
     <div className="flex flex-col gap-3">
       {projections.map((t, i) => (
-        <div key={t.team} className="bg-surface-2 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105 flex flex-col gap-2">
-          {/* Row 1: team + points */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-[2.25rem] font-bold leading-none text-center w-9 shrink-0" style={{ color: RANK_COLORS[i] }}>{i + 1}</span>
-              <div className="w-9 h-9 shrink-0 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={teamLogos[t.team] || "/placeholder.svg"}
-                  alt={t.team}
-                  width={36}
-                  height={36}
-                  className={`object-contain ${t.team === "Atletico Madrid" ? "w-7 h-7" : "w-9 h-9"}`}
-                />
-              </div>
-              <span className="relative text-xl font-light text-ink-2">
-                {t.team}
-                <span
-                  className="absolute bottom-0 left-0 h-[2px]"
-                  style={{ width: "0.85em", backgroundColor: t.color }}
-                />
-              </span>
+        <div
+          key={t.team}
+          className="flex items-center gap-5 rounded-[20px] border border-hairline bg-surface px-[22px] py-5"
+        >
+          {/* The favourite's numeral in the accent; olive in light, where lime can't be read */}
+          <BigNumber
+            size={56}
+            className={`w-8 shrink-0 text-center ${i === 0 ? "text-[color:var(--accent-text)]" : "text-[color:var(--ghost)]"}`}
+          >
+            {i + 1}
+          </BigNumber>
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: t.color }} />
+              <span className="text-[17px] font-semibold">{t.team}</span>
+              <span className="text-[13px] text-ink-muted">{t.player}</span>
             </div>
-            <div className="flex items-center gap-1">
-              {trendIcon(t.trend)}
-              <span className="text-[2.25rem] font-bold leading-none text-ink">{Math.round(t.projectedPoints)}</span>
-            </div>
+            <Label>
+              Now {t.currentPoints} pts
+              {t.avgOpponentStrength !== null && <> · Opp {t.avgOpponentStrength.toFixed(2)}</>} · Form{" "}
+              {t.formPPG.toFixed(2)}
+            </Label>
           </div>
-
-          {/* Row 2: stats */}
-          <div className="flex items-center justify-between text-[9px] md:text-xs text-ink-muted md:pl-[44px]">
-            <span>
-              <span className="md:hidden">Now: {t.currentPoints} pts</span>
-              <span className="hidden md:inline">Now: <span className="font-semibold text-ink-2">{t.currentPoints} pts</span> in {t.currentGames} games</span>
-            </span>
-            {t.avgOpponentStrength !== null && (
-              <span>Opp: <span className="font-semibold text-ink-2">{t.avgOpponentStrength.toFixed(2)}</span></span>
-            )}
-            <span>
-              <span className="md:hidden">PPG: {t.formPPG.toFixed(2)}</span>
-              <span className="hidden md:inline">Form PPG: <span className="font-semibold text-ink-2">{t.formPPG.toFixed(2)}</span></span>
-            </span>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <BigNumber size={64}>{Math.round(t.projectedPoints)}</BigNumber>
+            <Label>Predicted</Label>
           </div>
         </div>
       ))}
-      <p className="text-xs text-ink-dim mt-2 leading-relaxed">
+      <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">
         Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
       </p>
     </div>
   )
 }
 
-function StatCard({
-  value,
-  valueColor,
-  description,
-}: {
+type SeasonRecord = {
+  key: string
   value: React.ReactNode
-  valueColor?: string
-  description: React.ReactNode
-}) {
+  title: string
+  subtitle: string
+  /** The bear who holds it; a record shared by two sides keeps a neutral bar */
+  holder?: PlayerName | null
+}
+
+/** Tile with a 4px bar on top in the holder's colour. */
+function RecordTile({ record }: { record: SeasonRecord }) {
+  const color = record.holder ? PLAYER_COLORS[record.holder] : undefined
   return (
-    <div className="bg-surface-2 border border-hairline-strong rounded-2xl p-5 flex flex-row-reverse items-center justify-between gap-3 sm:flex-col sm:items-start sm:justify-start sm:gap-2 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105">
-      <div className="text-3xl font-bold leading-none shrink-0" style={{ color: valueColor ?? "#1f2937" }}>{value}</div>
-      <p className="text-sm text-ink-2">{description}</p>
+    <div className="relative flex flex-col gap-2.5 overflow-hidden rounded-[16px] border border-hairline bg-surface px-5 pb-5 pt-6">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1" style={{ background: color ?? "var(--track)" }} />
+      <BigNumber size={64} color={color}>{record.value}</BigNumber>
+      <div className="mt-1 text-sm font-medium">{record.title}</div>
+      <Label>{record.subtitle}</Label>
     </div>
   )
 }
 
-function TeamNameUnderlined({ team, playerTeams, className }: { team: string; playerTeams: PlayerTeams; className?: string }) {
-  const player = getPlayerForTeam(team, playerTeams)
-  const color = player ? PLAYER_COLORS[player] : undefined
-  return (
-    <span className={`relative whitespace-nowrap text-sm ${className ?? ""}`}>
-      {shortenTeamName(team)}
-      {color && <span className="absolute bottom-0 left-0 h-[2px] w-[0.85em]" style={{ backgroundColor: color }} />}
-    </span>
-  )
-}
-
 function RecordsSection({ records, playerTeams }: { records: RecordsData; playerTeams: PlayerTeams }) {
-  const cards: React.ReactNode[] = []
+  const owner = (team: string) => getPlayerForTeam(team, playerTeams)
+  const scoreline = (m: MatchRecord) => `${shortenTeamName(m.teamA)} ${m.scoreA}:${m.scoreB} ${shortenTeamName(m.teamB)}`
+  const list: SeasonRecord[] = []
 
   if (records.highestScoring) {
     const { match, total } = records.highestScoring
-    cards.push(
-      <StatCard
-        key="highestScoring"
-        value={total}
-        description={
-          <>
-            <span className="block text-sm">Highest-scoring game</span>
-            <span className="block text-sm"><TeamNameUnderlined team={match.teamA} playerTeams={playerTeams} /> {match.scoreA}:{match.scoreB} <TeamNameUnderlined team={match.teamB} playerTeams={playerTeams} /></span>
-          </>
-        }
-      />
-    )
+    list.push({ key: "highestScoring", value: total, title: "Highest-scoring game", subtitle: scoreline(match) })
   }
-
   if (records.biggestWin) {
-    const { match, margin } = records.biggestWin
-    cards.push(
-      <StatCard
-        key="biggestWin"
-        value={margin}
-        description={
-          <>
-            <span className="block text-sm">Biggest win</span>
-            <span className="block text-sm"><TeamNameUnderlined team={match.teamA} playerTeams={playerTeams} /> {match.scoreA}:{match.scoreB} <TeamNameUnderlined team={match.teamB} playerTeams={playerTeams} /></span>
-          </>
-        }
-      />
-    )
+    const { match, margin, winner } = records.biggestWin
+    list.push({ key: "biggestWin", value: margin, title: "Biggest win", subtitle: scoreline(match), holder: owner(winner) })
   }
-
   if (records.bestAttack) {
-    const player = getPlayerForTeam(records.bestAttack.team, playerTeams)
-    cards.push(
-      <StatCard
-        key="bestAttack"
-        value={records.bestAttack.gf}
-        valueColor={player ? PLAYER_COLORS[player] : undefined}
-        description={<>{shortenTeamName(records.bestAttack.team)} have scored the most goals</>}
-      />
-    )
+    const { team, gf } = records.bestAttack
+    list.push({ key: "bestAttack", value: gf, title: "Most goals scored", subtitle: shortenTeamName(team), holder: owner(team) })
   }
-
   if (records.bestDefense) {
-    const player = getPlayerForTeam(records.bestDefense.team, playerTeams)
-    cards.push(
-      <StatCard
-        key="bestDefense"
-        value={records.bestDefense.ga}
-        valueColor={player ? PLAYER_COLORS[player] : undefined}
-        description={<>{shortenTeamName(records.bestDefense.team)} have conceded the fewest goals</>}
-      />
-    )
+    const { team, ga } = records.bestDefense
+    list.push({ key: "bestDefense", value: ga, title: "Fewest goals conceded", subtitle: shortenTeamName(team), holder: owner(team) })
   }
-
   if (records.bestWinRate) {
-    const player = getPlayerForTeam(records.bestWinRate.team, playerTeams)
-    cards.push(
-      <StatCard
-        key="bestWinRateTeam"
-        value={`${Math.round(records.bestWinRate.winRate * 100)}%`}
-        valueColor={player ? PLAYER_COLORS[player] : undefined}
-        description={<>{shortenTeamName(records.bestWinRate.team)} have the best win rate</>}
-      />
-    )
+    const { team, winRate, wins, games } = records.bestWinRate
+    list.push({
+      key: "bestWinRateTeam",
+      value: `${Math.round(winRate * 100)}%`,
+      title: "Best team win rate",
+      subtitle: `${shortenTeamName(team)} · ${wins} of ${games}`,
+      holder: owner(team),
+    })
   }
-
   if (records.longestWinStreak) {
     const { player, length } = records.longestWinStreak
-    cards.push(
-      <StatCard
-        key="winStreak"
-        value={length}
-        valueColor={PLAYER_COLORS[player]}
-        description={<>{player}&apos;s longest winning streak</>}
-      />
-    )
+    list.push({ key: "winStreak", value: length, title: "Longest winning streak", subtitle: player, holder: player })
   }
-
   if (records.mostCleanSheets) {
     const { player, count } = records.mostCleanSheets
-    cards.push(
-      <StatCard
-        key="cleanSheets"
-        value={count}
-        valueColor={PLAYER_COLORS[player]}
-        description={<>{player} has kept the most clean sheets</>}
-      />
-    )
+    list.push({ key: "cleanSheets", value: count, title: "Most clean sheets", subtitle: player, holder: player })
   }
-
   if (records.longestUnbeaten) {
     const { player, length } = records.longestUnbeaten
-    cards.push(
-      <StatCard
-        key="unbeaten"
-        value={length}
-        valueColor={PLAYER_COLORS[player]}
-        description={<>{player}&apos;s longest unbeaten run</>}
-      />
-    )
+    list.push({ key: "unbeaten", value: length, title: "Longest unbeaten run", subtitle: player, holder: player })
   }
-
   if (records.bestWinRatePlayer) {
-    const { player, winRate } = records.bestWinRatePlayer
-    cards.push(
-      <StatCard
-        key="winRatePlayer"
-        value={`${Math.round(winRate * 100)}%`}
-        valueColor={PLAYER_COLORS[player]}
-        description={<>{player} has the best win rate</>}
-      />
-    )
+    const { player, winRate, wins, games } = records.bestWinRatePlayer
+    list.push({
+      key: "winRatePlayer",
+      value: `${Math.round(winRate * 100)}%`,
+      title: "Best win rate",
+      subtitle: `${player} · ${wins} of ${games}`,
+      holder: player,
+    })
   }
-
   if (records.bestFormPlayer) {
     const { player, formPPG } = records.bestFormPlayer
-    cards.push(
-      <StatCard
-        key="bestForm"
-        value={formPPG.toFixed(2)}
-        valueColor={PLAYER_COLORS[player]}
-        description={<>{player} is in the best current form</>}
-      />
-    )
+    list.push({ key: "bestForm", value: formPPG.toFixed(2), title: "Best current form", subtitle: `${player} · PPG, last 5`, holder: player })
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-      {cards}
+    <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
+      {list.map((record) => (
+        <RecordTile key={record.key} record={record} />
+      ))}
     </div>
   )
 }
@@ -840,7 +786,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
 
 // ── Root component ───────────────────────────────────────────────────────────
 
-export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos }: FifaAdvancedAnalyticsProps) {
+export default function FifaAdvancedAnalytics({ matches, playerTeams }: FifaAdvancedAnalyticsProps) {
   if (matches.length === 0) {
     return <p className="text-ink-muted text-center italic mt-32">No insights yet</p>
   }
@@ -853,29 +799,30 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Player Stats */}
       <section>
-        <h3 className="text-[16px] font-bold mb-4">Player Stats</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[...stats].sort((a, b) => b.pts - a.pts).map((s) => <PlayerStatsCard key={s.player} s={s} />)}
+        <SectionTitle>Player stats</SectionTitle>
+        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+          {[...stats]
+            .sort((a, b) => b.pts - a.pts || b.gd - a.gd)
+            .map((s, rank) => (
+              <PlayerStatsCard key={s.player} s={s} rank={rank} />
+            ))}
         </div>
       </section>
 
-      {/* H2H | Top 3 Predicted */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section>
-          <h3 className="text-[16px] font-bold mb-4">Head-to-Head</h3>
+      <div className="flex flex-wrap items-start gap-6">
+        <section className="min-w-0 flex-[1_1_420px]">
+          <SectionTitle>Head-to-head</SectionTitle>
           <H2HCards matrix={matrix} />
         </section>
-        <section>
-          <h3 className="text-[16px] font-bold mb-4">Top 3 Predicted</h3>
-          <TopTeamsProjection projections={topTeams} teamLogos={teamLogos} />
+        <section className="min-w-0 flex-[1_1_420px]">
+          <SectionTitle>Top 3 predicted</SectionTitle>
+          <TopTeamsProjection projections={topTeams} />
         </section>
       </div>
 
-      {/* Records */}
       <section>
-        <h3 className="text-[16px] font-bold mb-4">Records</h3>
+        <SectionTitle>Season records</SectionTitle>
         <RecordsSection records={records} playerTeams={playerTeams} />
       </section>
 

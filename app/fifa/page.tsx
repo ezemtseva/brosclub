@@ -377,6 +377,7 @@ export default async function FIFAPage() {
     {
       videoId: "CrNcXFZkemY",
       title: "✯ Goal of the season - Phil Foden",
+      highlight: true,
       thumbnail: "/imgs/fifa/fifathumbnail26.jpg",
       coverageText: "GAME DAY 3",
     },
@@ -754,6 +755,7 @@ export default async function FIFAPage() {
     {
       videoId: "0JiK73BRZAo",
       title: "✯ Goal of the season - Jota",
+      highlight: true,
       thumbnail: "/imgs/fifa/fifathumbnail.jpg",
       coverageText: "GAME DAY 17",
     },

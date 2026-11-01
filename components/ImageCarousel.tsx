@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useScrollLock } from '../lib/useScrollLock'
@@ -40,6 +40,16 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   const closeModal = () => {
     setModalOpen(false)
   }
+
+  // Esc closes the viewer too
+  useEffect(() => {
+    if (!modalOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setModalOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [modalOpen])
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -108,8 +118,15 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-surface p-4 rounded-lg max-w-[93.75rem] w-full flex flex-col mx-auto overflow-hidden">
+        // A click on the dimmed backdrop closes it
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={closeModal}>
+          <div
+            className="bg-surface p-4 rounded-lg w-full flex flex-col mx-auto overflow-hidden"
+            // 16:9 picture plus the caption and Close must fit the screen: the width
+            // is capped by the viewport height as well as by 93.75rem
+            style={{ maxWidth: 'min(93.75rem, calc((100dvh - 13rem) * 16 / 9))' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="relative aspect-video mb-4">
               <Image
                 src={images[currentImageIndex].src}

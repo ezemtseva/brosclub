@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { YouTubeVideo } from './YouTubeVideo'
@@ -11,6 +11,8 @@ interface VideoData {
   title: string
   thumbnail: string
   coverageText: string
+  /** Lime card with dark ink, for the season's standout clip */
+  highlight?: boolean
 }
 
 interface VideoCarouselProps {
@@ -43,6 +45,16 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
     setModalOpen(false)
   }
 
+  // Esc closes the viewer too
+  useEffect(() => {
+    if (!modalOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setModalOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [modalOpen])
+
   const nextVideo = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length)
   }
@@ -60,7 +72,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
         {videos.map((video, index) => (
           <div
             key={index}
-            className="w-[75vw] shrink-0 bg-surface shadow-md rounded-lg overflow-hidden cursor-pointer"
+            className={`w-[75vw] shrink-0 shadow-md rounded-lg overflow-hidden cursor-pointer ${video.highlight ? "bg-accent" : "bg-surface"}`}
             onClick={() => openModal(index)}
           >
             <div className="aspect-video relative">
@@ -70,7 +82,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
               </div>
             </div>
             <div className="p-4">
-              <p className="text-ink-2 truncate">{video.title}</p>
+              <p className={`truncate ${video.highlight ? "font-semibold text-accent-foreground" : "text-ink-2"}`}>{video.title}</p>
             </div>
           </div>
         ))}
@@ -82,7 +94,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
           {displayedVideos.map((video, index) => (
             <div
               key={index}
-              className="bg-surface shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer"
+              className={`${video.highlight ? "bg-accent" : "bg-surface"} shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer`}
               onClick={() => openModal(currentPage * videosPerPage + index)}
             >
               <div className="aspect-video relative">
@@ -92,7 +104,7 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
                 </div>
               </div>
               <div className="p-4">
-                <p className="text-ink-2 truncate">{video.title}</p>
+                <p className={`truncate ${video.highlight ? "font-semibold text-accent-foreground" : "text-ink-2"}`}>{video.title}</p>
               </div>
             </div>
           ))}
@@ -116,8 +128,15 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface rounded-lg w-full max-w-[93.75rem] flex flex-col mx-auto overflow-hidden">
+        // A click on the dimmed backdrop closes it
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={closeModal}>
+          <div
+            className="bg-surface rounded-lg w-full flex flex-col mx-auto overflow-hidden"
+            // 16:9 video plus the caption and Close must fit the screen: the width
+            // is capped by the viewport height as well as by 93.75rem
+            style={{ maxWidth: 'min(93.75rem, calc((100dvh - 11rem) * 16 / 9))' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="relative aspect-video">
               <YouTubeVideo
                 videoId={videos[currentVideoIndex].videoId}

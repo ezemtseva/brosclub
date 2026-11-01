@@ -21,7 +21,7 @@ const clubMembers = [
     country: "Serbia",
     countryCode: "rs",
     club: "Liverpool",
-    crest: "/imgs/fifa/liv.png",
+    crest: "/imgs/fifa/liv1.png",
   },
   {
     name: "Choco",
@@ -29,7 +29,7 @@ const clubMembers = [
     country: "Cyprus",
     countryCode: "cy",
     club: "Chelsea",
-    crest: "/imgs/fifa/che.png",
+    crest: "/imgs/fifa/che1.png",
   },
   {
     name: "Panda",
@@ -37,18 +37,16 @@ const clubMembers = [
     country: "Russia",
     countryCode: "ru",
     club: "Juventus",
-    crest: "/imgs/fifa/juv.png",
+    crest: "/imgs/fifa/juv1.png",
+    // A black mark on transparency — it needs a chip to show on the dark card
+    crestBackdrop: true,
   },
 ]
 
-/** Text on the player cards — the same dark ink in both themes. */
-const CARD_INK = "#0B0C0F"
-const CARD_RULE = "rgba(11,12,15,0.35)"
-
 /** Two cut corners, top-right and bottom-left, like a trading card. */
-const CARD_CLIP =
-  "polygon(0 0, calc(100% - 36px) 0, 100% 36px, 100% 100%, 36px 100%, 0 calc(100% - 36px))"
-const CARD_STRIPES = "repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 16px)"
+const cardClip = (corner: number) =>
+  `polygon(0 0, calc(100% - ${corner}px) 0, 100% ${corner}px, 100% 100%, ${corner}px 100%, 0 calc(100% - ${corner}px))`
+const CARD_STRIPES = "repeating-linear-gradient(135deg, var(--card-stripe) 0 2px, transparent 2px 16px)"
 
 /** The club was founded on 06.09.2012 — the hero counts the years from here. */
 const FOUNDED = new Date(2012, 8, 6)
@@ -345,13 +343,13 @@ export default async function Home() {
 
       <section className="mx-auto flex max-w-page flex-wrap items-end gap-12 px-8 pb-[72px] pt-11">
         <div className="min-w-0 flex-[999_1_560px]">
-          <p className="mb-6 font-mono text-sm uppercase tracking-[0.12em] text-ink-muted">{facts}</p>
           <h1 className="relative font-display text-[clamp(56px,9vw,136px)] font-extrabold leading-[0.92] tracking-[-0.03em]">
             Always
             <br />
             <span className="accent-word">Sunday.</span>
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
           </h1>
+          <p className="mt-6 font-mono text-sm uppercase tracking-[0.12em] text-ink-muted">{facts}</p>
         </div>
       </section>
 
@@ -363,38 +361,52 @@ export default async function Home() {
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           {standings.map((member) => {
+            const color = bearColor(member.name)
             const stats = cupCategories.map((category, column) => ({
               label: category.label,
               n: member.cups[column],
             }))
             return (
+              // The bear's colour is the 3px frame; the 35px inner cut keeps it
+              // even along the cut corners
               <article
                 key={member.name}
                 aria-label={`${member.name}: ${member.total} cups, ${member.club}, ${member.country}`}
-                className="font-archivo mx-auto flex aspect-[320/452] w-full max-w-[320px] flex-col rounded-[18px]"
+                className="mx-auto aspect-[320/452] w-full max-w-[320px] rounded-[18px] p-[3px]"
+                style={{ clipPath: cardClip(36), background: color }}
+              >
+              <div
+                className="font-archivo flex h-full flex-col overflow-hidden rounded-[15px] bg-surface text-ink"
                 style={{
-                  clipPath: CARD_CLIP,
-                  background: `${CARD_STRIPES}, ${bearColor(member.name)}`,
-                  color: CARD_INK,
+                  clipPath: cardClip(35),
+                  backgroundImage: CARD_STRIPES,
                   fontVariationSettings: "'wdth' 62",
                 }}
               >
                 <div className="relative min-h-0 flex-1">
                   <div className="absolute left-[26px] top-[26px] flex w-16 flex-col items-center gap-[10px]">
-                    <div className="text-[72px] font-black leading-[0.85]">{member.total}</div>
+                    {/* stat-number: the bear's colour in dark, plain ink in light */}
+                    <div className="stat-number text-[72px] font-black leading-[0.85]" style={{ color }}>
+                      {member.total}
+                    </div>
                     <div className="text-[22px] font-extrabold leading-none">CUPS</div>
-                    <div className="h-px w-10" style={{ background: CARD_RULE }} />
+                    <div className="h-px w-10 bg-[var(--card-rule)]" />
                     <Image
                       src={flagSvgUrl(member.countryCode)}
                       alt=""
                       width={44}
                       height={29}
                       unoptimized
-                      className="h-[29px] w-[44px] object-cover"
-                      style={{ outline: `1px solid ${CARD_INK}` }}
+                      className="h-[29px] w-[44px] object-cover outline outline-1 outline-[var(--card-rule)]"
                     />
-                    <div className="h-px w-10" style={{ background: CARD_RULE }} />
-                    <Image src={member.crest} alt="" width={42} height={42} className="h-[42px] w-[42px] object-contain" />
+                    <div className="h-px w-10 bg-[var(--card-rule)]" />
+                    {member.crestBackdrop ? (
+                      <span className="flex h-[42px] w-[42px] items-center justify-center rounded-lg bg-ink p-[5px]">
+                        <Image src={member.crest} alt="" width={32} height={32} className="crest-on-ink h-full w-full object-contain" />
+                      </span>
+                    ) : (
+                      <Image src={member.crest} alt="" width={42} height={42} className="h-[42px] w-[42px] object-contain" />
+                    )}
                   </div>
                   {/* Head and shoulders, standing on the name rule like a player photo */}
                   {/* Full width, never sliced at the sides; the rule crops the bottom
@@ -409,13 +421,17 @@ export default async function Home() {
                       width={392}
                       height={392}
                       className="absolute bottom-0 left-0 h-auto w-full translate-y-[12%]"
+                      // Four offset shadows trace a 3px outline around the drawing
+                      style={{
+                        filter: `drop-shadow(3px 0 0 ${color}) drop-shadow(-3px 0 0 ${color}) drop-shadow(0 3px 0 ${color}) drop-shadow(0 -3px 0 ${color})`,
+                      }}
                     />
                   </div>
                 </div>
                 <div className="px-[26px] pb-[30px]">
                   <h3
-                    className="font-archivo border-b border-t-2 pb-2 pt-[10px] text-center text-[38px] font-black uppercase leading-none"
-                    style={{ borderTopColor: CARD_INK, borderBottomColor: CARD_RULE }}
+                    className="font-archivo border-b border-t-2 border-b-[var(--card-rule)] pb-2 pt-[10px] text-center text-[38px] font-black uppercase leading-none"
+                    style={{ borderTopColor: color }}
                   >
                     {member.name}
                   </h3>
@@ -423,8 +439,7 @@ export default async function Home() {
                     {[stats.slice(0, 3), stats.slice(3)].map((column, i) => (
                       <div
                         key={i}
-                        className={`flex flex-1 flex-col gap-0.5 ${i === 1 ? "border-l pl-[18px]" : ""}`}
-                        style={i === 1 ? { borderLeftColor: CARD_RULE } : undefined}
+                        className={`flex flex-1 flex-col gap-0.5 ${i === 1 ? "border-l border-[var(--card-rule)] pl-[18px]" : ""}`}
                       >
                         {column.map((stat) => (
                           <div key={stat.label} className="flex items-baseline gap-2">
@@ -436,6 +451,7 @@ export default async function Home() {
                     ))}
                   </div>
                 </div>
+              </div>
               </article>
             )
           })}

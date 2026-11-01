@@ -28,6 +28,9 @@
     --accent-text: #d7ff3f;
     /* Panel behind a club leader on the home page — never a bear colour */
     --club-panel: #c9cbd1;
+    /* Player cards: the faint diagonal stripes and the thin rules on them */
+    --card-stripe: rgba(255, 255, 255, 0.025);
+    --card-rule: rgba(244, 244, 242, 0.18);
     --warning-text: #ffb547;
     --warning-border: #ffb547;
     --warning-bg: transparent;
@@ -51,6 +54,8 @@
     --tab-line: #111214;
     --accent-text: #5c6b00;
     --club-panel: #c9cdd4;
+    --card-stripe: rgba(17, 18, 20, 0.03);
+    --card-rule: rgba(17, 18, 20, 0.18);
     --warning-text: #9a5b00;
     --warning-border: #b26a00;
     --warning-bg: #fff1dc;
@@ -211,6 +216,12 @@ html.light .pill-live .dot {
 /* Big season numbers take the bear's colour in dark and plain ink in light */
 html.light .stat-number {
   color: var(--ink) !important;
+}
+
+/* A black crest sits on an ink chip: light on dark, so in light the chip turns
+   near-black and the crest is flipped to white to stay visible */
+html.light .crest-on-ink {
+  filter: invert(1);
 }
 
 /* History table styles */

@@ -49,10 +49,12 @@ type FifaRecordCard = {
   logo?: string
   player?: keyof typeof PLAYER_COLORS
   description: string
+  // Lime tile with dark ink, for the cup's signature record
+  highlight?: boolean
 }
 
 const fifaRecordCards: FifaRecordCard[] = [
-  { value: "8 h 18 m", description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
+  { value: "8 h 18 m", highlight: true, description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
   { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020-22, 24/25)" },
   { value: "73.21%", player: "Vanilla", description: "Vanilla holds the highest win rate in a season (2024/25)" },
   { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team in a season (2024/25)" },
@@ -122,7 +124,7 @@ function CountryFlag({ team }: { team: string }) {
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
 function toRecordCard(card: FifaRecordCard): RecordCard {
   const { text, when } = splitRecordDate(card.description)
-  return { value: card.value, logo: card.logo, text, when, who: card.player ? [card.player] : [] }
+  return { value: card.value, logo: card.logo, text, when, who: card.player ? [card.player] : [], highlight: card.highlight }
 }
 
 // Define types for season data
@@ -483,7 +485,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 25,
         wins: 7,
         draws: 5,
@@ -1163,7 +1165,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 44,
         wins: 5,
         draws: 9,
@@ -1467,7 +1469,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 15,
         wins: 4,
         draws: 3,
@@ -1822,7 +1824,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 40,
         wins: 15,
         draws: 3,
@@ -2190,7 +2192,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 32,
         wins: 2,
         draws: 6,
@@ -2313,7 +2315,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 47,
         wins: 22,
         draws: 10,
@@ -3019,7 +3021,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 40,
         wins: 14,
         draws: 8,
@@ -3192,7 +3194,7 @@ const pastSeasonsData: PastSeasonsData = {
       },
       {
         team: "Juventus",
-        logo: "/imgs/fifa/juv.png",
+        logo: "/imgs/fifa/juv1.png",
         games: 32,
         wins: 17,
         draws: 5,
@@ -3982,8 +3984,8 @@ export default function FifaSeasonTabs({
       return {
         position: (
           <span className="flex items-center justify-center gap-0.5">
-            <span style={{fontSize:'12.25px'}}>{currentRank}</span>
-            <span className="leading-none" style={{fontSize:'9px', color: mv > 0 ? '#22c55e' : mv < 0 ? '#f87171' : 'transparent'}}>
+            <span>{currentRank}</span>
+            <span className="leading-none" style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
               {mv > 0 ? '↑' : '↓'}
             </span>
           </span>
@@ -3993,9 +3995,9 @@ export default function FifaSeasonTabs({
             <Image
               src={entry.logo || "/placeholder.svg"}
               alt={entry.teamName}
-              width={24}
-              height={24}
-              className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
+              width={28}
+              height={28}
+              className="object-contain w-[28px] h-[28px] shrink-0"
             />
             <span>
               <span className="md:hidden">{shortenTeamName(entry.teamName)}</span>
@@ -4041,9 +4043,9 @@ export default function FifaSeasonTabs({
           <Image
             src={entry.logo || "/imgs/fifa/new.png"}
             alt={teamName}
-            width={24}
-            height={24}
-            className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
+            width={28}
+            height={28}
+            className="object-contain w-[28px] h-[28px] shrink-0"
           />
           <span>
             <span className="md:hidden">{shortenTeamName(teamName)}</span>

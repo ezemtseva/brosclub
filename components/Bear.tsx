@@ -23,17 +23,21 @@ export function BearAvatar({
   name,
   size = 48,
   ring = true,
+  filled = false,
 }: {
   name: string
   size?: number
   ring?: boolean
+  /** The bear's colour behind the drawing instead of the dark surface */
+  filled?: boolean
 }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center justify-center rounded-full ${ring ? "bg-surface-2" : ""}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full ${ring && !filled ? "bg-surface-2" : ""}`}
       style={{
         width: size,
         height: size,
+        background: filled ? bearColor(name) : undefined,
         boxShadow: ring ? `inset 0 0 0 2px ${bearColor(name)}` : undefined,
       }}
     >

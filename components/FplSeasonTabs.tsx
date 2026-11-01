@@ -8,8 +8,8 @@ import dynamicImport from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
+import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
+import { Panel, BearLegend, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -475,7 +475,7 @@ export default function FplSeasonTabs({
   }
 
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
+  const toCards = (data: any[]): StandingCardData[] =>
     data.map((row) => {
       const name = playerNameFromColor(row.hoverColor)
       return {
@@ -486,24 +486,19 @@ export default function FplSeasonTabs({
           { label: "Win %", value: row.winPercent ?? winPercent(row.wins, row.games) },
           { label: "Gameweeks", value: row.games ?? "—" },
         ],
-        series: chartData && sparkSeries(chartData, name),
       }
     })
 
-  const gameweeksPlayed = (data: any[]) => Math.max(...data.map((row) => row.games ?? 0), 0)
-
-  /** Standings + chart + wins split, the shape every played season shares. */
+  /** Standings + chart, the shape every played season shares. */
   const renderSeason = (
     data: any[],
     chartData: any[],
-    pieData: any[],
     highlights: { src: string; alt: string; caption: string }[],
   ) => {
-    const played = gameweeksPlayed(data)
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(data, chartData)} columns={columns} rows={data} />
+          <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
         </section>
 
         <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
@@ -514,12 +509,6 @@ export default function FplSeasonTabs({
           >
             <FplChart entries={chartData} />
           </Panel>
-          <WinsSplit
-            title="Gameweek wins"
-            rows={pieData.map((slice) => ({ name: slice.name, wins: slice.value }))}
-            total={played}
-            unit="GW"
-          />
         </section>
 
         {highlights.length > 0 && (
@@ -535,17 +524,16 @@ export default function FplSeasonTabs({
   // Render content based on active tab
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
-      return renderSeason(currentSeasonData, currentSeasonChartData, currentSeasonPieData, currentSeasonHighlights)
+      return renderSeason(currentSeasonData, currentSeasonChartData, currentSeasonHighlights)
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from fplEntry2526
       return renderSeason(
         historicalSeasonData,
         historicalSeasonChartData,
-        historicalSeasonPieData,
         historicalSeasonHighlights,
       )
     } else if (activeSeason === "2024/25") {
-      return renderSeason(season2425Data, season2425ChartData, season2425PieData, season2425Highlights)
+      return renderSeason(season2425Data, season2425ChartData, season2425Highlights)
     } else if (pastSeasonsData[activeSeason]) {
       // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!

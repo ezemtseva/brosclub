@@ -8,7 +8,7 @@ import dynamic from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
+import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
 import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -28,12 +28,14 @@ type StatCard = {
   value?: string
   player?: keyof typeof PLAYER_COLORS
   description: string
+  // Lime tile with dark ink, for the cup's signature record
+  highlight?: boolean
 }
 
 const holdemRecordCards: StatCard[] = [
   { player: "Panda", description: "Panda won the first game (06.09.2012)" },
   { value: "263", player: "Panda", description: "Panda was the first to win 100 games — it took him 263 games (09.06.2017)" },
-  { value: "1h 41m", description: "The longest poker game (2015)" },
+  { value: "1h 41m", highlight: true, description: "The longest poker game (2015)" },
   { value: "5", player: "Panda", description: "Panda holds the record for the longest winning streak — 5 games (10th season, 2025)" },
   { player: "Choco", description: "Choco is the first player to get a straight flush and four aces" },
   { player: "Vanilla", description: "Vanilla is the first player to get a six- and seven-card straight flush" },
@@ -53,7 +55,7 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
     { value: "23", description: "Largest gap between 1st and 2nd place this season" },
   ],
   "2015": [
-    { value: "1h 41m", description: "The longest poker game" },
+    { value: "1h 41m", highlight: true, description: "The longest poker game" },
   ],
   "2014": [
     { player: "Vanilla", description: "Vanilla is the first player to get a six- and seven-card straight flush" },
@@ -71,7 +73,7 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
 function toRecordCard(card: StatCard): RecordCard {
   const { text, when } = splitRecordDate(card.description)
-  return { value: card.value, text, when, who: card.player ? [card.player] : [] }
+  return { value: card.value, text, when, who: card.player ? [card.player] : [], highlight: card.highlight }
 }
 
 // Define types for the standings data
@@ -858,7 +860,7 @@ export default function HoldemSeasonTabs({
 
   // Render content based on active tab
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
+  const toCards = (data: any[]): StandingCardData[] =>
     data.map((row) => {
       const name = playerNameFromColor(row.hoverColor)
       return {
@@ -872,8 +874,6 @@ export default function HoldemSeasonTabs({
             ? { label: "Titles", value: row.seasonsWon }
             : { label: "Games", value: row.games ?? "—" },
         ],
-        // Only the database seasons keep per-game history
-        series: chartData && sparkSeries(chartData, name),
       }
     })
 
@@ -883,7 +883,7 @@ export default function HoldemSeasonTabs({
   const renderSeason = (data: any[], chartData: any[], pieData: any[], highlights: any[]) => (
     <>
       <section className="mx-auto max-w-page px-8 pt-10">
-        <StandingsBoard cards={toCards(data, chartData)} columns={columns} rows={data} />
+        <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
       </section>
 
       <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">

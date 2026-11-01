@@ -10,7 +10,7 @@ import AddGameDialog from "./AddGameDialog"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
+import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
 import { EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -40,13 +40,15 @@ type StatCard = {
   value?: string
   player?: keyof typeof PLAYER_COLORS
   description: string
+  // Lime tile with dark ink, for the cup's signature record
+  highlight?: boolean
 }
 
 const sevenOkerRecordCards: StatCard[] = [
   { player: "Vanilla", description: "Vanilla won the first ever 7oker game (29.03.2025)" },
   { player: "Panda", description: "Panda won the first season — took him 71 games to reach 100 points" },
   { player: "Choco", description: "Choco was the first to win a game by golden round against Panda (2024/25)" },
-  { value: "5", description: "Vanilla and Choco share the longest winning streak — 5 games (2024/25 and 2025/26)" },
+  { value: "5", highlight: true, description: "Vanilla and Choco share the longest winning streak — 5 games (2024/25 and 2025/26)" },
   { value: "298", player: "Panda", description: "Panda scored the biggest amount of points in a single game (2025/26)" },
   { value: "10.645", player: "Panda", description: "Panda holds the record for the most gamepoints in a season (2025/26)" },
 ]
@@ -71,7 +73,7 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
 function toRecordCard(card: StatCard): RecordCard {
   const { text, when } = splitRecordDate(card.description)
-  return { value: card.value, text, when, who: card.player ? [card.player] : [] }
+  return { value: card.value, text, when, who: card.player ? [card.player] : [], highlight: card.highlight }
 }
 
 /**
@@ -227,7 +229,7 @@ export default function SevenOkerSeasonTabs({
   const nextGameNumber = gamesPlayed + 1
 
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
+  const toCards = (data: any[]): StandingCardData[] =>
     data.map((row) => {
       const name = playerNameFromColor(row.hoverColor)
       return {
@@ -236,14 +238,11 @@ export default function SevenOkerSeasonTabs({
         stats: [
           { label: "Wins", value: row.wins ?? "—" },
           { label: "Win %", value: row.winPercentage ?? winPercent(row.wins, row.games) },
-          // GP on the card is the average per game; the table keeps the season total
-          { label: "GP", value: row.games > 0 ? Math.round((row.gamepoints ?? 0) / row.games) : "—" },
+          // The season total, as in the table's GP column
+          { label: "GP", value: (row.gamepoints ?? 0).toLocaleString("de-DE") },
         ],
-        series: chartData && sparkSeries(chartData, name),
       }
     })
-
-  const gamesIn = (data: any[]) => data.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
 
   /** Standings + chart, the shape every played season shares. */
   const renderSeason = (
@@ -257,7 +256,7 @@ export default function SevenOkerSeasonTabs({
     <>
       <section className="mx-auto max-w-page px-8 pt-10">
         <StandingsBoard
-          cards={toCards(data, chartData)}
+          cards={toCards(data)}
           columns={columns}
           rows={data}
           actions={actions}
@@ -266,7 +265,7 @@ export default function SevenOkerSeasonTabs({
       </section>
 
       <section className="mx-auto max-w-page px-8 pt-10">
-        <SevenOkerChartToggle entries={chartData} pieChartData={pieData} games={gamesIn(data)} />
+        <SevenOkerChartToggle entries={chartData} pieChartData={pieData} />
       </section>
 
       {highlights.length > 0 && (
@@ -290,23 +289,36 @@ export default function SevenOkerSeasonTabs({
         currentSeasonHighlights,
         seatingOpen && (
           <div className="mb-4 rounded-2xl border border-hairline bg-surface-2 px-5 py-4">
-            <span className="text-[15px] text-ink-muted">
+            {/* Phones get the order alone */}
+            <span className="text-[15px] text-ink-muted md:hidden">
+              Game #{nextGameNumber}: {who(first)} → {who(second)} → {who(third)}
+            </span>
+            <span className="hidden text-[15px] text-ink-muted md:inline">
               Game {nextGameNumber}: {who(first)} creates the table, then {who(second)} joins and later {who(third)}
             </span>
           </div>
         ),
         <>
+          {/* A "?" hint on phones, so it shares the row with the heading and Add game */}
           <button
             onClick={() => setSeatingOpen((open) => !open)}
-            className="min-h-[44px] rounded-full border border-hairline-strong px-[18px] text-sm font-medium text-ink transition-colors hover:border-ink"
+            aria-label={seatingOpen ? "Hide seating" : "Show seating"}
+            aria-expanded={seatingOpen}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border text-base font-semibold transition-colors md:w-auto md:px-[18px] md:text-sm md:font-medium ${
+              seatingOpen ? "border-ink text-ink" : "border-hairline-strong text-ink hover:border-ink"
+            }`}
           >
-            {seatingOpen ? "Hide seating" : "Show seating"}
+            <span aria-hidden="true" className="md:hidden">?</span>
+            <span className="hidden md:inline">{seatingOpen ? "Hide seating" : "Show seating"}</span>
           </button>
           <button
             onClick={() => setDialogOpen(true)}
-            className="min-h-[44px] rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+            aria-label="Add game"
+            className="min-h-[44px] whitespace-nowrap rounded-full bg-accent px-4 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:px-[18px]"
           >
-            + Add game
+            {/* "+ Game" on phones keeps it on the heading's row */}
+            <span className="md:hidden">+ Game</span>
+            <span className="hidden md:inline">+ Add game</span>
           </button>
         </>,
       )

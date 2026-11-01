@@ -147,7 +147,7 @@ export default function FifaSeasonConfig({
               <button
                 key={round}
                 onClick={() => setActiveRound(round)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   activeRound === round
                     ? "border-accent text-ink"
                     : "border-transparent text-ink-muted hover:text-ink hover:border-hairline-strong"
@@ -193,12 +193,16 @@ export default function FifaSeasonConfig({
                             style={
                               included
                                 ? { backgroundColor: `${color}20`, borderLeft: `3px solid ${color}` }
-                                : { backgroundColor: "#f9fafb", borderLeft: "3px solid #e5e7eb" }
+                                : { backgroundColor: "var(--surface-2)", borderLeft: "3px solid var(--hairline-strong)" }
                             }
                           >
                             <span
-                              className="w-4 h-4 rounded flex-none flex items-center justify-center text-[10px] text-white"
-                              style={{ backgroundColor: included ? color : "#d1d5db" }}
+                              className="w-4 h-4 rounded flex-none flex items-center justify-center text-[10px] text-night"
+                              style={
+                                included
+                                  ? { backgroundColor: color }
+                                  : { border: "1px solid var(--hairline-strong)" }
+                              }
                             >
                               {included ? "✓" : ""}
                             </span>
@@ -255,7 +259,7 @@ export default function FifaSeasonConfig({
                   <input
                     type="text"
                     placeholder="Add team..."
-                    className="w-full border border-hairline-strong rounded-lg px-3 py-2 text-sm focus:outline-none"
+                    className="w-full border border-hairline-strong rounded-lg bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-ink-dim focus:border-ink-muted focus:outline-none"
                     value={queries[player]}
                     onFocus={() => setOpens((prev) => ({ ...prev, [player]: true }))}
                     onChange={(e) => setQueries((prev) => ({ ...prev, [player]: e.target.value }))}

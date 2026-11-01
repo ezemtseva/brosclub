@@ -14,14 +14,22 @@ export type RecordCard = {
   when?: string
   /** Club crest shown in place of the value (FIFA) */
   logo?: string
+  /** The brand lime with dark ink, in both themes */
+  highlight?: boolean
 }
 
 export default function RecordTile({ card }: { card: RecordCard }) {
   const who = card.who ?? []
-  const color = who.length === 1 ? bearColor(who[0]) : "var(--ink)"
+  const lime = card.highlight
+  // On lime everything is the accent's dark ink
+  const color = lime ? "#0B0C0F" : who.length === 1 ? bearColor(who[0]) : "var(--ink)"
 
   return (
-    <article className="flex min-h-[200px] flex-col gap-4 rounded-[20px] border border-hairline bg-surface p-6">
+    <article
+      className={`flex min-h-[200px] flex-col gap-4 rounded-[20px] border p-6 ${
+        lime ? "border-accent bg-accent text-accent-foreground" : "border-hairline bg-surface"
+      }`}
+    >
       {/* One fixed-height slot for crest, figure or pill, so the text below
           starts on the same line in every tile */}
       <div className="flex h-14 shrink-0 items-center">
@@ -49,7 +57,7 @@ export default function RecordTile({ card }: { card: RecordCard }) {
           </span>
         )}
       </div>
-      <p className="m-0 flex-1 text-[15px] leading-normal text-ink-2">{card.text}</p>
+      <p className={`m-0 flex-1 text-[15px] leading-normal ${lime ? "text-accent-foreground" : "text-ink-2"}`}>{card.text}</p>
       <div className="flex flex-wrap items-center gap-1.5">
         {/* Same chip as the home page's Hall of champions: the bear's tint, bare avatar */}
         {who.map((name) => (
@@ -62,7 +70,9 @@ export default function RecordTile({ card }: { card: RecordCard }) {
             {name}
           </span>
         ))}
-        {card.when && <span className="ml-auto font-mono text-xs text-ink-dim">{card.when}</span>}
+        {card.when && (
+          <span className={`ml-auto font-mono text-xs ${lime ? "text-accent-foreground/70" : "text-ink-dim"}`}>{card.when}</span>
+        )}
       </div>
     </article>
   )

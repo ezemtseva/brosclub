@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
-import { Panel, BearLegend, WinsSplit } from "./design/Panels"
+import { Panel, BearLegend } from "./design/Panels"
 
 const SevenOkerChart = dynamic(() => import("./SevenOkerChart"), { ssr: false })
 
@@ -19,12 +19,11 @@ type SevenOkerEntry = {
 
 type SevenOkerChartToggleProps = {
   entries: SevenOkerEntry[]
+  /** Season rows; only the bears' names are read, for the legend */
   pieChartData: any[]
-  /** Games played this season — the wins panel shows wins out of this */
-  games: number
 }
 
-export default function SevenOkerChartToggle({ entries, pieChartData, games }: SevenOkerChartToggleProps) {
+export default function SevenOkerChartToggle({ entries, pieChartData }: SevenOkerChartToggleProps) {
   const [chartView, setChartView] = useState<"points" | "gamepoints">("points")
 
   const toggle = (view: "points" | "gamepoints", label: string) => (
@@ -45,7 +44,8 @@ export default function SevenOkerChartToggle({ entries, pieChartData, games }: S
       <Panel
         title="Season progress"
         aside={
-          <div role="group" aria-label="Chart metric" className="flex rounded-full bg-track p-1">
+          // ml-auto keeps it on the right when it wraps under the title on phones
+          <div role="group" aria-label="Chart metric" className="ml-auto flex rounded-full bg-track p-1">
             {toggle("points", "Points")}
             {toggle("gamepoints", "Game points")}
           </div>
@@ -53,16 +53,10 @@ export default function SevenOkerChartToggle({ entries, pieChartData, games }: S
         className="min-w-0 flex-[999_1_560px]"
       >
         <SevenOkerChart entries={entries} dataKey={chartView} />
-        <div className="mt-3">
+        <div className="md:mt-3">
           <BearLegend names={pieChartData.map((slice) => slice.name)} />
         </div>
       </Panel>
-      <WinsSplit
-        title="Wins"
-        rows={pieChartData.map((slice) => ({ name: slice.name, wins: slice.value }))}
-        total={games}
-        unit="games"
-      />
     </div>
   )
 }

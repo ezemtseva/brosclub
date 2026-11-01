@@ -29,16 +29,25 @@ export default function CupHeader({
   actions,
 }: CupHeaderProps) {
   return (
-    <section className="mx-auto max-w-page px-8 pt-8">
-      {/* Season picker pinned to the top right, level with the title's top edge */}
-      <div className="flex flex-wrap items-start justify-between gap-6">
-        <div className="min-w-0 flex-[999_1_520px]">
+    // Every cup page opens its content 40px below the tabs; phones pull it up to 20
+    <section className="mx-auto -mb-5 max-w-page px-8 pt-8 md:mb-0">
+      {/* Season picker pinned to the top right, level with the title's top edge.
+          Phones keep it beside the title; wider screens may wrap it below */}
+      <div className="flex items-start justify-between gap-3 md:flex-wrap md:gap-6">
+        <div className="min-w-0 flex-1 md:flex-[999_1_520px]">
           <h1 className="font-display text-[clamp(44px,6vw,84px)] font-extrabold leading-[0.95] tracking-[-0.03em]">
             {title}
           </h1>
-          {tagline && <p className="mt-5 max-w-[620px] text-[18px] text-ink-2">{tagline}</p>}
+          {/* No width cap: a long tagline runs on one line while the page has room.
+              Phones leave it out */}
+          {tagline && (
+            <p className="mt-5 hidden text-[18px] text-ink-2 md:block">
+              {/* An inline span, so a wrapped line gets its own highlight */}
+              <span className="tagline-highlight">{tagline}</span>
+            </p>
+          )}
         </div>
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="flex shrink-0 flex-wrap items-end gap-3">
           {actions}
           <div className="flex">
             <select
@@ -46,7 +55,7 @@ export default function CupHeader({
               aria-label="Season"
               value={activeSeason}
               onChange={(e) => onSeasonChange(e.target.value)}
-              className="season-select min-h-[44px] min-w-[180px] rounded-xl border border-hairline-strong bg-surface-2 px-3.5 pr-9 text-[15px] text-ink focus:outline-none"
+              className="season-select min-h-[44px] rounded-xl border border-hairline-strong bg-surface-2 px-3.5 pr-9 text-[15px] text-ink focus:outline-none"
             >
               {seasons.map((season) => (
                 <option key={season} value={season}>
@@ -58,7 +67,7 @@ export default function CupHeader({
         </div>
       </div>
 
-      <nav className="mt-10 flex flex-wrap gap-7 border-b border-hairline [&::-webkit-scrollbar]:hidden">
+      <nav className="mt-5 md:mt-10 flex flex-wrap gap-7 border-b border-hairline [&::-webkit-scrollbar]:hidden">
         {tabs.map((tab) => {
           const active = tab === activeTab
           return (

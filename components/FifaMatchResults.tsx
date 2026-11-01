@@ -84,9 +84,9 @@ function TeamCell({
       <Image
         src={logo}
         alt={normalized}
-        width={20}
-        height={20}
-        className="h-5 w-5 shrink-0 rounded-full object-contain"
+        width={24}
+        height={24}
+        className="h-6 w-6 shrink-0 object-contain"
       />
       <span className="truncate">
         <span className="hidden md:inline">{normalized}</span>
@@ -110,7 +110,7 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
       {matches.map((match) => (
         <div
           key={match.id}
-          className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 rounded-[14px] border border-hairline bg-surface px-4 py-3.5 text-sm"
+          className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 rounded-[14px] border border-hairline bg-surface px-4 py-3.5 text-base"
         >
           <TeamCell
             team={match.teamA}
@@ -118,7 +118,7 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
             teamLogos={teamLogos}
             won={match.scoreA > match.scoreB}
           />
-          <span className="rounded-lg bg-surface-3 px-2.5 py-1 font-mono text-[15px] font-medium text-ink">
+          <span className="rounded-lg bg-surface-3 px-2.5 py-1 font-mono text-base font-medium text-ink">
             {match.scoreA}:{match.scoreB}
           </span>
           <TeamCell

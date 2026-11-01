@@ -149,7 +149,13 @@ export default async function PokerPage() {
       <AutoRefresh intervalMs={30000} />
 
       <HoldemSeasonTabs
-        title="Texas Hold'em"
+        // Phones get the short name
+        title={
+          <>
+            <span className="md:hidden">Holdem</span>
+            <span className="hidden md:inline">Texas Holdem</span>
+          </>
+        }
         description="Permanently suspended after X seasons."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}

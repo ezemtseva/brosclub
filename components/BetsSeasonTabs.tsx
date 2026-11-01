@@ -10,8 +10,8 @@ import PlBetsGameweek from "./PlBetsGameweek"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
+import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
+import { Panel, BearLegend, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -44,13 +44,15 @@ type StatCard = {
   value: string
   player?: keyof typeof PLAYER_COLORS
   description: string
+  // Lime tile with dark ink, for the cup's signature records
+  highlight?: boolean
 }
 
 const betsRecordCards: StatCard[] = [
-  { value: "240", description: "Choco and Panda scored the same number of points in a season (2025/26)" },
+  { value: "240", highlight: true, description: "Choco and Panda scored the same number of points in a season (2025/26)" },
   { value: "299", player: "Choco", description: "Choco scored the most points in a season (2023/24)" },
   { value: "38", player: "Panda", description: "Panda held first place for 38 consecutive rounds (2022/23)" },
-  { value: "x3", description: "Panda and Vanilla have won the cup three times in a row (2012–14, 2020–23, 2015–18)" },
+  { value: "x3", highlight: true, description: "Panda and Vanilla have won the cup three times in a row (2012–14, 2020–23, 2015–18)" },
   { value: "56.67%", player: "Vanilla", description: "Vanilla scored the most points in a round — 17/30 (2021)" },
   { value: "4/5", player: "Vanilla", description: "Vanilla holds the record for most correctly predicted scores in a day (2016)" },
 ]
@@ -88,7 +90,7 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
 function toRecordCard(card: StatCard): RecordCard {
   const { text, when } = splitRecordDate(card.description)
-  return { value: card.value, text, when, who: card.player ? [card.player] : [] }
+  return { value: card.value, text, when, who: card.player ? [card.player] : [], highlight: card.highlight }
 }
 
 // Define types for the standings data
@@ -600,7 +602,7 @@ export default function BetsSeasonTabs({
   }
 
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
+  const toCards = (data: any[]): StandingCardData[] =>
     data.map((row) => {
       const name = playerNameFromColor(row.hoverColor)
       // All time keeps no prediction split, so it shows the gameweek win rate and titles instead
@@ -616,19 +618,15 @@ export default function BetsSeasonTabs({
               { label: "PS %", value: row.outcomePercent ?? "—" },
               { label: "EPS %", value: row.exactPercent ?? "—" },
             ]
-      return { name, points: row.points, stats, series: chartData && sparkSeries(chartData, name) }
+      return { name, points: row.points, stats }
     })
 
-  const gameweeksPlayed = (data: any[]) =>
-    Math.max(...data.map((row) => (typeof row.games === "number" ? row.games : 0)), 0)
-
-  /** Standings + chart + wins split, the shape every played season shares. */
-  const renderSeason = (data: any[], chartData: any[], pieData: any[], gameweek?: React.ReactNode) => {
-    const played = gameweeksPlayed(data)
+  /** Standings + chart, the shape every played season shares. */
+  const renderSeason = (data: any[], chartData: any[], gameweek?: React.ReactNode) => {
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(data, chartData)} columns={columns} rows={data} />
+          <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
         </section>
 
         {gameweek}
@@ -641,12 +639,6 @@ export default function BetsSeasonTabs({
           >
             <BetsChart entries={chartData} />
           </Panel>
-          <WinsSplit
-            title="Gameweek wins"
-            rows={pieData.map((slice) => ({ name: slice.name, wins: slice.value }))}
-            total={played}
-            unit="GW"
-          />
         </section>
       </>
     )
@@ -658,15 +650,14 @@ export default function BetsSeasonTabs({
       return renderSeason(
         currentSeasonData,
         currentSeasonChartData,
-        currentSeasonPieData,
         <section className="mx-auto max-w-page px-8 pt-12">
           <PlBetsGameweek initialGameweek={initialGameweek} initialMatches={initialMatches} />
         </section>,
       )
     } else if (activeSeason === "2025/26") {
-      return renderSeason(season2526Data, season2526ChartData, season2526PieData)
+      return renderSeason(season2526Data, season2526ChartData)
     } else if (activeSeason === "2024/25") {
-      return renderSeason(historicalSeasonData, historicalSeasonChartData, historicalSeasonPieData)
+      return renderSeason(historicalSeasonData, historicalSeasonChartData)
     } else if (pastSeasonsData[activeSeason]) {
       // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!

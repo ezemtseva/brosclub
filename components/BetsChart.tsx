@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PLAYER_COLORS } from '../lib/teamColors'
 import { useChartColors } from '../lib/useChartColors'
+import { useIsMobile } from '../lib/useIsMobile'
+import { chartLayout } from '../lib/chartLayout'
 import { ChartTooltip } from './ChartTooltip'
 
 type BetsEntry = {
@@ -25,6 +27,8 @@ type BetsChartProps = {
 
 export default function BetsChart({ entries }: BetsChartProps) {
   const colors = useChartColors()
+  // Phones: Y labels inside the plot, no side margins, fewer ticks
+  const layout = chartLayout(useIsMobile())
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -60,28 +64,29 @@ export default function BetsChart({ entries }: BetsChartProps) {
   }, [entries])
 
   return (
-    <div className="h-[400px]">
+    <div className="h-[280px] md:h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
-          margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
+          margin={layout.margin}
         >
           <CartesianGrid stroke={colors.grid} vertical={false} />
           <XAxis
             dataKey="games"
             type="number"
             domain={[0, 38]}
-            ticks={Array.from({ length: 20 }, (_, i) => i * 2)}
+            ticks={layout.xTicks(Array.from({ length: 20 }, (_, i) => i * 2))}
             stroke={colors.grid}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
           <YAxis
             type="number"
             domain={[0, 300]}
-            ticks={[0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300]}
+            ticks={layout.yTicks([0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300])}
             interval={0}
-            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11, ...layout.yTickOffset }}
             width={44}
+            {...layout.yAxis}
             stroke={colors.grid}
           />
           <Tooltip content={<ChartTooltip />} cursor={{ stroke: colors.cursor }} />

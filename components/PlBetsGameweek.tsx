@@ -348,7 +348,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                 ))}
               </tr>
             </thead>
-            <tbody className="text-sm text-ink-2">
+            <tbody className="text-base text-ink-2">
               {matches.map((match) => {
                 const locked = isLocked(match.kickoff)
                 const finished = match.status === "FINISHED"

@@ -12,6 +12,8 @@ import {
 } from "recharts"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import { useChartColors } from "../lib/useChartColors"
+import { useIsMobile } from "../lib/useIsMobile"
+import { chartLayout } from "../lib/chartLayout"
 import { ChartTooltip } from "./ChartTooltip"
 
 type SevenOkerEntry = {
@@ -40,6 +42,9 @@ export default function SevenOkerChart({
   dataKey = "points",
 }: SevenOkerChartProps) {
   const colors = useChartColors()
+  // Phones: Y labels inside the plot, no side margins, fewer ticks
+  const isMobile = useIsMobile()
+  const layout = chartLayout(isMobile, { top: 10, right: 10, left: 0, bottom: 5 })
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [yAxisDomain, setYAxisDomain] = useState<[number, number]>([0, 30])
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([])
@@ -108,11 +113,11 @@ export default function SevenOkerChart({
   }, [entries, dataKey])
 
   return (
-    <div className="h-[400px] w-full">
+    <div className="h-[280px] md:h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
-          margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+          margin={layout.margin}
         >
           <CartesianGrid stroke={colors.grid} vertical={false} />
 
@@ -121,7 +126,7 @@ export default function SevenOkerChart({
             dataKey="games"
             type="number"
             domain={[0, 75]}
-            ticks={Array.from({ length: 16 }, (_, i) => i * 5)}
+            ticks={layout.xTicks(Array.from({ length: 16 }, (_, i) => i * 5))}
             allowDecimals={false}
             allowDataOverflow
             interval={0}
@@ -131,12 +136,15 @@ export default function SevenOkerChart({
 
           <YAxis
             type="number"
-            domain={yAxisDomain}
-            ticks={yAxisTicks}
+            // Phones run game points to 12500, so the ceiling lands on a 2500 step and gets a label
+            domain={isMobile && dataKey === "gamepoints" ? [0, 12500] : yAxisDomain}
+            // Phones step by 25 points, or by 2500 game points
+            ticks={layout.yTicks(yAxisTicks, dataKey === "points" ? [25, 50, 75, 100] : [2500, 5000, 7500, 10000, 12500])}
             interval={0}
             width={50}
+            {...layout.yAxis}
             stroke={colors.grid}
-            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11, ...layout.yTickOffset }}
           />
 
           <Tooltip content={<ChartTooltip />} cursor={{ stroke: colors.cursor }} />

@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react"
-import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
+import Image from "next/image"
+import { PLAYER_COLORS, PLAYER_TINTS, shortenTeamName } from "../lib/teamColors"
 import { BearAvatar } from "./Bear"
+import PlayerCell from "./PlayerCell"
 import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../lib/cardFrame"
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -512,7 +514,7 @@ function PlayerStatsCard({ s, rank }: { s: PlayerStats; rank: number }) {
         style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
       >
         <div className="flex items-center gap-3">
-          <BearAvatar name={s.player} size={44} />
+          <BearAvatar name={s.player} size={44} filled />
           <span className="font-display text-xl font-bold">{s.player}</span>
           <span
             className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
@@ -541,13 +543,14 @@ function PlayerStatsCard({ s, rank }: { s: PlayerStats; rank: number }) {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 border-t border-[var(--card-rule)] pt-4">
+        {/* Columns sized to their figures, never wrapped: "91-25-109" would break at a hyphen */}
+        <div className="flex justify-between gap-3 border-t border-[var(--card-rule)] pt-4">
           {[
             { label: "W-D-L", value: `${s.wins}-${s.draws}-${s.losses}` },
             { label: "Goals", value: `${s.gf}:${s.ga}` },
             { label: "Goal diff", value: signed(s.gd) },
           ].map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1.5">
+            <div key={stat.label} className="flex flex-col gap-1.5 whitespace-nowrap">
               <BigNumber size={30}>{stat.value}</BigNumber>
               <Label>{stat.label}</Label>
             </div>
@@ -581,22 +584,21 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
           >
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
-                <BearAvatar name={pA} size={36} />
-                <span className="truncate font-semibold">{pA}</span>
+                <BearAvatar name={pA} size={36} filled />
+                {/* Phones show the avatars alone */}
+                <span className="hidden truncate font-semibold md:block">{pA}</span>
               </div>
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-baseline gap-2">
-                  <BigNumber size={64} color={PLAYER_COLORS[pA]}>{r.wins}</BigNumber>
-                  <BigNumber size={64} className="text-[color:var(--ghost)]">–</BigNumber>
-                  <BigNumber size={64} color={PLAYER_COLORS[pB]}>{r.losses}</BigNumber>
-                </div>
-                <Label className="whitespace-nowrap">
-                  {r.draws} draws · {total} games
-                </Label>
+              {/* Wins – draws – losses; the draws take the dashes' grey */}
+              <div className="flex items-baseline gap-2">
+                <BigNumber size={64} color={PLAYER_COLORS[pA]}>{r.wins}</BigNumber>
+                <BigNumber size={64} className="text-[color:var(--ghost)]">–</BigNumber>
+                <BigNumber size={64} className="text-[color:var(--ghost)]">{r.draws}</BigNumber>
+                <BigNumber size={64} className="text-[color:var(--ghost)]">–</BigNumber>
+                <BigNumber size={64} color={PLAYER_COLORS[pB]}>{r.losses}</BigNumber>
               </div>
               <div className="flex min-w-0 items-center justify-end gap-2.5">
-                <span className="truncate font-semibold">{pB}</span>
-                <BearAvatar name={pB} size={36} />
+                <span className="hidden truncate font-semibold md:block">{pB}</span>
+                <BearAvatar name={pB} size={36} filled />
               </div>
             </div>
 
@@ -624,13 +626,22 @@ function H2HCards({ matrix }: { matrix: H2HMatrix }) {
   )
 }
 
-function TopTeamsProjection({ projections }: { projections: TeamProjection[] }) {
+function TopTeamsProjection({
+  projections,
+  teamLogos,
+}: {
+  projections: TeamProjection[]
+  teamLogos: Record<string, string>
+}) {
   return (
     <div className="flex flex-col gap-3">
       {projections.map((t, i) => (
         <div
           key={t.team}
-          className="flex items-center gap-5 rounded-[20px] border border-hairline bg-surface px-[22px] py-5"
+          // The favourite is ringed in the brand lime
+          className={`flex items-center gap-5 rounded-[20px] border bg-surface px-[22px] py-5 ${
+            i === 0 ? "border-accent" : "border-hairline"
+          }`}
         >
           {/* The favourite's numeral in the accent; olive in light, where lime can't be read */}
           <BigNumber
@@ -641,9 +652,14 @@ function TopTeamsProjection({ projections }: { projections: TeamProjection[] }) 
           </BigNumber>
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-              <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: t.color }} />
+              <Image
+                src={teamLogos[t.team] || "/placeholder.svg"}
+                alt=""
+                width={28}
+                height={28}
+                className="h-7 w-7 shrink-0 object-contain"
+              />
               <span className="text-[17px] font-semibold">{t.team}</span>
-              <span className="text-[13px] text-ink-muted">{t.player}</span>
             </div>
             <Label>
               Now {t.currentPoints} pts
@@ -651,10 +667,10 @@ function TopTeamsProjection({ projections }: { projections: TeamProjection[] }) 
               {t.formPPG.toFixed(2)}
             </Label>
           </div>
-          <div className="flex shrink-0 flex-col items-end gap-2">
-            <BigNumber size={64}>{Math.round(t.projectedPoints)}</BigNumber>
-            <Label>Predicted</Label>
-          </div>
+          {/* The owner's colour carries who the team belongs to */}
+          <BigNumber size={64} color={t.color} className="shrink-0">
+            {Math.round(t.projectedPoints)}
+          </BigNumber>
         </div>
       ))}
       <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">
@@ -668,80 +684,156 @@ type SeasonRecord = {
   key: string
   value: React.ReactNode
   title: string
-  subtitle: string
+  /** Who holds it: a bear's pill, a team's pill or a match's crests */
+  who: React.ReactNode
+  /** The same holder drawn large, filling the tile's right side on phones */
+  big: React.ReactNode
   /** The bear who holds it; a record shared by two sides keeps a neutral bar */
   holder?: PlayerName | null
 }
 
-/** Tile with a 4px bar on top in the holder's colour. */
+/**
+ * Tile with a 4px bar on top in the holder's colour. Wide screens stack the
+ * holder's pill under the title; phones, one tile to a row, put a large
+ * avatar or crest on the right instead of leaving that side empty.
+ */
 function RecordTile({ record }: { record: SeasonRecord }) {
   const color = record.holder ? PLAYER_COLORS[record.holder] : undefined
   return (
-    <div className="relative flex flex-col gap-2.5 overflow-hidden rounded-[16px] border border-hairline bg-surface px-5 pb-5 pt-6">
+    <div className="relative flex items-center gap-4 overflow-hidden rounded-[16px] border border-hairline bg-surface px-5 pb-5 pt-6">
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1" style={{ background: color ?? "var(--track)" }} />
-      <BigNumber size={64} color={color}>{record.value}</BigNumber>
-      <div className="mt-1 text-sm font-medium">{record.title}</div>
-      <Label>{record.subtitle}</Label>
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+        <BigNumber size={64} color={color}>{record.value}</BigNumber>
+        <div className="mt-1 text-sm font-medium">{record.title}</div>
+        <div className="hidden min-w-0 flex-wrap items-center gap-2 md:flex">{record.who}</div>
+      </div>
+      <div className="flex shrink-0 items-center md:hidden">{record.big}</div>
     </div>
   )
 }
 
-function RecordsSection({ records, playerTeams }: { records: RecordsData; playerTeams: PlayerTeams }) {
+function RecordsSection({
+  records,
+  playerTeams,
+  teamLogos,
+}: {
+  records: RecordsData
+  playerTeams: PlayerTeams
+  teamLogos: Record<string, string>
+}) {
   const owner = (team: string) => getPlayerForTeam(team, playerTeams)
-  const scoreline = (m: MatchRecord) => `${shortenTeamName(m.teamA)} ${m.scoreA}:${m.scoreB} ${shortenTeamName(m.teamB)}`
+
+  const crest = (team: string, size: number) => (
+    <Image
+      src={teamLogos[team] || "/placeholder.svg"}
+      alt={shortenTeamName(team)}
+      title={shortenTeamName(team)}
+      width={size}
+      height={size}
+      className="shrink-0 object-contain"
+      style={{ width: size, height: size }}
+    />
+  )
+
+  /** A team as the bears' pill: its crest and name on its owner's tint. */
+  const teamPill = (team: string) => {
+    const bear = owner(team)
+    return (
+      <span
+        className="inline-flex min-w-0 items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[5px] pr-[11px] text-sm font-medium text-ink"
+        style={{ background: (bear && PLAYER_TINTS[bear]) || "var(--chip)" }}
+      >
+        {crest(team, 18)}
+        {shortenTeamName(team)}
+      </span>
+    )
+  }
+
+  /** Two crests either side of the score — names would not fit a tile. */
+  const scoreline = (m: MatchRecord) => (
+    <span className="inline-flex items-center gap-2.5">
+      {crest(m.teamA, 24)}
+      <span className="font-mono text-sm font-medium text-ink">
+        {m.scoreA}:{m.scoreB}
+      </span>
+      {crest(m.teamB, 24)}
+    </span>
+  )
+
+  // Phone versions: the holder drawn large on the tile's right
+  const BIG = 80
+  const bigMatch = (m: MatchRecord) => (
+    <span className="inline-flex items-center gap-2">
+      {crest(m.teamA, 44)}
+      <span className="font-mono text-sm font-medium text-ink">
+        {m.scoreA}:{m.scoreB}
+      </span>
+      {crest(m.teamB, 44)}
+    </span>
+  )
+  const forPlayer = (player: PlayerName) => ({ who: <PlayerCell name={player} />, big: <BearAvatar name={player} size={BIG} filled /> })
+  const forTeam = (team: string) => ({ who: teamPill(team), big: crest(team, BIG) })
+  const forMatch = (m: MatchRecord) => ({ who: scoreline(m), big: bigMatch(m) })
+
   const list: SeasonRecord[] = []
 
   if (records.highestScoring) {
     const { match, total } = records.highestScoring
-    list.push({ key: "highestScoring", value: total, title: "Highest-scoring game", subtitle: scoreline(match) })
+    list.push({ key: "highestScoring", value: total, title: "Highest-scoring game", ...forMatch(match) })
   }
   if (records.biggestWin) {
     const { match, margin, winner } = records.biggestWin
-    list.push({ key: "biggestWin", value: margin, title: "Biggest win", subtitle: scoreline(match), holder: owner(winner) })
+    list.push({ key: "biggestWin", value: margin, title: "Biggest win", ...forMatch(match), holder: owner(winner) })
   }
   if (records.bestAttack) {
     const { team, gf } = records.bestAttack
-    list.push({ key: "bestAttack", value: gf, title: "Most goals scored", subtitle: shortenTeamName(team), holder: owner(team) })
+    list.push({ key: "bestAttack", value: gf, title: "Most goals scored", ...forTeam(team), holder: owner(team) })
   }
   if (records.bestDefense) {
     const { team, ga } = records.bestDefense
-    list.push({ key: "bestDefense", value: ga, title: "Fewest goals conceded", subtitle: shortenTeamName(team), holder: owner(team) })
+    list.push({ key: "bestDefense", value: ga, title: "Fewest goals conceded", ...forTeam(team), holder: owner(team) })
   }
   if (records.bestWinRate) {
-    const { team, winRate, wins, games } = records.bestWinRate
+    const { team, winRate } = records.bestWinRate
     list.push({
       key: "bestWinRateTeam",
       value: `${Math.round(winRate * 100)}%`,
       title: "Best team win rate",
-      subtitle: `${shortenTeamName(team)} · ${wins} of ${games}`,
+      ...forTeam(team),
       holder: owner(team),
     })
   }
   if (records.longestWinStreak) {
     const { player, length } = records.longestWinStreak
-    list.push({ key: "winStreak", value: length, title: "Longest winning streak", subtitle: player, holder: player })
+    list.push({ key: "winStreak", value: length, title: "Longest winning streak", ...forPlayer(player), holder: player })
   }
   if (records.mostCleanSheets) {
     const { player, count } = records.mostCleanSheets
-    list.push({ key: "cleanSheets", value: count, title: "Most clean sheets", subtitle: player, holder: player })
+    list.push({ key: "cleanSheets", value: count, title: "Most clean sheets", ...forPlayer(player), holder: player })
   }
   if (records.longestUnbeaten) {
     const { player, length } = records.longestUnbeaten
-    list.push({ key: "unbeaten", value: length, title: "Longest unbeaten run", subtitle: player, holder: player })
+    list.push({ key: "unbeaten", value: length, title: "Longest unbeaten run", ...forPlayer(player), holder: player })
   }
   if (records.bestWinRatePlayer) {
-    const { player, winRate, wins, games } = records.bestWinRatePlayer
+    const { player, winRate } = records.bestWinRatePlayer
     list.push({
       key: "winRatePlayer",
       value: `${Math.round(winRate * 100)}%`,
       title: "Best win rate",
-      subtitle: `${player} · ${wins} of ${games}`,
+      ...forPlayer(player),
       holder: player,
     })
   }
   if (records.bestFormPlayer) {
     const { player, formPPG } = records.bestFormPlayer
-    list.push({ key: "bestForm", value: formPPG.toFixed(2), title: "Best current form", subtitle: `${player} · PPG, last 5`, holder: player })
+    list.push({
+      key: "bestForm",
+      value: formPPG.toFixed(2),
+      title: "Best current form",
+      ...forPlayer(player),
+      holder: player,
+    })
   }
 
   return (
@@ -786,7 +878,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
 
 // ── Root component ───────────────────────────────────────────────────────────
 
-export default function FifaAdvancedAnalytics({ matches, playerTeams }: FifaAdvancedAnalyticsProps) {
+export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos }: FifaAdvancedAnalyticsProps) {
   if (matches.length === 0) {
     return <p className="text-ink-muted text-center italic mt-32">No insights yet</p>
   }
@@ -817,13 +909,13 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams }: FifaAdva
         </section>
         <section className="min-w-0 flex-[1_1_420px]">
           <SectionTitle>Top 3 predicted</SectionTitle>
-          <TopTeamsProjection projections={topTeams} />
+          <TopTeamsProjection projections={topTeams} teamLogos={teamLogos} />
         </section>
       </div>
 
       <section>
         <SectionTitle>Season records</SectionTitle>
-        <RecordsSection records={records} playerTeams={playerTeams} />
+        <RecordsSection records={records} playerTeams={playerTeams} teamLogos={teamLogos} />
       </section>
 
       {/* Predictions */}

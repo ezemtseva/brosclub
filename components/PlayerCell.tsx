@@ -1,29 +1,17 @@
-import Image from "next/image"
-import { PLAYER_COLORS } from "../lib/teamColors"
+import { PLAYER_TINTS } from "../lib/teamColors"
+import { BearAvatar } from "./Bear"
 
-const PLAYER_AVATARS: Record<string, string> = {
-  Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
-}
-
-/** Player in a standings table: avatar ringed in the player's colour, then the name. */
-export default function PlayerCell({ name, color }: { name: string; color?: string }) {
-  const ringColor = color ?? PLAYER_COLORS[name] ?? "#cccccc"
-  const avatar = PLAYER_AVATARS[name]
-
+/**
+ * Player in a table: the hall-of-champions pill — the mascot and the name on
+ * the bear's tint. `color` is kept for callers that still pass it.
+ */
+export default function PlayerCell({ name }: { name: string; color?: string }) {
   return (
-    <span className="flex items-center gap-2 whitespace-nowrap">
-      {avatar && (
-        <Image
-          src={avatar}
-          alt={name}
-          width={24}
-          height={24}
-          className="rounded-full object-cover w-6 h-6 border-2 shrink-0"
-          style={{ borderColor: ringColor }}
-        />
-      )}
+    <span
+      className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium text-ink md:text-base"
+      style={{ background: PLAYER_TINTS[name] ?? "var(--chip)" }}
+    >
+      <BearAvatar name={name} size={20} ring={false} />
       {name}
     </span>
   )

@@ -212,8 +212,8 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
       return {
         position: (
           <span className="flex items-center justify-center gap-0.5">
-            <span style={{fontSize:'12.25px'}}>{index + 1}</span>
-            <span className="leading-none" style={{fontSize:'9px', color: mv > 0 ? '#22c55e' : mv < 0 ? '#f87171' : 'transparent'}}>
+            <span>{index + 1}</span>
+            <span className="leading-none" style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
               {mv > 0 ? '↑' : '↓'}
             </span>
           </span>
@@ -225,11 +225,11 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
             <Image
               src={entry.logo || "/placeholder.svg"}
               alt={teamName}
-              width={24}
-              height={24}
+              width={28}
+              height={28}
               // Fixed box + object-contain: preflight's height:auto would stretch
               // a non-square crest and push the row open
-              className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
+              className="object-contain w-[28px] h-[28px] shrink-0"
             />
             <span>
               <span className="md:hidden">{shortenTeamName(teamName)}</span>
@@ -271,9 +271,9 @@ function processFifaData2024(entries: any[]) {
           <Image
             src={entry.logo || "/placeholder.svg"}
             alt={teamName}
-            width={24}
-            height={24}
-            className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
+            width={28}
+            height={28}
+            className="object-contain w-[28px] h-[28px] shrink-0"
           />
           <span>{teamName}</span>
         </div>

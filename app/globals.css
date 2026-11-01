@@ -151,6 +151,16 @@ html.light .accent-word {
   -webkit-box-decoration-break: clone;
 }
 
+/* A cup's tagline: plain in dark, the same lime highlighter as "Sunday." in light */
+html.light .tagline-highlight {
+  color: var(--ink);
+  background: var(--lime);
+  padding: 0 0.15em;
+  border-radius: 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
 /* A link inside body copy: lime text in dark, lime underline in light */
 .link-accent {
   color: var(--lime);
@@ -221,10 +231,13 @@ html.light .stat-number {
   color: var(--ink) !important;
 }
 
-/* A dark crest is traced in the bear's colour on the dark card; on white it
-   reads as it is */
-html.light .crest-outline {
-  filter: none !important;
+/* Dark-only crests turn white in dark; light shows them as they are.
+   Matched by src so it covers raw paths and next/image (%2F-encoded) URLs */
+html:not(.light) img:is(
+  [src*="fifa/tot.png"], [src*="fifa%2Ftot.png"],
+  [src*="fifa/juv1.png"], [src*="fifa%2Fjuv1.png"]
+) {
+  filter: brightness(0) invert(1);
 }
 /* History table styles */
 .history-table {
@@ -271,6 +284,13 @@ html.light .crest-outline {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+/* Standings rows run 49px at the 16px body size: header + ten rows + the frame's
+   borders. Results sits beside it at the same height */
+.fifa-standings-table > div,
+.fifa-results-table > div {
+  max-height: 537px;
 }
 
 /* Cup standings: Cards | Table. The attribute is set before the first paint

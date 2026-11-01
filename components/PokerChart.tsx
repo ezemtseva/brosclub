@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PLAYER_COLORS } from '../lib/teamColors'
 import { useChartColors } from '../lib/useChartColors'
+import { useIsMobile } from '../lib/useIsMobile'
+import { chartLayout } from '../lib/chartLayout'
 import { ChartTooltip } from './ChartTooltip'
 
 type PokerEntry = {
@@ -24,6 +26,8 @@ type PokerChartProps = {
 
 export default function PokerChart({ entries }: PokerChartProps) {
   const colors = useChartColors()
+  // Phones: Y labels inside the plot, no side margins, fewer ticks
+  const layout = chartLayout(useIsMobile(), { top: 10, right: 10, left: 0, bottom: 5 })
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -56,29 +60,30 @@ export default function PokerChart({ entries }: PokerChartProps) {
   }, [entries])
 
   return (
-    <div className="h-[400px] w-full">
+    <div className="h-[280px] md:h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
-          margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+          margin={layout.margin}
         >
           <CartesianGrid stroke={colors.grid} vertical={false} />
           <XAxis
             dataKey="games"
             type="number"
             domain={[0, 44]}
-            ticks={Array.from({ length: 23 }, (_, i) => i * 2)}
+            ticks={layout.xTicks(Array.from({ length: 23 }, (_, i) => i * 2))}
             stroke={colors.grid}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
           <YAxis
             type="number"
             domain={[0, 85]}
-            ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85]}
+            ticks={layout.yTicks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85])}
             interval={0}
             width={44}
+            {...layout.yAxis}
             stroke={colors.grid}
-            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
+            tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11, ...layout.yTickOffset }}
           />
           <Tooltip content={<ChartTooltip />} cursor={{ stroke: colors.cursor }} />
           <Line type="monotone" dataKey="Vanilla" stroke={PLAYER_COLORS.Vanilla} strokeWidth={3} dot={false} activeDot={{ r: 4 }} connectNulls />

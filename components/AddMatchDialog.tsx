@@ -77,7 +77,7 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
     <div ref={containerRef} className="relative flex-1 min-w-0" onBlur={handleBlur}>
       <input
         type="text"
-        className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-colors ${colorClass}`}
+        className={`w-full border rounded-lg px-3 py-2 text-sm placeholder:text-ink-dim focus:outline-none transition-colors ${colorClass}`}
         placeholder={open ? "" : "Select team"}
         value={open ? query : value}
         onFocus={() => { setOpen(true); setQuery("") }}
@@ -324,20 +324,20 @@ export default function AddMatchDialog({
   const scoresEntered = scoreA !== "" && scoreB !== ""
 
   const selectAClass = !scoresEntered
-    ? "border-hairline-strong"
+    ? "border-hairline-strong bg-surface-2 text-ink"
     : aScore > bScore
     ? "border-accent bg-accent font-semibold text-accent-foreground"
     : aScore < bScore
-    ? "border-red-300 bg-red-50"
-    : "border-hairline-strong bg-surface-2"
+    ? "border-hairline-strong bg-surface-2 text-ink-muted"
+    : "border-hairline-strong bg-surface-2 text-ink"
 
   const selectBClass = !scoresEntered
-    ? "border-hairline-strong"
+    ? "border-hairline-strong bg-surface-2 text-ink"
     : bScore > aScore
     ? "border-accent bg-accent font-semibold text-accent-foreground"
     : bScore < aScore
-    ? "border-red-300 bg-red-50"
-    : "border-hairline-strong bg-surface-2"
+    ? "border-hairline-strong bg-surface-2 text-ink-muted"
+    : "border-hairline-strong bg-surface-2 text-ink"
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -393,7 +393,7 @@ export default function AddMatchDialog({
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg bg-surface-2 text-ink px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreA}
             onChange={(e) => setScoreA(e.target.value.slice(0, 2))}
           />
@@ -405,7 +405,7 @@ export default function AddMatchDialog({
             min="0"
             max="99"
             placeholder="0"
-            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-14 shrink-0 text-center border border-hairline-strong rounded-lg bg-surface-2 text-ink px-2 py-2 text-sm font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={scoreB}
             onChange={(e) => setScoreB(e.target.value.slice(0, 2))}
           />
@@ -427,14 +427,14 @@ export default function AddMatchDialog({
               <div style={{ width: `${odds.probB}%`, backgroundColor: getTeamColor(teamB, playerTeams) || "#9ca3af" }} />
             </div>
             <div className="relative flex justify-between text-xs">
-              <span className="font-semibold" style={{ color: getTeamColor(teamA, playerTeams) || "#374151" }}>{odds.probA}%</span>
+              <span className="font-semibold" style={{ color: getTeamColor(teamA, playerTeams) || "var(--ink-muted)" }}>{odds.probA}%</span>
               <span
                 className="absolute -translate-x-1/2 text-ink-dim"
                 style={{ left: `${odds.probA + odds.probDraw / 2}%` }}
               >
                 {odds.probDraw}%
               </span>
-              <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "#374151" }}>{odds.probB}%</span>
+              <span className="font-semibold" style={{ color: getTeamColor(teamB, playerTeams) || "var(--ink-muted)" }}>{odds.probB}%</span>
             </div>
             {accuracy && (
               <p className="text-sm text-ink-muted text-center mt-1">

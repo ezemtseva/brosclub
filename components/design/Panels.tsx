@@ -14,7 +14,8 @@ export function Panel({
   children: React.ReactNode
 }) {
   return (
-    <div className={`rounded-[20px] border border-hairline bg-surface p-7 ${className}`}>
+    // Phones trim the padding so a chart inside gets the width
+    <div className={`rounded-[20px] border border-hairline bg-surface p-4 md:p-7 ${className}`}>
       {(title || aside) && (
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
           {title && <h2 className="font-display text-xl font-bold">{title}</h2>}
@@ -26,10 +27,10 @@ export function Panel({
   )
 }
 
-/** Legend of bear names with a colour swatch — sits next to charts. */
+/** Legend of bear names with a colour swatch — sits next to charts. Phones go without it. */
 export function BearLegend({ names }: { names: string[] }) {
   return (
-    <div className="flex gap-4 text-[13px] text-ink-2">
+    <div className="hidden gap-4 text-[13px] text-ink-2 md:flex">
       {names.map((name) => (
         <span key={name} className="inline-flex items-center gap-1.5">
           <span
@@ -53,16 +54,18 @@ export function WinsSplit({
   rows,
   total,
   unit,
+  hideOnPhones = false,
 }: {
   title: string
   rows: { name: string; wins: number }[]
   total: number
   unit: string
+  hideOnPhones?: boolean
 }) {
   const anyWins = rows.some((row) => row.wins > 0)
 
   return (
-    <Panel title={title} className="flex flex-[1_1_320px] flex-col gap-5">
+    <Panel title={title} className={`${hideOnPhones ? "hidden md:flex" : "flex"} flex-[1_1_320px] flex-col gap-5`}>
       <div aria-hidden="true" className="flex h-3.5 gap-[3px] overflow-hidden rounded-full">
         {anyWins ? (
           rows.map((row) => (

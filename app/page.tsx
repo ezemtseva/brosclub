@@ -3,10 +3,11 @@ import Link from "next/link"
 import prisma from "../lib/prisma"
 import { PLAYER_TINTS } from "../lib/teamColors"
 import { CURRENT_FIFA_SEASON } from "../lib/fifaSeason"
-import { flagSvgUrl } from "../lib/teamCountries"
 import { cardClip, CARD_STRIPES, ARCHIVO_CONDENSED } from "../lib/cardFrame"
 import { CURRENT_SEASON, CURRENT_SEASON_NUMERAL } from "../lib/season"
 import { BearAvatar, bearColor } from "../components/Bear"
+import PlayerCell from "../components/PlayerCell"
+import MobileReveal from "../components/MobileReveal"
 import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
 
@@ -14,40 +15,8 @@ export const dynamic = 'force-dynamic'
 
 const Snowfall = dynamicImport(() => import("../components/Snowfall"), { ssr: false })
 
-/** Each bear's collectible card: mascot, the flag they play under, their club. */
-const clubMembers = [
-  {
-    name: "Vanilla",
-    image: "/imgs/vanilla.png",
-    country: "Serbia",
-    countryCode: "rs",
-    club: "Liverpool",
-    crest: "/imgs/fifa/liv1.png",
-  },
-  {
-    name: "Choco",
-    image: "/imgs/choco.png",
-    country: "Cyprus",
-    countryCode: "cy",
-    club: "Chelsea",
-    crest: "/imgs/fifa/che1.png",
-  },
-  {
-    name: "Panda",
-    image: "/imgs/panda.png",
-    country: "Russia",
-    countryCode: "ru",
-    club: "Juventus",
-    crest: "/imgs/fifa/juv1.png",
-    // A black mark on transparency — traced in the bear's colour to show on the dark card
-    crestOutline: true,
-  },
-]
-
-/** Four offset shadows trace an outline around a transparent drawing. */
-const outlineFilter = (color: string, px: number) =>
-  `drop-shadow(${px}px 0 0 ${color}) drop-shadow(-${px}px 0 0 ${color}) drop-shadow(0 ${px}px 0 ${color}) drop-shadow(0 -${px}px 0 ${color})`
-
+/** The club's three bears, in the order their cups are tallied. */
+const clubMembers = [{ name: "Vanilla" }, { name: "Choco" }, { name: "Panda" }]
 
 /** The club was founded on 06.09.2012 — the hero counts the years from here. */
 const FOUNDED = new Date(2012, 8, 6)
@@ -75,14 +44,21 @@ type SeasonSummary = {
   /** The panel behind the leader — their colour, or neutral grey for a club */
   color: string
   empty?: string
+  /**
+   * Season progress: `value` out of `max` fills the bar (rounds played, or for
+   * 7oker the leader's points); `gameweek` is written in it
+   */
+  progress: { value: number; max: number; gameweek: number }
 }
+
+const RANKS = ["1ST", "2ND", "3RD"]
 
 const cupCategories = [
   { key: "fifa", label: "FIFA" },
   { key: "fpl", label: "FPL" },
   { key: "bets", label: "BETS" },
   { key: "sevenOker", label: "7OKER" },
-  { key: "holdem", label: "HOLD'EM" },
+  { key: "holdem", label: "HOLDEM" },
 ] as const
 
 const historyData = [
@@ -150,7 +126,7 @@ async function getLatest7okerLeader() {
       const leader = await (prisma as any).sevenOkerEntry.findFirst({
         where: { week: latestWeek.week },
         orderBy: { points: "desc" },
-        select: { bearo: true, points: true },
+        select: { bearo: true, points: true, games: true },
       })
       if (leader) return { ...leader, isArchive: false }
     }
@@ -165,7 +141,7 @@ async function getLatest7okerLeader() {
     const archiveLeader = await (prisma as any).sevenOkerEntry2526.findFirst({
       where: { week: latestArchiveWeek.week },
       orderBy: { points: "desc" },
-      select: { bearo: true, points: true },
+      select: { bearo: true, points: true, games: true },
     })
     return archiveLeader ? { ...archiveLeader, isArchive: true } : null
   } catch (error) {
@@ -188,7 +164,11 @@ async function getLatestBetsLeaders() {
     if (top <= 0) return null
 
     // Several players can share the lead
-    return { players: entries.filter((e) => e.points === top).map((e) => e.player), points: top }
+    return {
+      players: entries.filter((e) => e.points === top).map((e) => e.player),
+      points: top,
+      games: entries.reduce((max, e) => Math.max(max, e.games), 0),
+    }
   } catch (error) {
     console.error("Error fetching Bets leader:", error)
     return null
@@ -202,14 +182,16 @@ async function getLatestFifaLeader() {
     // rows are ranked here — otherwise the card names a different leader.
     const [entries, drafted] = await Promise.all([
       prisma.fifaEntry.findMany({
-        select: { team: true, logo: true, wins: true, draws: true, losses: true, goalsScored: true, goalsConceded: true },
+        select: { team: true, logo: true, games: true, wins: true, draws: true, losses: true, goalsScored: true, goalsConceded: true },
       }),
       prisma.fifaPlayerTeam.findMany({ where: { season: CURRENT_FIFA_SEASON }, select: { team: true, player: true } }),
     ])
 
     const owners = new Map(drafted.map((row) => [row.team, row.player]))
-    const leader = entries
-      .filter((entry) => owners.size === 0 || owners.has(entry.team))
+    const inSeason = entries.filter((entry) => owners.size === 0 || owners.has(entry.team))
+    // Rounds played so far: the most games any of this season's teams has had
+    const rounds = inSeason.reduce((max, entry) => Math.max(max, entry.games), 0)
+    const leader = inSeason
       .map((entry) => ({
         ...entry,
         points: entry.wins * 3 + entry.draws,
@@ -218,7 +200,7 @@ async function getLatestFifaLeader() {
       .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)[0]
 
     // The chip takes the colour of whoever drafted the team this season.
-    return leader ? { ...leader, owner: owners.get(leader.team) ?? null } : null
+    return leader ? { ...leader, owner: owners.get(leader.team) ?? null, rounds } : null
   } catch (error) {
     console.error("Error fetching FIFA leader:", error)
     return null
@@ -229,19 +211,12 @@ async function getLatestFifaLeader() {
 const HistoryCell = ({ value }: { value: string }) => {
   const winners = value.split(" & ").filter((name) => name in PLAYER_TINTS)
   if (winners.length === 0) {
-    return <span className="font-mono text-[13px] text-ink-dim">{value === "-" ? "—" : value}</span>
+    return <span className="font-mono text-[13px] text-ink-dim md:text-base">{value === "-" ? "—" : value}</span>
   }
   return (
     <div className="flex flex-wrap gap-1.5">
       {winners.map((name) => (
-        <span
-          key={name}
-          className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium"
-          style={{ background: PLAYER_TINTS[name] }}
-        >
-          <BearAvatar name={name} size={20} ring={false} />
-          {name}
-        </span>
+        <PlayerCell key={name} name={name} />
       ))}
     </div>
   )
@@ -273,6 +248,7 @@ export default async function Home() {
       // The panel takes the colour of whoever drafted the leading club
       color: fifaLeader?.owner ? bearColor(fifaLeader.owner) : CLUB_PANEL,
       empty: "Will be started soon",
+      progress: { value: fifaLeader?.rounds ?? 0, max: 30, gameweek: fifaLeader?.rounds ?? 0 },
     },
     {
       title: "FPL",
@@ -281,6 +257,7 @@ export default async function Home() {
       leader: hasFpl ? fplLeader!.player : undefined,
       color: hasFpl ? bearColor(fplLeader!.player) : CLUB_PANEL,
       empty: "Will be started soon",
+      progress: { value: fplLeader?.games ?? 0, max: 38, gameweek: fplLeader?.games ?? 0 },
     },
     {
       title: "Bets",
@@ -289,6 +266,7 @@ export default async function Home() {
       leader: betsLeaders?.players.join(" & "),
       color: betsLeaders?.players.length === 1 ? bearColor(betsLeaders.players[0]) : CLUB_PANEL,
       empty: "Will be started soon",
+      progress: { value: betsLeaders?.games ?? 0, max: 38, gameweek: betsLeaders?.games ?? 0 },
     },
     {
       title: "7oker",
@@ -297,6 +275,9 @@ export default async function Home() {
       leader: has7oker ? sevenOkerLeader.bearo : undefined,
       color: has7oker ? bearColor(sevenOkerLeader.bearo) : CLUB_PANEL,
       empty: "Will be started soon",
+      // The bar fills toward the 100 points that end the season; the label still
+      // gives the gameweek, the games played so far
+      progress: { value: sevenOkerLeader?.points ?? 0, max: 100, gameweek: sevenOkerLeader?.games ?? 0 },
     },
   ]
 
@@ -342,7 +323,9 @@ export default async function Home() {
     <>
       {(currentMonth === 12 || currentMonth === 1) && <Snowfall />}
 
-      <section className="mx-auto flex max-w-page flex-wrap items-end gap-12 px-8 pb-[72px] pt-11">
+      {/* Hidden on phones for now — drop `hidden md:flex` to bring it back.
+          Phones also drop the facts line */}
+      <section className="mx-auto hidden max-w-page flex-wrap items-end gap-12 px-8 pb-2 pt-11 md:flex md:pb-[47px]">
         <div className="min-w-0 flex-[999_1_560px]">
           <h1 className="relative font-display text-[clamp(56px,9vw,136px)] font-extrabold leading-[0.92] tracking-[-0.03em]">
             Always
@@ -350,119 +333,22 @@ export default async function Home() {
             <span className="accent-word">Sunday.</span>
             {(currentMonth === 12 || currentMonth === 1) && <SantaHat />}
           </h1>
-          <p className="mt-6 font-mono text-sm uppercase tracking-[0.12em] text-ink-muted">{facts}</p>
-        </div>
-      </section>
-
-      <section aria-labelledby="standings" className="mx-auto max-w-page px-8 pb-20 pt-6">
-        <div className="mb-7 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 id="standings" className="font-display text-[32px] font-bold tracking-[-0.01em]">
-            All-time standings
-          </h2>
-        </div>
-        <div className="grid gap-6 lg:grid-cols-3">
-          {standings.map((member) => {
-            const color = bearColor(member.name)
-            const stats = cupCategories.map((category, column) => ({
-              label: category.label,
-              n: member.cups[column],
-            }))
-            return (
-              // The bear's colour is the 3px frame; the 35px inner cut keeps it
-              // even along the cut corners
-              <article
-                key={member.name}
-                aria-label={`${member.name}: ${member.total} cups, ${member.club}, ${member.country}`}
-                className="mx-auto aspect-[320/452] w-full max-w-[320px] rounded-[18px] p-[3px]"
-                style={{ clipPath: cardClip(36), background: color }}
-              >
-              <div
-                className="font-archivo flex h-full flex-col overflow-hidden rounded-[15px] bg-surface text-ink"
-                style={{
-                  clipPath: cardClip(35),
-                  backgroundImage: CARD_STRIPES,
-                  fontVariationSettings: ARCHIVO_CONDENSED,
-                }}
-              >
-                <div className="relative min-h-0 flex-1">
-                  <div className="absolute left-[26px] top-[26px] flex w-16 flex-col items-center gap-[10px]">
-                    {/* stat-number: the bear's colour in dark, plain ink in light */}
-                    <div className="stat-number text-[72px] font-black leading-[0.85]" style={{ color }}>
-                      {member.total}
-                    </div>
-                    <div className="text-[22px] font-extrabold leading-none">CUPS</div>
-                    <div className="h-px w-10 bg-[var(--card-rule)]" />
-                    <Image
-                      src={flagSvgUrl(member.countryCode)}
-                      alt=""
-                      width={44}
-                      height={29}
-                      unoptimized
-                      className="h-[29px] w-[44px] object-cover outline outline-1 outline-[var(--card-rule)]"
-                    />
-                    <div className="h-px w-10 bg-[var(--card-rule)]" />
-                    <Image
-                      src={member.crest}
-                      alt=""
-                      width={42}
-                      height={42}
-                      className="crest-outline h-[42px] w-[42px] object-contain"
-                      style={member.crestOutline ? { filter: outlineFilter(color, 2) } : undefined}
-                    />
-                  </div>
-                  {/* Head and shoulders, standing on the name rule like a player photo */}
-                  {/* Full width, never sliced at the sides; the rule crops the bottom
-                      eighth and anything taller may rise past the box */}
-                  <div
-                    className="absolute bottom-0 right-[10px] h-[196px] w-[196px]"
-                    style={{ clipPath: "inset(-100% 0 0 0)" }}
-                  >
-                    <Image
-                      src={member.image}
-                      alt=""
-                      width={392}
-                      height={392}
-                      className="absolute bottom-0 left-0 h-auto w-full translate-y-[12%]"
-                      style={{ filter: outlineFilter(color, 3) }}
-                    />
-                  </div>
-                </div>
-                <div className="px-[26px] pb-[30px]">
-                  <h3
-                    className="font-archivo border-b border-t-2 border-b-[var(--card-rule)] pb-2 pt-[10px] text-center text-[38px] font-black uppercase leading-none"
-                    style={{ borderTopColor: color }}
-                  >
-                    {member.name}
-                  </h3>
-                  <div className="mt-3 flex gap-[18px]">
-                    {[stats.slice(0, 3), stats.slice(3)].map((column, i) => (
-                      <div
-                        key={i}
-                        className={`flex flex-1 flex-col gap-0.5 ${i === 1 ? "border-l border-[var(--card-rule)] pl-[18px]" : ""}`}
-                      >
-                        {column.map((stat) => (
-                          <div key={stat.label} className="flex items-baseline gap-2">
-                            <span className="min-w-[22px] text-right text-[28px] font-black leading-tight">{stat.n}</span>
-                            <span className="text-[22px] font-semibold leading-tight">{stat.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              </article>
-            )
-          })}
+          <p className="mt-6 hidden font-mono text-sm uppercase tracking-[0.12em] text-ink-muted md:block">{facts}</p>
         </div>
       </section>
 
       <section aria-labelledby="season" className="border-y border-hairline bg-band">
-        <div className="mx-auto max-w-page px-8 pb-20 pt-[72px]">
+        <div className="mx-auto max-w-page px-8 pb-10 pt-9 md:pb-[53px] md:pt-[47px]">
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-3">
+            {/* Phones: "Season 26/27" in one heading; wider screens: "Season XVI"
+                with the full years pushed to the right */}
             <h2 id="season" className="font-display text-[32px] font-bold tracking-[-0.01em]">
-              Season {CURRENT_SEASON_NUMERAL} <span className="accent-word font-medium">{CURRENT_SEASON}</span>
+              Season <span className="hidden md:inline">{CURRENT_SEASON_NUMERAL}</span>
+              <span className="accent-word font-medium md:hidden">{CURRENT_SEASON.replace(/^20/, "")}</span>
             </h2>
+            <span className="accent-word hidden font-display text-[32px] font-medium tracking-[-0.01em] md:inline">
+              {CURRENT_SEASON}
+            </span>
           </div>
           <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
             {summaries.map((summary) => (
@@ -556,21 +442,111 @@ export default async function Home() {
                     </span>
                   )}
                 </div>
+                {/* How far the season has run, in the brand lime, with the count and
+                    share written at the right end */}
+                {(() => {
+                  const { value, max, gameweek } = summary.progress
+                  const percent = Math.min(100, Math.round((value / max) * 100))
+                  return (
+                    <div
+                      role="progressbar"
+                      aria-label={`${summary.title} season progress`}
+                      aria-valuemin={0}
+                      aria-valuemax={max}
+                      aria-valuenow={Math.min(value, max)}
+                      aria-valuetext={`Gameweek ${gameweek}, ${percent}%`}
+                      className="relative mx-1 mb-1 h-6 overflow-hidden rounded-full bg-track"
+                    >
+                      <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
+                      {/* Once the lime reaches the words they switch to its dark ink */}
+                      <span
+                        className={`absolute inset-y-0 right-3 flex items-center font-mono text-[11px] font-medium uppercase tracking-[0.08em] ${
+                          percent >= 80 ? "text-accent-foreground" : "text-ink-2"
+                        }`}
+                      >
+                        GW {gameweek} · {percent}%
+                      </span>
+                    </div>
+                  )
+                })()}
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-24 pt-20">
+      <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-12 pt-10 md:pb-[63px] md:pt-[53px]">
         <div className="mb-7 flex flex-wrap items-baseline justify-between gap-4">
           <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
-            Hall of champions
+            History
           </h2>
         </div>
-        {/* Header plus five rows; older seasons scroll under the sticky header */}
-        <div className="max-h-[288px] overflow-auto rounded-[20px] border border-hairline bg-surface">
-          <table className="w-full min-w-[760px] table-fixed border-collapse text-sm">
+        {/* The bears' cups, framed like the standings cards on the cup pages: rank,
+            the total in the bear's colour, then the five cups. Always shown on wide
+            screens; phones open them from a button */}
+        <MobileReveal showLabel="SEE BEAROS CARDS" hideLabel="HIDE BEAROS CARDS" className="mb-8 gap-5 md:grid-cols-3">
+          {standings.map((member, index) => {
+            const color = bearColor(member.name)
+            const isLeader = index === 0
+            return (
+              <article
+                key={member.name}
+                aria-label={`${member.name}: ${member.total} cups`}
+                className="rounded-[16px] p-[3px]"
+                style={{ clipPath: cardClip(28), background: color }}
+              >
+                <div
+                  className="flex h-full flex-col gap-5 rounded-[13px] bg-surface px-6 pb-[26px] pt-[22px] text-ink"
+                  style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-xl font-bold">{member.name}</span>
+                    <span
+                      className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
+                        isLeader ? "bg-accent text-accent-foreground" : "bg-surface-3 text-ink-2"
+                      }`}
+                      style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
+                    >
+                      {RANKS[index] ?? `${index + 1}TH`}
+                    </span>
+                  </div>
+
+                  {/* The total on the left, the bear large on the right */}
+                  <div className="flex items-center justify-between gap-3">
+                    {/* stat-number: the bear's colour in dark, plain ink in light */}
+                    <span
+                      className="stat-number font-archivo text-[112px] font-black leading-[0.8]"
+                      style={{ color, fontVariationSettings: ARCHIVO_CONDENSED }}
+                    >
+                      {member.total}
+                    </span>
+                    <BearAvatar name={member.name} size={112} filled />
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2 border-t border-[var(--card-rule)] pt-4">
+                    {cupCategories.map((category, column) => (
+                      <div key={category.key}>
+                        <div
+                          className="font-archivo text-[30px] font-black leading-none"
+                          style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
+                        >
+                          {member.cups[column]}
+                        </div>
+                        <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">
+                          {category.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            )
+          })}
+        </MobileReveal>
+        {/* Header plus five rows (53px each on wide screens; on phones a shared title wraps
+            its row to 79px), older seasons scroll under the sticky header */}
+        <div className="max-h-[330px] overflow-auto md:max-h-[320px] rounded-[20px] border border-hairline bg-surface">
+          <table className="w-full min-w-[760px] table-fixed border-collapse text-base">
             {/* Season gets a fixed width; the five cups split the rest evenly */}
             <colgroup>
               <col className="w-[120px]" />
@@ -587,7 +563,7 @@ export default async function Home() {
                 <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">FPL</th>
                 <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">BETS</th>
                 <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">7OKER</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">HOLD&apos;EM</th>
+                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">HOLDEM</th>
               </tr>
             </thead>
             <tbody>
@@ -595,7 +571,7 @@ export default async function Home() {
                 <tr key={row.year}>
                   <th
                     scope="row"
-                    className="whitespace-nowrap border-b border-hairline-row px-6 py-3.5 text-left font-mono text-sm font-medium"
+                    className="whitespace-nowrap border-b border-hairline-row px-6 py-3.5 text-left font-mono text-sm font-medium md:text-base"
                   >
                     {row.year}
                   </th>

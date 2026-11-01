@@ -10,7 +10,7 @@ import PlBetsGameweek from "./PlBetsGameweek"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsCards, { type StandingsRow } from "./design/StandingsCards"
+import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
 import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -600,17 +600,23 @@ export default function BetsSeasonTabs({
   }
 
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toRows = (data: any[]): StandingsRow[] =>
+  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
     data.map((row) => {
-      const metrics: { label: string; value: string | number }[] = []
-      if (row.games !== undefined) metrics.push({ label: "GW", value: row.games })
-      if (row.wins !== undefined) metrics.push({ label: "WINS", value: row.wins })
-      if (row.winPercentage !== undefined) metrics.push({ label: "GW %", value: row.winPercentage })
-      if (row.outcomePercent !== undefined) metrics.push({ label: "PS %", value: row.outcomePercent })
-      if (row.exactPercent !== undefined) metrics.push({ label: "EPS %", value: row.exactPercent })
-      if (row.seasonsWon !== undefined) metrics.push({ label: "TITLES", value: row.seasonsWon })
-      metrics.push({ label: "GAP", value: row.difference === "-" ? "—" : row.difference })
-      return { name: playerNameFromColor(row.hoverColor), points: row.points, metrics }
+      const name = playerNameFromColor(row.hoverColor)
+      // All time keeps no prediction split, so it shows the gameweek win rate and titles instead
+      const stats =
+        row.seasonsWon !== undefined
+          ? [
+              { label: "GW wins", value: row.wins ?? "—" },
+              { label: "GW %", value: winPercent(row.wins, row.games) },
+              { label: "Titles", value: row.seasonsWon },
+            ]
+          : [
+              { label: "GW wins", value: row.wins ?? "—" },
+              { label: "PS %", value: row.outcomePercent ?? "—" },
+              { label: "EPS %", value: row.exactPercent ?? "—" },
+            ]
+      return { name, points: row.points, stats, series: chartData && sparkSeries(chartData, name) }
     })
 
   const gameweeksPlayed = (data: any[]) =>
@@ -622,8 +628,7 @@ export default function BetsSeasonTabs({
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
-          <StandingsCards rows={toRows(data)} />
+          <StandingsBoard cards={toCards(data, chartData)} columns={columns} rows={data} />
         </section>
 
         {gameweek}
@@ -631,7 +636,7 @@ export default function BetsSeasonTabs({
         <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
           <Panel
             title="Season progress"
-            aside={<BearLegend names={toRows(data).map((row) => row.name)} />}
+            aside={<BearLegend names={toCards(data).map((card) => card.name)} />}
             className="min-w-0 flex-[999_1_560px]"
           >
             <BetsChart entries={chartData} />
@@ -667,16 +672,14 @@ export default function BetsSeasonTabs({
       const seasonData = pastSeasonsData[activeSeason]!
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
-          <StandingsCards rows={toRows(seasonData.standings)} />
+          <StandingsBoard cards={toCards(seasonData.standings)} columns={columns} rows={seasonData.standings} />
         </section>
       )
     } else if (activeSeason === "All Time") {
       const allTimeData = computeAllTimeStandings()
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">All time standings</h2>
-          <StandingsCards rows={toRows(allTimeData)} />
+          <StandingsBoard heading="All time standings" cards={toCards(allTimeData)} columns={allTimeColumns} rows={allTimeData} />
         </section>
       )
     } else {
@@ -714,9 +717,8 @@ export default function BetsSeasonTabs({
   return (
     <div className="pb-24">
       <CupHeader
-        eyebrow={activeSeason === "All Time" ? "Cup · All time" : `Cup · ${activeSeason}`}
         title={title}
-        tagline={`“${description}”`}
+        tagline={description}
         seasons={seasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {

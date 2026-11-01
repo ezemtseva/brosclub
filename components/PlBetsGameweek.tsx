@@ -75,13 +75,13 @@ function StatusLabel({ status }: { status: string }) {
   )
 }
 
-/** Settled bet: an exact score is a white chip, a right outcome a grey one,
+/** Settled bet: an exact score is a lime chip, a right outcome a grey one,
  *  and a miss is struck through. */
 const BET_PILL = "inline-block min-w-[40px] rounded-lg px-2 py-1 font-mono text-sm font-medium"
 
 function betStyle(points: number | null): string {
   if (points === null) return "font-mono text-sm"
-  if (points >= 3) return `${BET_PILL} bg-ink text-night`
+  if (points >= 3) return `${BET_PILL} bg-accent text-accent-foreground`
   if (points === 1) return `${BET_PILL} bg-chip text-ink`
   return `${BET_PILL} text-ink-dim line-through`
 }
@@ -318,21 +318,6 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
 
       {toast && <p className="mb-3 font-mono text-sm text-[color:var(--accent-text)]">{toast}</p>}
 
-      <div className="mb-4 flex flex-wrap gap-5 text-[13px] text-ink-2">
-        <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="rounded-md bg-ink px-2 py-0.5 font-mono text-xs text-night">2:0</span>
-          Exact score
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="rounded-md bg-chip px-2 py-0.5 font-mono text-xs">2:1</span>
-          Right outcome
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="px-2 py-0.5 font-mono text-xs text-ink-dim line-through">1:1</span>
-          Miss
-        </span>
-      </div>
-
       {matches.length === 0 ? (
         <p className="text-sm text-ink-muted">No fixtures for GW{gameweek}.</p>
       ) : (
@@ -342,7 +327,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
           }`}
         >
           <table className="w-full min-w-max">
-            <thead>
+            <thead className="table-head">
               <tr className="font-mono text-xs uppercase tracking-[0.08em] text-ink-muted">
                 <th className="w-[130px] border-b border-hairline px-5 py-3.5 text-left font-medium">Kick-off</th>
                 <th className="w-[170px] whitespace-nowrap border-b border-hairline px-3 py-3.5 text-left font-medium">Home</th>

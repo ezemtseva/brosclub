@@ -218,12 +218,11 @@ html.light .stat-number {
   color: var(--ink) !important;
 }
 
-/* A black crest sits on an ink chip: light on dark, so in light the chip turns
-   near-black and the crest is flipped to white to stay visible */
-html.light .crest-on-ink {
-  filter: invert(1);
+/* A dark crest is traced in the bear's colour on the dark card; on white it
+   reads as it is */
+html.light .crest-outline {
+  filter: none !important;
 }
-
 /* History table styles */
 .history-table {
   max-height: 265px;
@@ -269,6 +268,32 @@ html.light .crest-on-ink {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+/* Cup standings: Cards | Table. The attribute is set before the first paint
+   from localStorage, so the chosen view and its button show without a jump */
+html[data-standings-view="table"] .standings-cards,
+html:not([data-standings-view="table"]) .standings-table {
+  display: none;
+}
+
+.standings-toggle button {
+  @apply text-ink-2 hover:text-ink;
+}
+
+html:not([data-standings-view="table"]) .standings-toggle [data-view="cards"],
+html[data-standings-view="table"] .standings-toggle [data-view="table"] {
+  @apply bg-ink font-semibold text-night;
+}
+
+/* Every table header on the site: the brand lime with dark ink, both themes */
+.table-head {
+  background-color: #d7ff3f;
+}
+
+.table-head th,
+.table-head th:hover {
+  color: #0b0c0f;
 }
 
 /* On touch devices these inner scrollers rubber-band once they hit their end,

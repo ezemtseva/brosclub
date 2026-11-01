@@ -4,6 +4,7 @@ import prisma from "../lib/prisma"
 import { PLAYER_TINTS } from "../lib/teamColors"
 import { CURRENT_FIFA_SEASON } from "../lib/fifaSeason"
 import { flagSvgUrl } from "../lib/teamCountries"
+import { cardClip, CARD_STRIPES, ARCHIVO_CONDENSED } from "../lib/cardFrame"
 import { CURRENT_SEASON, CURRENT_SEASON_NUMERAL } from "../lib/season"
 import { BearAvatar, bearColor } from "../components/Bear"
 import dynamicImport from "next/dynamic"
@@ -38,15 +39,15 @@ const clubMembers = [
     countryCode: "ru",
     club: "Juventus",
     crest: "/imgs/fifa/juv1.png",
-    // A black mark on transparency — it needs a chip to show on the dark card
-    crestBackdrop: true,
+    // A black mark on transparency — traced in the bear's colour to show on the dark card
+    crestOutline: true,
   },
 ]
 
-/** Two cut corners, top-right and bottom-left, like a trading card. */
-const cardClip = (corner: number) =>
-  `polygon(0 0, calc(100% - ${corner}px) 0, 100% ${corner}px, 100% 100%, ${corner}px 100%, 0 calc(100% - ${corner}px))`
-const CARD_STRIPES = "repeating-linear-gradient(135deg, var(--card-stripe) 0 2px, transparent 2px 16px)"
+/** Four offset shadows trace an outline around a transparent drawing. */
+const outlineFilter = (color: string, px: number) =>
+  `drop-shadow(${px}px 0 0 ${color}) drop-shadow(-${px}px 0 0 ${color}) drop-shadow(0 ${px}px 0 ${color}) drop-shadow(0 -${px}px 0 ${color})`
+
 
 /** The club was founded on 06.09.2012 — the hero counts the years from here. */
 const FOUNDED = new Date(2012, 8, 6)
@@ -380,7 +381,7 @@ export default async function Home() {
                 style={{
                   clipPath: cardClip(35),
                   backgroundImage: CARD_STRIPES,
-                  fontVariationSettings: "'wdth' 62",
+                  fontVariationSettings: ARCHIVO_CONDENSED,
                 }}
               >
                 <div className="relative min-h-0 flex-1">
@@ -400,13 +401,14 @@ export default async function Home() {
                       className="h-[29px] w-[44px] object-cover outline outline-1 outline-[var(--card-rule)]"
                     />
                     <div className="h-px w-10 bg-[var(--card-rule)]" />
-                    {member.crestBackdrop ? (
-                      <span className="flex h-[42px] w-[42px] items-center justify-center rounded-lg bg-ink p-[5px]">
-                        <Image src={member.crest} alt="" width={32} height={32} className="crest-on-ink h-full w-full object-contain" />
-                      </span>
-                    ) : (
-                      <Image src={member.crest} alt="" width={42} height={42} className="h-[42px] w-[42px] object-contain" />
-                    )}
+                    <Image
+                      src={member.crest}
+                      alt=""
+                      width={42}
+                      height={42}
+                      className="crest-outline h-[42px] w-[42px] object-contain"
+                      style={member.crestOutline ? { filter: outlineFilter(color, 2) } : undefined}
+                    />
                   </div>
                   {/* Head and shoulders, standing on the name rule like a player photo */}
                   {/* Full width, never sliced at the sides; the rule crops the bottom
@@ -421,10 +423,7 @@ export default async function Home() {
                       width={392}
                       height={392}
                       className="absolute bottom-0 left-0 h-auto w-full translate-y-[12%]"
-                      // Four offset shadows trace a 3px outline around the drawing
-                      style={{
-                        filter: `drop-shadow(3px 0 0 ${color}) drop-shadow(-3px 0 0 ${color}) drop-shadow(0 3px 0 ${color}) drop-shadow(0 -3px 0 ${color})`,
-                      }}
+                      style={{ filter: outlineFilter(color, 3) }}
                     />
                   </div>
                 </div>
@@ -581,7 +580,7 @@ export default async function Home() {
               <col />
               <col />
             </colgroup>
-            <thead className="sticky top-0 z-10 bg-surface">
+            <thead className="table-head sticky top-0 z-10">
               <tr className="text-left font-mono text-xs tracking-[0.1em] text-ink-muted">
                 <th scope="col" className="border-b border-hairline px-6 py-[18px] font-medium">SEASON</th>
                 <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">FIFA</th>

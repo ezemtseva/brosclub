@@ -326,7 +326,7 @@ export default function AddMatchDialog({
   const selectAClass = !scoresEntered
     ? "border-hairline-strong"
     : aScore > bScore
-    ? "border-green-300 bg-green-50"
+    ? "border-accent bg-accent font-semibold text-accent-foreground"
     : aScore < bScore
     ? "border-red-300 bg-red-50"
     : "border-hairline-strong bg-surface-2"
@@ -334,7 +334,7 @@ export default function AddMatchDialog({
   const selectBClass = !scoresEntered
     ? "border-hairline-strong"
     : bScore > aScore
-    ? "border-green-300 bg-green-50"
+    ? "border-accent bg-accent font-semibold text-accent-foreground"
     : bScore < aScore
     ? "border-red-300 bg-red-50"
     : "border-hairline-strong bg-surface-2"

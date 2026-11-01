@@ -149,7 +149,7 @@ export default async function PokerPage() {
       <AutoRefresh intervalMs={30000} />
 
       <HoldemSeasonTabs
-        title="Texas Hold'em Cup"
+        title="Texas Hold'em"
         description="Permanently suspended after X seasons."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}

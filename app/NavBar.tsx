@@ -3,15 +3,14 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { CURRENT_SEASON_LABEL } from "../lib/season"
 import ThemeToggle from "../components/ThemeToggle"
 
 const mainNavItems = [
   { href: "/fifa", label: "FIFA" },
   { href: "/fpl", label: "FPL" },
-  { href: "/bets", label: "Bets" },
-  { href: "/7oker", label: "7oker" },
-  { href: "/poker", label: "Hold'em" },
+  { href: "/bets", label: "BETS" },
+  { href: "/7oker", label: "7OKER" },
+  { href: "/poker", label: "HOLD'EM" },
 ]
 
 export default function NavBar() {
@@ -47,7 +46,7 @@ export default function NavBar() {
                 aria-current={active ? "page" : undefined}
                 className={`rounded-full px-[14px] py-[10px] text-sm ${
                   active
-                    ? "bg-ink font-semibold text-night"
+                    ? "bg-accent font-semibold text-accent-foreground"
                     : "font-medium text-ink hover:text-[color:var(--accent-text)]"
                 }`}
               >
@@ -57,13 +56,7 @@ export default function NavBar() {
           })}
         </div>
 
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <div className="flex items-center gap-2 rounded-full border border-hairline-strong px-[14px] py-2 font-mono text-[13px] text-ink-2">
-            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
-            {CURRENT_SEASON_LABEL}
-          </div>
-        </div>
+        <ThemeToggle />
       </nav>
     </header>
   )

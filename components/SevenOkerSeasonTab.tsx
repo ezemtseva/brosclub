@@ -10,7 +10,7 @@ import AddGameDialog from "./AddGameDialog"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsCards, { type StandingsRow } from "./design/StandingsCards"
+import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
 import { EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -227,15 +227,20 @@ export default function SevenOkerSeasonTabs({
   const nextGameNumber = gamesPlayed + 1
 
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toRows = (data: any[]): StandingsRow[] =>
+  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
     data.map((row) => {
-      const metrics: { label: string; value: string | number }[] = [{ label: "G", value: row.games }]
-      if (row.wins !== undefined) metrics.push({ label: "WINS", value: row.wins })
-      if (row.winPercentage !== undefined) metrics.push({ label: "WIN %", value: row.winPercentage })
-      if (row.gamepoints !== undefined) metrics.push({ label: "GP", value: row.gamepoints })
-      if (row.seasonsWon !== undefined) metrics.push({ label: "TITLES", value: row.seasonsWon })
-      metrics.push({ label: "GAP", value: row.difference === "-" ? "—" : row.difference })
-      return { name: playerNameFromColor(row.hoverColor), points: row.points, metrics }
+      const name = playerNameFromColor(row.hoverColor)
+      return {
+        name,
+        points: row.points,
+        stats: [
+          { label: "Wins", value: row.wins ?? "—" },
+          { label: "Win %", value: row.winPercentage ?? winPercent(row.wins, row.games) },
+          // GP on the card is the average per game; the table keeps the season total
+          { label: "GP", value: row.games > 0 ? Math.round((row.gamepoints ?? 0) / row.games) : "—" },
+        ],
+        series: chartData && sparkSeries(chartData, name),
+      }
     })
 
   const gamesIn = (data: any[]) => data.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
@@ -247,12 +252,17 @@ export default function SevenOkerSeasonTabs({
     pieData: any[],
     highlights: any[],
     extras?: React.ReactNode,
+    actions?: React.ReactNode,
   ) => (
     <>
       <section className="mx-auto max-w-page px-8 pt-10">
-        <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
-        {extras}
-        <StandingsCards rows={toRows(data)} />
+        <StandingsBoard
+          cards={toCards(data, chartData)}
+          columns={columns}
+          rows={data}
+          actions={actions}
+          notice={extras}
+        />
       </section>
 
       <section className="mx-auto max-w-page px-8 pt-10">
@@ -285,6 +295,20 @@ export default function SevenOkerSeasonTabs({
             </span>
           </div>
         ),
+        <>
+          <button
+            onClick={() => setSeatingOpen((open) => !open)}
+            className="min-h-[44px] rounded-full border border-hairline-strong px-[18px] text-sm font-medium text-ink transition-colors hover:border-ink"
+          >
+            {seatingOpen ? "Hide seating" : "Show seating"}
+          </button>
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="min-h-[44px] rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+          >
+            + Add game
+          </button>
+        </>,
       )
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from sevenOkerEntry2526
@@ -301,8 +325,7 @@ export default function SevenOkerSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">All time standings</h2>
-          <StandingsCards rows={toRows(allTimeData)} />
+          <StandingsBoard heading="All time standings" cards={toCards(allTimeData)} columns={allTimeColumns} rows={allTimeData} />
         </section>
       )
     }
@@ -330,13 +353,8 @@ export default function SevenOkerSeasonTabs({
   return (
     <div className="pb-24">
       <CupHeader
-        eyebrow={
-          activeSeason === "All Time"
-            ? "Cup · All time"
-            : `Cup · ${activeSeason} · ${gamesPlayed} games played`
-        }
         title={title}
-        tagline={<>“{description}”</>}
+        tagline={description}
         seasons={seasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {
@@ -347,24 +365,6 @@ export default function SevenOkerSeasonTabs({
         tabs={pageTabs.filter((tab) => !(tab === "Insights" && activeSeason === "All Time"))}
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab as PageTab)}
-        actions={
-          activeSeason === "2026/27" && activeTab === "Summary" ? (
-            <>
-              <button
-                onClick={() => setSeatingOpen((open) => !open)}
-                className="min-h-[44px] rounded-full border border-hairline-strong px-[18px] text-sm font-medium text-ink transition-colors hover:border-ink"
-              >
-                {seatingOpen ? "Hide seating" : "Show seating"}
-              </button>
-              <button
-                onClick={() => setDialogOpen(true)}
-                className="min-h-[44px] rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
-              >
-                + Add game
-              </button>
-            </>
-          ) : null
-        }
       />
 
       {dialogOpen && (

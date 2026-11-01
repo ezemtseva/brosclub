@@ -107,13 +107,15 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
   return (
     <div ref={scrollRef} className="table-scroll overflow-x-auto rounded-[20px] border border-hairline bg-surface [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <table className="min-w-full tabular-nums">
-        <thead>
+        {/* Opaque, so rows scrolling under a sticky header stay hidden; the
+            bottom line is a shadow because a collapsed border scrolls away */}
+        <thead className="table-head">
           <tr className="h-[45px] font-mono text-xs uppercase leading-normal tracking-[0.08em] text-ink-muted">
             {activeColumns.map((column, index) => (
               <th
                 key={index}
                 style={widthFor(column)}
-                className={`border-b border-hairline py-3 font-medium ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
+                className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}

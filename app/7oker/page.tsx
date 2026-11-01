@@ -228,7 +228,7 @@ export default async function SevenOkerPage() {
       <AutoRefresh intervalMs={30000} />
 
       <SevenOkerSeasonTabs
-        title="7oker Cup"
+        title="7oker"
         description={
           <>
             III season of our beloved local{" "}

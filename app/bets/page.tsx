@@ -183,7 +183,7 @@ export default async function BetsPage() {
       <AutoRefresh intervalMs={30000} />
 
       <BetsSeasonTabs
-        title="Bets Cup"
+        title="Bets"
         description="XIV season of boring betting on top football leagues. Only English Premier League matches since 2019."
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}

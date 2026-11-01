@@ -41,6 +41,10 @@ export default function RootLayout({
       var light = stored ? stored === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
       if (light) document.documentElement.classList.add('light');
     } catch (e) {}
+    // Same for the cup pages' Cards | Table choice — CSS reads the attribute
+    try {
+      if (localStorage.getItem('standings-view') === 'table') document.documentElement.dataset.standingsView = 'table';
+    } catch (e) {}
   `
 
   return (

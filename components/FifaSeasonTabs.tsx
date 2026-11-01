@@ -53,7 +53,7 @@ type FifaRecordCard = {
 
 const fifaRecordCards: FifaRecordCard[] = [
   { value: "8 h 18 m", description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
-  { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020/21, 2021/22, 2024/25)" },
+  { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020-22, 24/25)" },
   { value: "73.21%", player: "Vanilla", description: "Vanilla holds the highest win rate in a season (2024/25)" },
   { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team in a season (2024/25)" },
   { player: "Choco", description: "Choco is the first to score a goal by a goalkeeper, Atletico Madrid (2017)" },
@@ -4032,6 +4032,12 @@ export default function FifaSeasonTabs({
       position: index + 1,
       team: (
         <div className="flex items-center space-x-2">
+          {/* The owner's dot, as in Results */}
+          <span
+            aria-hidden="true"
+            className="h-2 w-2 shrink-0 rounded-full"
+            style={{ backgroundColor: entry.color || getTeamColor(entry.team) }}
+          />
           <Image
             src={entry.logo || "/imgs/fifa/new.png"}
             alt={teamName}
@@ -4039,13 +4045,9 @@ export default function FifaSeasonTabs({
             height={24}
             className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
           />
-          <span className="relative">
+          <span>
             <span className="md:hidden">{shortenTeamName(teamName)}</span>
             <span className="hidden md:inline">{teamName}</span>
-            <span
-              className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: entry.color || getTeamColor(entry.team) }}
-            />
           </span>
         </div>
       ),
@@ -4152,7 +4154,8 @@ export default function FifaSeasonTabs({
           <div className="flex flex-col lg:flex-row justify-between gap-6">
             {/* Standings column */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-4 h-9">
+              {/* h-11 matches the Results header, whose search box sets its height */}
+              <div className="mb-4 flex h-11 items-center justify-between">
                 <h2 className="m-0 font-display text-2xl font-bold leading-none">Standings</h2>
               </div>
               <div className="fifa-standings-table">
@@ -4277,9 +4280,8 @@ export default function FifaSeasonTabs({
   return (
     <div className="pb-24">
       <CupHeader
-        eyebrow={activeSeason === "All Time" ? "Cup · All time" : `Cup · ${activeSeason}`}
         title={title}
-        tagline={`“${description}”`}
+        tagline={description}
         seasons={seasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {

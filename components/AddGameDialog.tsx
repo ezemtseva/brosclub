@@ -51,7 +51,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
   const allFilled = PLAYERS.every((p) => scores[p] !== "")
 
   const getRowClass = (player: Player) => {
-    if (allFilled && numericScores[player] === maxScore) return "border-yellow-300 bg-yellow-50"
+    if (allFilled && numericScores[player] === maxScore) return "border-accent bg-accent text-accent-foreground"
     return "border-hairline-strong bg-surface"
   }
 
@@ -108,7 +108,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               {scoreOptions ? (
                 <div className="flex items-center gap-2">
                   <select
-                    className="season-select w-20 border border-hairline-strong rounded-lg px-5 py-1 text-sm font-bold text-center bg-surface focus:outline-none"
+                    className="season-select w-20 border border-hairline-strong rounded-lg px-5 py-1 text-sm font-bold text-center bg-surface text-ink focus:outline-none"
                     value={scores[player]}
                     onChange={(e) => pickScore(player, e.target.value)}
                   >
@@ -119,7 +119,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
                   </select>
                   <input
                     type="number"
-                    className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface text-ink focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     value={gamePoints[player]}
                     onChange={(e) =>
                       setGamePoints((prev) => ({ ...prev, [player]: typeNumber(e.target.value, 3) }))
@@ -130,7 +130,7 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               ) : (
                 <input
                   type="number"
-                  className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="w-20 text-center border border-hairline-strong rounded-lg px-2 py-1 text-sm font-bold bg-surface text-ink focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   value={scores[player]}
                   onChange={(e) => {
                     const val = e.target.value

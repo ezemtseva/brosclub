@@ -220,6 +220,8 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
         ),
         team: (
           <div className="flex items-center space-x-2">
+            {/* The owner's dot, as in Results */}
+            <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getColor(entry.team) }} />
             <Image
               src={entry.logo || "/placeholder.svg"}
               alt={teamName}
@@ -229,13 +231,9 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
               // a non-square crest and push the row open
               className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
             />
-            <span className="relative">
+            <span>
               <span className="md:hidden">{shortenTeamName(teamName)}</span>
               <span className="hidden md:inline">{teamName}</span>
-              <span
-                className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-                style={{ backgroundColor: getColor(entry.team) }}
-              />
             </span>
           </div>
         ),
@@ -269,6 +267,7 @@ function processFifaData2024(entries: any[]) {
       position: index + 1,
       team: (
         <div className="flex items-center space-x-2">
+          <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getTeamColor2024(entry.team) }} />
           <Image
             src={entry.logo || "/placeholder.svg"}
             alt={teamName}
@@ -276,13 +275,7 @@ function processFifaData2024(entries: any[]) {
             height={24}
             className="rounded-full object-contain w-[24px] h-[24px] shrink-0"
           />
-          <span className="relative">
-            {teamName}
-            <span
-              className="absolute bottom-0 left-0 w-[0.85em] h-[2px]"
-              style={{ backgroundColor: getTeamColor2024(entry.team) }}
-            />
-          </span>
+          <span>{teamName}</span>
         </div>
       ),
       games: entry.games,
@@ -981,7 +974,7 @@ export default async function FIFAPage() {
       <AutoRefresh intervalMs={30000} />
 
       <FifaSeasonTabs
-        title="EA FC Cup"
+        title="EA FC"
         description="XI season of pure hate, rage and hopelessness. Only for 80 euro annually."
         currentSeasonData={currentSeasonData}
         currentSeasonHighlights={currentSeasonHighlights}

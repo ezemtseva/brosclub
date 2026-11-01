@@ -8,7 +8,7 @@ import dynamic from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
-import StandingsCards, { type StandingsRow } from "./design/StandingsCards"
+import StandingsBoard, { sparkSeries, winPercent, type StandingCardData } from "./design/StandingsBoard"
 import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -858,15 +858,23 @@ export default function HoldemSeasonTabs({
 
   // Render content based on active tab
   /** Processed table rows carry the bear in their colour — the cards want the name. */
-  const toRows = (data: any[]): StandingsRow[] =>
+  const toCards = (data: any[], chartData?: any[]): StandingCardData[] =>
     data.map((row) => {
-      const metrics: { label: string; value: string | number }[] = [{ label: "G", value: row.games }]
-      if (row.wins !== undefined) metrics.push({ label: "WINS", value: row.wins })
-      if (row.winPercentage !== undefined) metrics.push({ label: "WIN %", value: row.winPercentage })
-      if (row.seasonsWon !== undefined) metrics.push({ label: "TITLES", value: row.seasonsWon })
-      const gap = row.difference ?? row.pointsDifference
-      metrics.push({ label: "GAP", value: gap === "-" || gap === undefined ? "—" : gap })
-      return { name: playerNameFromColor(row.hoverColor), points: row.points, metrics }
+      const name = playerNameFromColor(row.hoverColor)
+      return {
+        name,
+        points: row.points,
+        stats: [
+          { label: "Wins", value: row.wins ?? "—" },
+          { label: "Win %", value: row.winPercentage ?? winPercent(row.wins, row.games) },
+          // Titles are an all-time figure; a single season shows its games instead
+          row.seasonsWon !== undefined
+            ? { label: "Titles", value: row.seasonsWon }
+            : { label: "Games", value: row.games ?? "—" },
+        ],
+        // Only the database seasons keep per-game history
+        series: chartData && sparkSeries(chartData, name),
+      }
     })
 
   const gamesIn = (data: any[]) => data.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
@@ -875,14 +883,13 @@ export default function HoldemSeasonTabs({
   const renderSeason = (data: any[], chartData: any[], pieData: any[], highlights: any[]) => (
     <>
       <section className="mx-auto max-w-page px-8 pt-10">
-        <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
-        <StandingsCards rows={toRows(data)} />
+        <StandingsBoard cards={toCards(data, chartData)} columns={columns} rows={data} />
       </section>
 
       <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
         <Panel
           title="Season progress"
-          aside={<BearLegend names={toRows(data).map((row) => row.name)} />}
+          aside={<BearLegend names={toCards(data).map((card) => card.name)} />}
           className="min-w-0 flex-[999_1_560px]"
         >
           <PokerChart entries={chartData} />
@@ -922,14 +929,16 @@ export default function HoldemSeasonTabs({
 
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
           {seasonData.standings ? (
-            <StandingsCards rows={toRows(seasonData.standings)} />
+            <StandingsBoard cards={toCards(seasonData.standings)} columns={columns} rows={seasonData.standings} />
           ) : (
-            <EmptyPanel
-              title={`Season ${activeSeason}`}
-              text={`Standings data for the ${activeSeason} season will be added soon.`}
-            />
+            <>
+              <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
+              <EmptyPanel
+                title={`Season ${activeSeason}`}
+                text={`Standings data for the ${activeSeason} season will be added soon.`}
+              />
+            </>
           )}
         </section>
       )
@@ -937,8 +946,7 @@ export default function HoldemSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <h2 className="mb-4 font-display text-2xl font-bold">All time standings</h2>
-          <StandingsCards rows={toRows(allTimeData)} />
+          <StandingsBoard heading="All time standings" cards={toCards(allTimeData)} columns={allTimeColumns} rows={allTimeData} />
         </section>
       )
     } else {
@@ -976,16 +984,8 @@ export default function HoldemSeasonTabs({
   return (
     <div className="pb-24">
       <CupHeader
-        eyebrow={
-          <span className="flex flex-wrap items-center gap-3">
-            <span className="badge-suspended rounded-full px-2.5 py-1 tracking-[0.08em]">
-              Suspended
-            </span>
-            Cup · Archive · 2012 — 2024/25
-          </span>
-        }
         title={title}
-        tagline={`“${description}”`}
+        tagline={description}
         seasons={visibleSeasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {

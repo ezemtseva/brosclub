@@ -294,7 +294,7 @@ export default async function FPLPage() {
         <AutoRefresh intervalMs={30000} />
 
         <FplSeasonTabs
-          title="Fantasy Premier League Cup"
+          title="Fantasy Premier League"
           description="X anniversary season of no-names turning our teams into a shit joke."
           currentSeasonData={currentSeasonData}
           currentSeasonChartData={currentSeasonChartData}
@@ -317,7 +317,7 @@ export default async function FPLPage() {
     return (
       <div className="mx-auto max-w-page px-8 py-16">
         <h1 className="mb-4 font-display text-[clamp(44px,6vw,84px)] font-extrabold leading-[0.95] tracking-[-0.03em]">
-          Fantasy Premier League Cup
+          Fantasy Premier League
         </h1>
         <p className="text-[18px] text-vanilla">Error loading FPL data. Please try again later.</p>
         {process.env.NODE_ENV === "development" && (

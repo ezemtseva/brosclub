@@ -12,6 +12,8 @@ function currentTheme(): Theme {
 
 export function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("light", theme === "light")
+  // The browser bar follows the site's theme, not the system's
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#F7F8FA" : "#0B0C0F")
   try {
     localStorage.setItem("theme", theme)
   } catch {

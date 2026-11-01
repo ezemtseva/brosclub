@@ -23,10 +23,9 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#0B0C0F' },
-    { media: '(prefers-color-scheme: light)', color: '#F7F8FA' },
-  ],
+  // The site opens dark whatever the system says, so the browser bar does too;
+  // a stored light choice repaints it (see below and applyTheme)
+  themeColor: '#0B0C0F',
 }
 
 export default function RootLayout({
@@ -34,12 +33,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Runs before the first paint, so a light-theme visitor never sees dark flash
+  // Runs before the first paint, so a light-theme visitor never sees dark flash.
+  // Dark is the default for everyone; only a stored choice of light changes it
   const noFlashTheme = `
     try {
-      var stored = localStorage.getItem('theme');
-      var light = stored ? stored === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
-      if (light) document.documentElement.classList.add('light');
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.add('light');
+        document.addEventListener('DOMContentLoaded', function () {
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', '#F7F8FA');
+        });
+      }
     } catch (e) {}
     // Same for the cup pages' Cards | Table choice — CSS reads the attribute
     try {

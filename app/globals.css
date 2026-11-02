@@ -119,6 +119,18 @@
     @apply bg-night text-ink text-base;
   }
 
+  /* Dark theme: a soft glow, lighter at the middle of the screen, so the page
+     doesn't read as a flat black. A fixed layer behind everything rather than a
+     fixed background, which iOS ignores (it would stretch down the whole page) */
+  html:not(.light) body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 70% 60% at 50% 45%, #1a1d24 0%, #11131a 45%, var(--night) 100%);
+  }
+
   h1,
   h2,
   h3,

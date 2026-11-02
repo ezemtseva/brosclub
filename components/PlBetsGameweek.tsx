@@ -235,8 +235,9 @@ function BetCell({
   // Editing or no bet yet: show inputs + Save
   const showSave = home !== "" || away !== "" || bet !== undefined
   const betInput = `${compact ? "w-8 py-1.5 text-base" : "w-9 py-0.5 text-sm"} rounded-md border border-hairline-strong bg-surface-2 px-1 text-center font-mono text-ink focus:outline-none focus:ring-1 focus:ring-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`
-  return (
-    <div className={`relative flex items-center justify-center gap-1 ${compact ? COMPACT_WIDTH : "mx-auto w-[76px]"}`}>
+  const incomplete = (home !== "" && away === "") || (home === "" && away !== "")
+  const inputs = (
+    <>
       <input
         type="number"
         min="0"
@@ -259,20 +260,39 @@ function BetCell({
         placeholder=""
         className={betInput}
       />
-      {/* A phone card's column has no room beside the inputs, so save sits under them */}
-      <div
-        className={
-          compact
-            ? "absolute left-1/2 top-full mt-0.5 flex -translate-x-1/2 items-center"
-            : "absolute left-full ml-1 flex items-center gap-0.5"
-        }
-      >
+    </>
+  )
+
+  // Phone cards: a lime Confirm under the inputs while there is something to save.
+  // It sits in the flow, so the card grows for it and shrinks back once it is gone
+  if (compact) {
+    return (
+      <div className={`flex flex-col items-center gap-2 ${COMPACT_WIDTH}`}>
+        <div className="flex items-center justify-center gap-1">{inputs}</div>
+        {showSave && (
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving || incomplete}
+            className="min-h-9 w-full rounded-full bg-accent text-[13px] font-semibold text-accent-foreground transition-opacity disabled:opacity-40"
+          >
+            {saving ? "…" : "Confirm"}
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative mx-auto flex w-[76px] items-center justify-center gap-1">
+      {inputs}
+      <div className="absolute left-full ml-1 flex items-center gap-0.5">
         <button
           onClick={handleSave}
-          disabled={saving || (home !== "" && away === "") || (home === "" && away !== "")}
-          // Hidden until there is something to save: the table keeps its space so
-          // columns don't jump; a phone card's narrow column needs the room
-          className={`text-[color:var(--accent-text)] transition-colors hover:text-ink disabled:opacity-30 ${showSave ? "" : compact ? "hidden" : "invisible"}`}
+          disabled={saving || incomplete}
+          // Hidden until there is something to save, but keeping its space so the
+          // columns don't jump
+          className={`text-[color:var(--accent-text)] transition-colors hover:text-ink disabled:opacity-30 ${showSave ? "" : "invisible"}`}
         >
           {saving ? "…" : (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -440,8 +460,6 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                       </div>
                       {/* The bets line up with the match above: the first under the home
                           side, the middle under the score, the last under the away side */}
-                      {/* A save button showing under the inputs dips into the card's
-                          bottom padding rather than keeping a gap open for it */}
                       <div className="mt-3 grid grid-cols-3 gap-2 border-t border-hairline-row pb-1 pt-3">
                         {PLAYERS.map((player, index) => (
                           <div

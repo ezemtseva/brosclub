@@ -3,6 +3,7 @@
 import { useState, useRef } from "react"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import { useScrollLock } from "../lib/useScrollLock"
+import { useIsMobile } from "../lib/useIsMobile"
 
 interface PlayerTeams {
   Vanilla: string[]
@@ -51,6 +52,8 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  // Phones: the narrow field just says "Select"
+  const isMobile = useIsMobile()
 
   const filtered = query
     ? options.filter((o) => o.team.toLowerCase().includes(query.toLowerCase()))
@@ -78,7 +81,7 @@ function TeamSelect({ options, value, onChange, colorClass, playerTeams }: TeamS
       <input
         type="text"
         className={`w-full border rounded-lg px-3 py-2 text-sm placeholder:text-ink-dim focus:outline-none transition-colors ${colorClass}`}
-        placeholder={open ? "" : "Select team"}
+        placeholder={open ? "" : isMobile ? "Select" : "Select team"}
         value={open ? query : value}
         onFocus={() => { setOpen(true); setQuery("") }}
         onChange={(e) => setQuery(e.target.value)}

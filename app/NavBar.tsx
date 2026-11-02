@@ -44,7 +44,9 @@ function OtherMenu({ pathname }: { pathname: string }) {
   }, [open])
   useEffect(() => setOpen(false), [pathname])
 
-  const itemClass = "block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink hover:bg-surface-3"
+  // The colour is left to each item: two text colours in one class list clash
+  const itemBase = "block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium hover:bg-surface-3"
+  const itemClass = `${itemBase} text-ink`
 
   return (
     <div ref={ref} className="relative shrink-0 md:hidden">
@@ -53,9 +55,13 @@ function OtherMenu({ pathname }: { pathname: string }) {
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((value) => !value)}
-        className={tabClass(active)}
+        aria-label="More"
+        // Three bars, the usual "more" menu; lime like a tab when Holdem is open
+        className={`${tabClass(active)} flex items-center justify-center`}
       >
-        OTHER
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
       </button>
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[160px] rounded-xl border border-hairline-strong bg-surface-2 p-1.5 shadow-lg">
@@ -64,7 +70,7 @@ function OtherMenu({ pathname }: { pathname: string }) {
               key={item.href}
               href={item.href}
               aria-current={item.href === pathname ? "page" : undefined}
-              className={`${itemClass} ${item.href === pathname ? "text-[color:var(--accent-text)]" : ""}`}
+              className={`${itemBase} ${item.href === pathname ? "text-[color:var(--accent-text)]" : "text-ink"}`}
             >
               {item.label}
             </Link>

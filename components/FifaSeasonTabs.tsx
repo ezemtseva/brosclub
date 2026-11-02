@@ -4063,10 +4063,10 @@ export default function FifaSeasonTabs({
             <div className="flex-1 min-w-0">
               <div className="mb-4 flex h-11 items-center justify-between">
                 <h2 className="m-0 font-display text-2xl font-bold leading-none">Standings</h2>
-                {/* Desktop: gear icon */}
+                {/* Desktop only: a phone never gets the gear, held either way (see .desktop-only) */}
                 <button
                   onClick={() => setConfigOpen(true)}
-                  className="hidden leading-none text-ink-muted transition-colors hover:text-ink md:block"
+                  className="desktop-only leading-none text-ink-muted transition-colors hover:text-ink"
                   style={{ fontSize: "1.75rem" }}
                   title="Configure player teams"
                 >
@@ -4099,7 +4099,7 @@ export default function FifaSeasonTabs({
                   />
                   <button
                     onClick={() => setDialogOpen(true)}
-                    className="hidden min-h-[44px] items-center whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:flex"
+                    className="add-game-button hidden min-h-[44px] items-center whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:flex"
                   >
                     + Add game
                   </button>

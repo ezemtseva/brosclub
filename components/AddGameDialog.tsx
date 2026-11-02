@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useScrollLock } from "../lib/useScrollLock"
+import PlayerCell from "./PlayerCell"
 
 const PLAYERS = ["Panda", "Choco", "Vanilla"] as const
 type Player = (typeof PLAYERS)[number]
@@ -104,7 +105,8 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
               key={player}
               className={`flex items-center justify-between border rounded-lg px-4 py-2 transition-colors ${getRowClass(player)}`}
             >
-              <span className="text-sm font-medium">{player}</span>
+              {/* The bear as the same pill as in every table */}
+              <PlayerCell name={player} />
               {scoreOptions ? (
                 <div className="flex items-center gap-2">
                   <select

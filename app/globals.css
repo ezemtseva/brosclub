@@ -300,6 +300,23 @@ html:not([data-standings-view="table"]) .standings-table {
   display: none;
 }
 
+/* Computers only: a wide screen with a mouse or trackpad. Width alone would let a
+   phone turned sideways (844px and up) in, so the pointer decides */
+.desktop-only {
+  display: none;
+}
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Light theme, every screen: Add game is black, not lime */
+html.light .add-game-button {
+  background-color: var(--ink);
+  color: var(--night);
+}
+
 /* Phones in the dark theme: Add game is white, not lime */
 @media (max-width: 767px) {
   html:not(.light) .add-game-button {

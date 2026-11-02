@@ -20,7 +20,7 @@ const columns = [
   { header: "Form", accessor: "form", width: "140px" },
 ]
 
-// Phones keep just games and points, the points bold in the accent (olive in light)
+// Phones keep just games, points and goal difference, the points bold in the accent (olive in light)
 const mobileColumns = [
   { header: "#", accessor: "position" },
   // max-w-0: on a narrow phone a long name is cut with an ellipsis instead of
@@ -29,6 +29,7 @@ const mobileColumns = [
   // 1%: the numbers shrink to their digits and the team takes the rest
   { header: "G", accessor: "games", width: "1%" },
   { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
+  { header: "GD", accessor: "goalDifference", width: "1%" },
 ]
 
 // Team colors for 2024/25 season (historical - DO NOT CHANGE)

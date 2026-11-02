@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import Image from "next/image"
 import { PLAYER_COLORS } from "../lib/teamColors"
+import PlayerCell from "./PlayerCell"
 
 const PLAYERS = ["Vanilla", "Choco", "Panda"] as const
 type Player = (typeof PLAYERS)[number]
@@ -49,6 +50,48 @@ function formatKickoff(kickoff: string): string {
   return `${date}, ${time}`
 }
 
+/** "Sat, 8 Nov": the day a phone groups its matches under. */
+function formatMatchDay(kickoff: string): string {
+  return new Date(kickoff).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short" })
+}
+
+/** The gameweek's matches grouped by day, in kick-off order. */
+function matchDays(matches: PlMatch[]): [string, PlMatch[]][] {
+  const days: [string, PlMatch[]][] = []
+  for (const match of matches) {
+    const day = formatMatchDay(match.kickoff)
+    const last = days[days.length - 1]
+    if (last && last[0] === day) last[1].push(match)
+    else days.push([day, [match]])
+  }
+  return days
+}
+
+function formatKickoffTime(kickoff: string): string {
+  return new Date(kickoff).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false })
+}
+
+/** Where a match stands, shared by the wide table and the phone cards. */
+function matchState(match: PlMatch) {
+  const locked = isLocked(match.kickoff)
+  const finished = match.status === "FINISHED"
+  const postponed = match.status === "POSTPONED"
+  const inPlay = match.status === "IN_PLAY" || match.status === "PAUSED"
+  const showScore = (finished || inPlay) && match.scoreHome !== null && match.scoreAway !== null
+  const status = finished
+    ? "Finished"
+    : postponed
+      ? "Postponed"
+      : match.status === "PAUSED" && Date.now() - new Date(match.kickoff).getTime() < 63 * 60 * 1000
+        ? "Half Time"
+        : inPlay
+          ? "Live"
+          : locked
+            ? "Locked"
+            : "Open"
+  return { locked, finished, postponed, inPlay, showScore, status }
+}
+
 
 /** Live and Half Time share a colour — one is a pause inside the other. */
 const STATUS_STYLES: Record<string, string> = {
@@ -75,6 +118,12 @@ function StatusLabel({ status }: { status: string }) {
   )
 }
 
+/**
+ * A phone card's bet is always as wide as its two inputs, whether it is being
+ * typed, saved or settled, so the score stays put when the inputs give way to it.
+ */
+const COMPACT_WIDTH = "w-[77px]"
+
 /** Settled bet: an exact score is a lime chip, a right outcome a grey one,
  *  and a miss is struck through. */
 const BET_PILL = "inline-block min-w-[40px] rounded-lg px-2 py-1 font-mono text-sm font-medium"
@@ -93,6 +142,7 @@ function BetCell({
   locked,
   finished,
   onSaved,
+  compact = false,
 }: {
   match: PlMatch
   player: Player
@@ -100,6 +150,8 @@ function BetCell({
   locked: boolean
   finished: boolean
   onSaved: () => void
+  /** Phone cards: narrower inputs, the edit and save buttons inline and always shown (no hover on touch) */
+  compact?: boolean
 }) {
   const [editing, setEditing] = useState(!bet)
   const [home, setHome] = useState(bet !== undefined ? String(bet.scoreHome) : "")
@@ -138,9 +190,9 @@ function BetCell({
   // Locked or finished: read-only
   if (finished || locked) {
     return (
-      <div className="flex items-center justify-center px-2 py-1">
+      <div className={`flex items-center justify-center py-1 ${compact ? COMPACT_WIDTH : "px-2"}`}>
         {bet && (
-          <span className={finished ? betStyle(bet.points) : "font-mono text-sm"}>
+          <span className={finished ? betStyle(bet.points) : `font-mono ${compact ? "text-base" : "text-sm"}`}>
             {bet.scoreHome}:{bet.scoreAway}
           </span>
         )}
@@ -150,11 +202,25 @@ function BetCell({
 
   // Saved and not editing: show score + Edit button
   if (bet && !editing) {
+    // Phone cards: no pencil; while the match is open a tap on the bet edits it
+    if (compact) {
+      return (
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          aria-label={`Edit ${player}'s bet, ${bet.scoreHome}:${bet.scoreAway}`}
+          className={`${COMPACT_WIDTH} py-1.5 text-center font-mono text-base text-ink`}
+        >
+          {bet.scoreHome}:{bet.scoreAway}
+        </button>
+      )
+    }
     return (
       <div className="group relative mx-auto flex w-[76px] items-center justify-center">
         <span className="font-mono text-sm">{bet.scoreHome}:{bet.scoreAway}</span>
         <button
           onClick={() => setEditing(true)}
+          aria-label="Edit bet"
           className="absolute left-full ml-1 text-ink-dim opacity-0 transition-opacity hover:text-ink group-hover:opacity-100"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -168,10 +234,9 @@ function BetCell({
 
   // Editing or no bet yet: show inputs + Save
   const showSave = home !== "" || away !== "" || bet !== undefined
-  const betInput =
-    "w-9 rounded-md border border-hairline-strong bg-surface-2 px-1 py-0.5 text-center font-mono text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+  const betInput = `${compact ? "w-8 py-1.5 text-base" : "w-9 py-0.5 text-sm"} rounded-md border border-hairline-strong bg-surface-2 px-1 text-center font-mono text-ink focus:outline-none focus:ring-1 focus:ring-accent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`
   return (
-    <div className="relative mx-auto flex w-[76px] items-center justify-center gap-1">
+    <div className={`relative flex items-center justify-center gap-1 ${compact ? COMPACT_WIDTH : "mx-auto w-[76px]"}`}>
       <input
         type="number"
         min="0"
@@ -194,11 +259,20 @@ function BetCell({
         placeholder=""
         className={betInput}
       />
-      <div className="absolute left-full ml-1 flex items-center gap-0.5">
+      {/* A phone card's column has no room beside the inputs, so save sits under them */}
+      <div
+        className={
+          compact
+            ? "absolute left-1/2 top-full mt-0.5 flex -translate-x-1/2 items-center"
+            : "absolute left-full ml-1 flex items-center gap-0.5"
+        }
+      >
         <button
           onClick={handleSave}
           disabled={saving || (home !== "" && away === "") || (home === "" && away !== "")}
-          className={`text-[color:var(--accent-text)] transition-colors hover:text-ink disabled:opacity-30 ${showSave ? "" : "invisible"}`}
+          // Hidden until there is something to save: the table keeps its space so
+          // columns don't jump; a phone card's narrow column needs the room
+          className={`text-[color:var(--accent-text)] transition-colors hover:text-ink disabled:opacity-30 ${showSave ? "" : compact ? "hidden" : "invisible"}`}
         >
           {saving ? "…" : (
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -331,8 +405,71 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
       {matches.length === 0 ? (
         <p className="text-sm text-ink-muted">No fixtures for GW{gameweek}.</p>
       ) : (
+        <>
+        {/* Phones: a card per match under its day, the three bets side by side
+            at the bottom, so nothing scrolls sideways */}
+        <div className={`flex flex-col gap-6 transition-opacity duration-150 md:hidden ${refreshing ? "opacity-50" : "opacity-100"}`}>
+          {matchDays(matches).map(([day, dayMatches]) => (
+            <section key={day}>
+              <h3 className="mb-2.5 font-mono text-[13px] font-medium uppercase tracking-[0.08em] text-ink-muted">{day}</h3>
+              <div className="flex flex-col gap-3">
+                {dayMatches.map((match) => {
+                  const { locked, finished, postponed, inPlay, showScore, status } = matchState(match)
+                  return (
+                    <article key={match.matchId} className="rounded-2xl border border-hairline bg-surface p-4">
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <span className="font-mono text-[13px] text-ink-muted">{formatKickoffTime(match.kickoff)}</span>
+                        <StatusLabel status={status} />
+                      </div>
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-[15px] text-ink-2">
+                        <span className="flex min-w-0 items-center gap-2">
+                          {match.homeCrest && <Image src={match.homeCrest} alt="" width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />}
+                          <span className={`truncate ${finished && match.scoreHome! > match.scoreAway! ? "font-semibold text-ink" : ""}`}>{match.homeTeam}</span>
+                        </span>
+                        {showScore ? (
+                          <span className={`rounded-lg px-2.5 py-1 font-mono text-[15px] font-medium ${inPlay ? "pill-live" : "bg-surface-3 text-ink"}`}>
+                            {match.scoreHome}:{match.scoreAway}
+                          </span>
+                        ) : (
+                          <span className="px-1 font-mono text-xs text-ink-dim">vs</span>
+                        )}
+                        <span className="flex min-w-0 items-center justify-end gap-2">
+                          <span className={`truncate ${finished && match.scoreAway! > match.scoreHome! ? "font-semibold text-ink" : ""}`}>{match.awayTeam}</span>
+                          {match.awayCrest && <Image src={match.awayCrest} alt="" width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />}
+                        </span>
+                      </div>
+                      {/* The bets line up with the match above: the first under the home
+                          side, the middle under the score, the last under the away side */}
+                      {/* A save button showing under the inputs dips into the card's
+                          bottom padding rather than keeping a gap open for it */}
+                      <div className="mt-3 grid grid-cols-3 gap-2 border-t border-hairline-row pb-1 pt-3">
+                        {PLAYERS.map((player, index) => (
+                          <div
+                            key={player}
+                            className={`flex min-w-0 flex-col gap-1.5 ${["items-start", "items-center", "items-end"][index]}`}
+                          >
+                            <PlayerCell name={player} small />
+                            <BetCell
+                              match={match}
+                              player={player}
+                              bet={match.bets.find((b) => b.player === player)}
+                              locked={postponed ? false : locked}
+                              finished={finished}
+                              onSaved={fetchMatches}
+                              compact
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
         <div
-          className={`bets-gameweek-table overflow-x-auto rounded-[20px] border border-hairline bg-surface transition-opacity duration-150 ${
+          className={`bets-gameweek-table hidden overflow-x-auto rounded-[20px] border border-hairline bg-surface transition-opacity duration-150 md:block ${
             refreshing ? "opacity-50" : "opacity-100"
           }`}
         >
@@ -360,11 +497,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
             </thead>
             <tbody className="text-base text-ink-2">
               {matches.map((match) => {
-                const locked = isLocked(match.kickoff)
-                const finished = match.status === "FINISHED"
-                const postponed = match.status === "POSTPONED"
-                const inPlay = match.status === "IN_PLAY" || match.status === "PAUSED"
-                const showScore = (finished || inPlay) && match.scoreHome !== null && match.scoreAway !== null
+                const { locked, finished, postponed, inPlay, showScore, status } = matchState(match)
                 return (
                   <tr key={match.matchId} className="h-[52px]">
                     <td className="w-[130px] whitespace-nowrap border-b border-hairline-row px-5 py-3 font-mono text-[13px] text-ink-muted">
@@ -396,22 +529,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
                       </span>
                     </td>
                     <td className="whitespace-nowrap border-b border-hairline-row px-4 py-3 text-center">
-                      <StatusLabel
-                        status={
-                          finished
-                            ? "Finished"
-                            : postponed
-                              ? "Postponed"
-                              : match.status === "PAUSED" &&
-                                  Date.now() - new Date(match.kickoff).getTime() < 63 * 60 * 1000
-                                ? "Half Time"
-                                : inPlay
-                                  ? "Live"
-                                  : locked
-                                    ? "Locked"
-                                    : "Open"
-                        }
-                      />
+                      <StatusLabel status={status} />
                     </td>
                     {PLAYERS.map((player) => (
                       <td key={player} className="border-b border-hairline-row px-4 py-3 text-center">
@@ -431,6 +549,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   )

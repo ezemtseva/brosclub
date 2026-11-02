@@ -5,13 +5,23 @@ import { BearAvatar } from "./Bear"
  * Player in a table: the hall-of-champions pill — the mascot and the name on
  * the bear's tint. `color` is kept for callers that still pass it.
  */
-export default function PlayerCell({ name }: { name: string; color?: string }) {
+export default function PlayerCell({
+  name,
+  small = false,
+}: {
+  name: string
+  color?: string
+  /** A step smaller, for narrow spots such as a phone's bet card */
+  small?: boolean
+}) {
   return (
     <span
-      className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium text-ink md:text-base"
+      className={`inline-flex items-center whitespace-nowrap rounded-full py-[3px] pl-[3px] font-medium text-ink ${
+        small ? "gap-1.5 pr-2.5 text-xs" : "gap-[7px] pr-[11px] text-sm md:text-base"
+      }`}
       style={{ background: PLAYER_TINTS[name] ?? "var(--chip)" }}
     >
-      <BearAvatar name={name} size={20} ring={false} />
+      <BearAvatar name={name} size={small ? 18 : 20} ring={false} />
       {name}
     </span>
   )

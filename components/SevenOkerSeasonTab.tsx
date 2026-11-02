@@ -15,6 +15,7 @@ import { gamesCaption, phoneColumns } from "./design/gameweekTable"
 import { EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
+import MobileReveal from "./MobileReveal"
 
 // Define the seasons array
 const seasons = ["2026/27", "2025/26", "2024/25", "All Time"] as const
@@ -290,15 +291,18 @@ export default function SevenOkerSeasonTabs({
         currentSeasonData,
         currentSeasonChartData,
         currentSeasonHighlights,
-        // The next game's seating, always on show under the standings
-        <div className="rounded-2xl border border-hairline bg-surface-2 px-5 py-4 text-[15px] text-ink">
-          <span className="md:hidden">
-            {nextTable}: {first} → {second} → {third}
-          </span>
-          <span className="hidden md:inline">
-            {nextTable} creates {first}, then joins {second} and {third}
-          </span>
-        </div>,
+        // The next game's seating under the standings, opened from a button like
+        // the home page's "See bearos cards"
+        <MobileReveal everywhere showLabel="SHOW NEXT TABLE SEATING" hideLabel="HIDE NEXT TABLE SEATING">
+          <div className="rounded-2xl border border-hairline bg-surface-2 px-5 py-4 text-[15px] text-ink">
+            <span className="md:hidden">
+              {nextTable}: {first} → {second} → {third}
+            </span>
+            <span className="hidden md:inline">
+              {nextTable} creates {first}, then joins {second} and {third}
+            </span>
+          </div>
+        </MobileReveal>,
         // Phones: a round "+" so it fits the heading's line beside the games count
         <button
           onClick={() => setDialogOpen(true)}

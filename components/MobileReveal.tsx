@@ -4,18 +4,21 @@ import type React from "react"
 import { useState } from "react"
 
 /**
- * Phones get a lime button that shows or hides the content; wider screens
- * always show it and never see the button. `className` styles the content
- * box once it shows (its display comes from here, so leave that out).
+ * A lime button that shows or hides the content. By default it is for phones
+ * only: wider screens always show the content and never see the button; with
+ * `everywhere` the button works on every screen. `className` styles the
+ * content box once it shows (its display comes from here, so leave that out).
  */
 export default function MobileReveal({
   showLabel,
   hideLabel,
+  everywhere = false,
   className = "",
   children,
 }: {
   showLabel: string
   hideLabel: string
+  everywhere?: boolean
   className?: string
   children: React.ReactNode
 }) {
@@ -28,7 +31,7 @@ export default function MobileReveal({
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className="mb-6 flex min-h-[44px] items-center gap-3 text-sm font-semibold text-ink md:hidden"
+        className={`mb-6 flex min-h-[44px] items-center gap-3 text-sm font-semibold text-ink ${everywhere ? "" : "md:hidden"}`}
       >
         <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <svg
@@ -47,7 +50,7 @@ export default function MobileReveal({
         </span>
         {open ? hideLabel : showLabel}
       </button>
-      <div className={`${open ? "grid" : "hidden"} md:grid ${className}`}>{children}</div>
+      <div className={`${open ? "grid" : "hidden"} ${everywhere ? "" : "md:grid"} ${className}`}>{children}</div>
     </>
   )
 }

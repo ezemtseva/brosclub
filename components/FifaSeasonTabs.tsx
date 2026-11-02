@@ -4288,7 +4288,7 @@ export default function FifaSeasonTabs({
   const renderBrecordsContent = () => <RecordGrid cards={fifaRecordCards.map(toRecordCard)} />
 
   return (
-    <div className="pb-24">
+    <div className="pb-12">
       <CupHeader
         title={title}
         tagline={description}

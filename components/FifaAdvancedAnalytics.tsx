@@ -446,7 +446,8 @@ const RANKS = ["1ST", "2ND", "3RD"]
 function BigNumber({ size, color, className, children }: { size: number; color?: string; className?: string; children: React.ReactNode }) {
   return (
     <span
-      className={`font-archivo font-black leading-[0.8] ${color ? "stat-number" : ""} ${className ?? ""}`}
+      // No stat-number here: insights keep the bear's colour in the light theme too
+      className={`font-archivo font-black leading-[0.8] ${className ?? ""}`}
       style={{ fontSize: size, color, fontVariationSettings: ARCHIVO_CONDENSED }}
     >
       {children}

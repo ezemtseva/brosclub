@@ -996,7 +996,7 @@ export default function HoldemSeasonTabs({
   )
 
   return (
-    <div className="pb-24">
+    <div className="pb-12">
       <CupHeader
         title={title}
         tagline={description}

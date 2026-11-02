@@ -475,7 +475,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-12 pt-10 md:pb-[63px] md:pt-[53px]">
+      <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-6 pt-10 md:pb-8 md:pt-[53px]">
         <div className="mb-7 flex flex-wrap items-baseline justify-between gap-4">
           <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
             History

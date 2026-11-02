@@ -356,7 +356,7 @@ export default function SevenOkerSeasonTabs({
   )
 
   return (
-    <div className="pb-24">
+    <div className="pb-12">
       <CupHeader
         title={title}
         tagline={description}

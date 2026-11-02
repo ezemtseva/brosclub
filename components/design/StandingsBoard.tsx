@@ -11,7 +11,7 @@ export type StandingStat = { label: string; value: string | number }
 export type StandingCardData = {
   name: string
   points: number
-  /** Exactly three, shown in a row under the divider */
+  /** Three to a row under the divider; most cups give three, EA FC all time nine */
   stats: StandingStat[]
 }
 
@@ -126,19 +126,25 @@ export default function StandingsBoard({
   heading = "Standings",
   cards,
   columns,
+  mobileColumns,
+  tableCaption,
   rows,
   actions,
-  notice,
+  footer,
 }: {
-  heading?: string
+  heading?: React.ReactNode
   cards: StandingCardData[]
   /** Table view: the page's usual columns over its processed rows */
   columns: any[]
+  /** Table view on phones, when the page has a narrower set (EA FC) */
+  mobileColumns?: any[]
+  /** Beside the heading on an upright phone, cards or table: what the phone columns leave out (FPL: the gameweek) */
+  tableCaption?: React.ReactNode
   rows: any[]
   /** Extra controls beside the switch (7oker: seating, add game) */
   actions?: React.ReactNode
-  /** Shown between the heading and the standings (7oker: seating order) */
-  notice?: React.ReactNode
+  /** Shown under the cards or table (7oker: the next table's seating) */
+  footer?: React.ReactNode
 }) {
   const view = useStandingsView()
 
@@ -149,21 +155,32 @@ export default function StandingsBoard({
   return (
     <>
       <div className="mb-4 flex min-h-11 flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 font-display text-2xl font-bold leading-none">{heading}</h2>
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Phones keep everything on the heading's line: the heading, then at the
+            right end the caption and the buttons; their view switch lives in the
+            Other menu */}
+        <div className="flex w-full items-center justify-between gap-3 md:w-auto">
+          <h2 className="m-0 font-display text-2xl font-bold leading-none">{heading}</h2>
+          <div className="flex items-center gap-3 md:hidden">
+            {/* An upright phone only (as DataTable decides), in either view */}
+            {tableCaption && <div className="standings-table-caption landscape:hidden">{tableCaption}</div>}
+            {actions}
+          </div>
+        </div>
+        {/* Wide screens: the buttons and the Cards | Table switch on the right */}
+        <div className="hidden flex-wrap items-center gap-3 md:flex">
           {actions}
           <ViewToggle view={view} onChange={applyStandingsView} />
         </div>
       </div>
-      {notice}
       <div className="standings-cards grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
         {cards.map((card, index) => (
           <StandingCard key={card.name} card={card} index={index} leaderPoints={leaderPoints} />
         ))}
       </div>
       <div className="standings-table">
-        <DataTable columns={tableColumns} data={rows} />
+        <DataTable columns={tableColumns} mobileColumns={mobileColumns} data={rows} />
       </div>
+      {footer && <div className="mt-4">{footer}</div>}
     </>
   )
 }

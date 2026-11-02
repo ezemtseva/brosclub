@@ -13,7 +13,7 @@ import {
 import { PLAYER_COLORS } from "../lib/teamColors"
 import { useChartColors } from "../lib/useChartColors"
 import { useIsMobile } from "../lib/useIsMobile"
-import { chartLayout } from "../lib/chartLayout"
+import { chartLayout, dataExtent, fitAxis } from "../lib/chartLayout"
 import { ChartTooltip } from "./ChartTooltip"
 
 type SevenOkerEntry = {
@@ -112,6 +112,11 @@ export default function SevenOkerChart({
     setChartData(nextChartData)
   }, [entries, dataKey])
 
+  // Phones zoom to the season so far: each axis ends at the first step that
+  // covers the games played and the highest total
+  const extent = dataExtent(chartData)
+  const fit = isMobile ? { x: fitAxis(extent.maxX, 10, 75), y: fitAxis(extent.maxY, (dataKey === "points" ? 25 : 2500)) } : null
+
   return (
     <div className="h-[280px] md:h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -125,8 +130,8 @@ export default function SevenOkerChart({
           <XAxis
             dataKey="games"
             type="number"
-            domain={[0, 75]}
-            ticks={layout.xTicks(Array.from({ length: 16 }, (_, i) => i * 5))}
+            domain={fit ? fit.x.domain : [0, 75]}
+            ticks={fit ? fit.x.ticks : layout.xTicks(Array.from({ length: 16 }, (_, i) => i * 5))}
             allowDecimals={false}
             allowDataOverflow
             interval={0}
@@ -136,10 +141,9 @@ export default function SevenOkerChart({
 
           <YAxis
             type="number"
-            // Phones run game points to 12500, so the ceiling lands on a 2500 step and gets a label
-            domain={isMobile && dataKey === "gamepoints" ? [0, 12500] : yAxisDomain}
-            // Phones step by 25 points, or by 2500 game points
-            ticks={layout.yTicks(yAxisTicks, dataKey === "points" ? [25, 50, 75, 100] : [2500, 5000, 7500, 10000, 12500])}
+            domain={fit ? fit.y.domain : yAxisDomain}
+            // Phones step by 25 points, or by 2500 game points (see `fit`)
+            ticks={fit ? fit.y.ticks : layout.yTicks(yAxisTicks)}
             interval={0}
             width={50}
             {...layout.yAxis}

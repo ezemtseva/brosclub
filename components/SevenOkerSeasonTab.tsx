@@ -11,6 +11,7 @@ import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
+import { gamesCaption, phoneColumns } from "./design/gameweekTable"
 import { EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -222,8 +223,6 @@ export default function SevenOkerSeasonTabs({
   }
 
   // Render content based on active tab
-  const [seatingOpen, setSeatingOpen] = useState(false)
-
   // Games already played this season decide which seat order comes next
   const gamesPlayed = currentSeasonData.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
   const nextGameNumber = gamesPlayed + 1
@@ -248,7 +247,6 @@ export default function SevenOkerSeasonTabs({
   const renderSeason = (
     data: any[],
     chartData: any[],
-    pieData: any[],
     highlights: any[],
     extras?: React.ReactNode,
     actions?: React.ReactNode,
@@ -258,14 +256,18 @@ export default function SevenOkerSeasonTabs({
         <StandingsBoard
           cards={toCards(data)}
           columns={columns}
+          // Upright phones: the games count moves beside the heading, and the two
+          // gaps to the leader (PD, GPD) are left out; sideways they come back
+          mobileColumns={phoneColumns(columns, ["games", "pointsDifference", "gamepointsDifference"])}
+          tableCaption={gamesCaption("G", data)}
           rows={data}
           actions={actions}
-          notice={extras}
+          footer={extras}
         />
       </section>
 
       <section className="mx-auto max-w-page px-8 pt-10">
-        <SevenOkerChartToggle entries={chartData} pieChartData={pieData} />
+        <SevenOkerChartToggle entries={chartData} />
       </section>
 
       {highlights.length > 0 && (
@@ -281,65 +283,54 @@ export default function SevenOkerSeasonTabs({
     if (activeSeason === "2026/27") {
       // Current season — live data from sevenOkerEntry
       const [first, second, third] = seatingForGame(nextGameNumber)
-      // The game number bold in the accent (olive in light, where lime can't be read);
+      // "Next table" bold in the accent (olive in light, where lime can't be read);
       // the order itself in plain ink
-      const game = <span className="font-bold text-[color:var(--accent-text)]">Game #{nextGameNumber}</span>
+      const nextTable = <span className="font-bold text-[color:var(--accent-text)]">Next table</span>
       return renderSeason(
         currentSeasonData,
         currentSeasonChartData,
-        currentSeasonPieData,
         currentSeasonHighlights,
-        seatingOpen && (
-          <div className="mb-4 rounded-2xl border border-hairline bg-surface-2 px-5 py-4">
-            {/* Phones get the order alone */}
-            <span className="text-[15px] text-ink md:hidden">
-              {game}: {first} → {second} → {third}
-            </span>
-            <span className="hidden text-[15px] text-ink md:inline">
-              {game}: {first} creates the table, then {second} joins and later {third}
-            </span>
-          </div>
-        ),
-        <>
-          {/* A "?" hint on phones, so it shares the row with the heading and Add game */}
-          <button
-            onClick={() => setSeatingOpen((open) => !open)}
-            aria-label={seatingOpen ? "Hide seating" : "Show seating"}
-            aria-expanded={seatingOpen}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border text-base font-semibold transition-colors md:w-auto md:px-[18px] md:text-sm md:font-medium ${
-              seatingOpen ? "border-ink text-ink" : "border-hairline-strong text-ink hover:border-ink"
-            }`}
-          >
-            <span aria-hidden="true" className="md:hidden">?</span>
-            <span className="hidden md:inline">{seatingOpen ? "Hide seating" : "Show seating"}</span>
-          </button>
-          <button
-            onClick={() => setDialogOpen(true)}
-            aria-label="Add game"
-            className="min-h-[44px] whitespace-nowrap rounded-full bg-accent px-4 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:px-[18px]"
-          >
-            {/* "+ Game" on phones keeps it on the heading's row */}
-            <span className="md:hidden">+ Game</span>
-            <span className="hidden md:inline">+ Add game</span>
-          </button>
-        </>,
+        // The next game's seating, always on show under the standings
+        <div className="rounded-2xl border border-hairline bg-surface-2 px-5 py-4 text-[15px] text-ink">
+          <span className="md:hidden">
+            {nextTable}: {first} → {second} → {third}
+          </span>
+          <span className="hidden md:inline">
+            {nextTable} creates {first}, then joins {second} and {third}
+          </span>
+        </div>,
+        // Phones: a round "+" so it fits the heading's line beside the games count
+        <button
+          onClick={() => setDialogOpen(true)}
+          aria-label="Add game"
+          className="add-game-button flex h-11 w-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-accent text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:h-auto md:min-h-[44px] md:w-auto md:px-[18px]"
+        >
+          <span aria-hidden="true" className="text-2xl font-medium leading-none md:hidden">+</span>
+          <span className="hidden md:inline">+ Add game</span>
+        </button>,
       )
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from sevenOkerEntry2526
       return renderSeason(
         historicalSeasonData,
         historicalSeasonChartData,
-        historicalSeasonPieData,
         historicalSeasonHighlights,
       )
     } else if (activeSeason === "2024/25") {
       // For the 2024/25 season, use the archived data from sevenOkerEntry2024
-      return renderSeason(season2425Data, season2425ChartData, season2425PieData, season2425Highlights)
+      return renderSeason(season2425Data, season2425ChartData, season2425Highlights)
     } else if (activeSeason === "All Time") {
       const allTimeData = computeAllTimeStandings()
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard heading="All time standings" cards={toCards(allTimeData)} columns={allTimeColumns} rows={allTimeData} />
+          <StandingsBoard
+            heading="All time standings"
+            cards={toCards(allTimeData)}
+            columns={allTimeColumns}
+            mobileColumns={phoneColumns(allTimeColumns, ["games", "difference", "gamepointsDifference"])}
+            tableCaption={gamesCaption("G", allTimeData)}
+            rows={allTimeData}
+          />
         </section>
       )
     }
@@ -352,7 +343,7 @@ export default function SevenOkerSeasonTabs({
         {highlights && highlights.length > 0 ? (
           <RecordGrid cards={highlights.map(toRecordCard)} />
         ) : (
-          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
         )}
       </section>
     )

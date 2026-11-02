@@ -11,7 +11,8 @@ import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { Panel, BearLegend, EmptyPanel } from "./design/Panels"
+import { gameweekCaption, phoneColumnsWithoutGameweek } from "./design/gameweekTable"
+import { Panel, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -621,12 +622,24 @@ export default function BetsSeasonTabs({
       return { name, points: row.points, stats }
     })
 
+  // An upright phone also leaves out the prediction splits, PS% and EPS%; turned
+  // sideways the table shows them again
+  const mobileColumns = phoneColumnsWithoutGameweek(columns).filter(
+    (column) => column.accessor !== "outcomePercent" && column.accessor !== "exactPercent",
+  )
+
   /** Standings + chart, the shape every played season shares. */
   const renderSeason = (data: any[], chartData: any[], gameweek?: React.ReactNode) => {
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
+          <StandingsBoard
+            cards={toCards(data)}
+            columns={columns}
+            mobileColumns={mobileColumns}
+            tableCaption={gameweekCaption(data)}
+            rows={data}
+          />
         </section>
 
         {gameweek}
@@ -634,7 +647,6 @@ export default function BetsSeasonTabs({
         <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
           <Panel
             title="Season progress"
-            aside={<BearLegend names={toCards(data).map((card) => card.name)} />}
             className="min-w-0 flex-[999_1_560px]"
           >
             <BetsChart entries={chartData} />
@@ -663,7 +675,13 @@ export default function BetsSeasonTabs({
       const seasonData = pastSeasonsData[activeSeason]!
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(seasonData.standings)} columns={columns} rows={seasonData.standings} />
+          <StandingsBoard
+            cards={toCards(seasonData.standings)}
+            columns={columns}
+            mobileColumns={mobileColumns}
+            tableCaption={gameweekCaption(seasonData.standings)}
+            rows={seasonData.standings}
+          />
         </section>
       )
     } else if (activeSeason === "All Time") {
@@ -693,7 +711,7 @@ export default function BetsSeasonTabs({
         {highlights && highlights.length > 0 ? (
           <RecordGrid cards={highlights.map(toRecordCard)} />
         ) : (
-          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
         )}
       </section>
     )

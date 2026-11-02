@@ -300,6 +300,14 @@ html:not([data-standings-view="table"]) .standings-table {
   display: none;
 }
 
+/* Phones in the dark theme: Add game is white, not lime */
+@media (max-width: 767px) {
+  html:not(.light) .add-game-button {
+    background-color: var(--ink);
+    color: var(--night);
+  }
+}
+
 .standings-toggle button {
   @apply text-ink-2 hover:text-ink;
 }

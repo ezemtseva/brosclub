@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { PLAYER_COLORS } from '../lib/teamColors'
 import { useChartColors } from '../lib/useChartColors'
 import { useIsMobile } from '../lib/useIsMobile'
-import { chartLayout } from '../lib/chartLayout'
+import { chartLayout, dataExtent, fitAxis } from '../lib/chartLayout'
 import { ChartTooltip } from './ChartTooltip'
 
 type PokerEntry = {
@@ -27,7 +27,8 @@ type PokerChartProps = {
 export default function PokerChart({ entries }: PokerChartProps) {
   const colors = useChartColors()
   // Phones: Y labels inside the plot, no side margins, fewer ticks
-  const layout = chartLayout(useIsMobile(), { top: 10, right: 10, left: 0, bottom: 5 })
+  const isMobile = useIsMobile()
+  const layout = chartLayout(isMobile, { top: 10, right: 10, left: 0, bottom: 5 })
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -59,6 +60,11 @@ export default function PokerChart({ entries }: PokerChartProps) {
     setChartData(chartData)
   }, [entries])
 
+  // Phones zoom to the season so far: each axis ends at the first step that
+  // covers the games played and the highest total
+  const extent = dataExtent(chartData)
+  const fit = isMobile ? { x: fitAxis(extent.maxX, 10, 44), y: fitAxis(extent.maxY, 25) } : null
+
   return (
     <div className="h-[280px] md:h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -70,15 +76,15 @@ export default function PokerChart({ entries }: PokerChartProps) {
           <XAxis
             dataKey="games"
             type="number"
-            domain={[0, 44]}
-            ticks={layout.xTicks(Array.from({ length: 23 }, (_, i) => i * 2))}
+            domain={fit ? fit.x.domain : [0, 44]}
+            ticks={fit ? fit.x.ticks : layout.xTicks(Array.from({ length: 23 }, (_, i) => i * 2))}
             stroke={colors.grid}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
           <YAxis
             type="number"
-            domain={[0, 85]}
-            ticks={layout.yTicks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85])}
+            domain={fit ? fit.y.domain : [0, 85]}
+            ticks={fit ? fit.y.ticks : layout.yTicks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85])}
             interval={0}
             width={44}
             {...layout.yAxis}

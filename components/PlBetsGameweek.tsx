@@ -281,7 +281,17 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
     <div>
       {/* Header */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="m-0 font-display text-2xl font-bold">Gameweek {gameweek}</h2>
+        {/* Phones: "Bets" with the gameweek on the right, set like the GW beside
+            "Standings" above; wider screens keep "Gameweek N" */}
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="m-0 font-display text-2xl font-bold">
+            <span className="md:hidden">Bets</span>
+            <span className="hidden md:inline">Gameweek {gameweek}</span>
+          </h2>
+          <p className="m-0 font-display text-xl font-bold leading-none md:hidden">
+            GW <span className="text-[color:var(--accent-text)]">{gameweek}</span>
+          </p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={() => setGameweek(1)} disabled={gameweek === 1} className={navButton}>
             «

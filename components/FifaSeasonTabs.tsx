@@ -15,6 +15,7 @@ import { CURRENT_FIFA_SEASON as FIFA_SEASON } from "../lib/fifaSeason"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import { EmptyPanel } from "./design/Panels"
+import StandingsBoard, { winPercent } from "./design/StandingsBoard"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -3653,24 +3654,15 @@ export default function FifaSeasonTabs({
     { header: "SW", accessor: "seasonsWon" },
     { header: "SP", accessor: "seasonsPlayed" },
   ]
+  // Phones keep just games and points, the points bold in the accent (olive in light)
   const allTimeColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
-    { header: "Team", accessor: "team", width: "20%" },
-    // Has to be a percentage: the other columns' percentages claim the whole
-    // table, and a px width would be squeezed down to the leftover. Cell
-    // padding eats 28px, so too narrow a column clamps the flag to a sliver.
-    { header: "C", accessor: "country", width: "7%" },
-    { header: "G", accessor: "games" },
-    { header: "P", accessor: "points" },
-    { header: "W", accessor: "wins" },
-    { header: "D", accessor: "draws" },
-    { header: "L", accessor: "losses" },
-    { header: "GS", accessor: "goalsScored" },
-    { header: "GC", accessor: "goalsConceded" },
-    { header: "GD", accessor: "goalDifference" },
-    { header: "W%", accessor: "winPercentage" },
-    { header: "SW", accessor: "seasonsWon" },
-    { header: "SP", accessor: "seasonsPlayed" },
+    // max-w-0: on a narrow phone a long name is cut with an ellipsis instead of
+    // pushing the table wider than the screen
+    { header: "Team", accessor: "team", cellClassName: "max-w-0" },
+    // 1%: the numbers shrink to their digits and the name takes the rest
+    { header: "G", accessor: "games", width: "1%" },
+    { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
   ]
 
   const allTimePlayerColumns = [
@@ -3689,17 +3681,10 @@ export default function FifaSeasonTabs({
   ]
   const allTimePlayerColumnsMobile = [
     { header: "#", accessor: "position", width: "4%" },
-    { header: "Player", accessor: "player", width: "20%" },
-    { header: "G", accessor: "games" },
-    { header: "P", accessor: "points" },
-    { header: "W", accessor: "wins" },
-    { header: "D", accessor: "draws" },
-    { header: "L", accessor: "losses" },
-    { header: "GS", accessor: "goalsScored" },
-    { header: "GC", accessor: "goalsConceded" },
-    { header: "GD", accessor: "goalDifference" },
-    { header: "W%", accessor: "winPercentage" },
-    { header: "SW", accessor: "seasonsWon" },
+    { header: "Player", accessor: "player" },
+    // 1%: the numbers shrink to their digits and the name takes the rest
+    { header: "G", accessor: "games", width: "1%" },
+    { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
   ]
 
   // Compute All Time standings by player
@@ -3810,6 +3795,7 @@ export default function FifaSeasonTabs({
 
     return sorted.map((entry, index) => ({
       position: index + 1,
+      name: entry.name,
       player: (
         <PlayerCell name={entry.name} color={entry.hoverColor} />
       ),
@@ -3991,7 +3977,7 @@ export default function FifaSeasonTabs({
           </span>
         ),
         team: (
-          <div className="flex items-center space-x-2">
+          <div className="flex min-w-0 items-center space-x-2">
             <Image
               src={entry.logo || "/placeholder.svg"}
               alt={entry.teamName}
@@ -3999,7 +3985,7 @@ export default function FifaSeasonTabs({
               height={28}
               className="object-contain w-[28px] h-[28px] shrink-0"
             />
-            <span>
+            <span className="min-w-0 truncate">
               <span className="md:hidden">{shortenTeamName(entry.teamName)}</span>
               <span className="hidden md:inline">{entry.teamName}</span>
             </span>
@@ -4033,7 +4019,7 @@ export default function FifaSeasonTabs({
       return {
       position: index + 1,
       team: (
-        <div className="flex items-center space-x-2">
+        <div className="flex min-w-0 items-center space-x-2">
           {/* The owner's dot, as in Results */}
           <span
             aria-hidden="true"
@@ -4047,7 +4033,7 @@ export default function FifaSeasonTabs({
             height={28}
             className="object-contain w-[28px] h-[28px] shrink-0"
           />
-          <span>
+          <span className="min-w-0 truncate">
             <span className="md:hidden">{shortenTeamName(teamName)}</span>
             <span className="hidden md:inline">{teamName}</span>
           </span>
@@ -4089,7 +4075,7 @@ export default function FifaSeasonTabs({
                 {/* Mobile: Add Game button */}
                 <button
                   onClick={() => setDialogOpen(true)}
-                  className="flex min-h-[44px] items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:hidden"
+                  className="add-game-button flex min-h-[44px] items-center gap-1.5 whitespace-nowrap rounded-full bg-accent px-[18px] text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:hidden"
                 >
                   + Add game
                 </button>
@@ -4225,10 +4211,32 @@ export default function FifaSeasonTabs({
             <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
           </div>
           <section className="mt-12">
-            <h2 className="mb-4 font-display text-2xl font-bold">Standings by Player</h2>
-            <div className="fifa-standings-table">
-              <DataTable columns={allTimePlayerColumns} mobileColumns={allTimePlayerColumnsMobile} data={allTimePlayerData} />
-            </div>
+            {/* Cards or the table, switched like every cup's standings */}
+            <StandingsBoard
+              heading="Standings by Player"
+              cards={allTimePlayerData.map((row) => ({
+                name: row.name,
+                points: row.points,
+                // Every column of the table but points, which the card shows large
+                stats: [
+                  { label: "Games", value: row.games.toLocaleString("de-DE") },
+                  { label: "Win %", value: winPercent(row.wins, row.games) },
+                  { label: "Titles", value: row.seasonsWon },
+                  { label: "Wins", value: row.wins.toLocaleString("de-DE") },
+                  { label: "Draws", value: row.draws.toLocaleString("de-DE") },
+                  { label: "Losses", value: row.losses.toLocaleString("de-DE") },
+                  { label: "Scored", value: row.goalsScored.toLocaleString("de-DE") },
+                  { label: "Conceded", value: row.goalsConceded.toLocaleString("de-DE") },
+                  {
+                    label: "Goal diff",
+                    value: `${row.goalDifference > 0 ? "+" : row.goalDifference < 0 ? "−" : ""}${Math.abs(row.goalDifference).toLocaleString("de-DE")}`,
+                  },
+                ],
+              }))}
+              columns={allTimePlayerColumns}
+              mobileColumns={allTimePlayerColumnsMobile}
+              rows={allTimePlayerData}
+            />
           </section>
         </>
       )
@@ -4274,7 +4282,7 @@ export default function FifaSeasonTabs({
     if (highlights && highlights.length > 0) {
       return <RecordGrid cards={highlights.map(toRecordCard)} />
     }
-    return <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+    return <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
   }
 
   const renderBrecordsContent = () => <RecordGrid cards={fifaRecordCards.map(toRecordCard)} />

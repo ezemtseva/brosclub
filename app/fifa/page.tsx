@@ -20,18 +20,15 @@ const columns = [
   { header: "Form", accessor: "form", width: "140px" },
 ]
 
+// Phones keep just games and points, the points bold in the accent (olive in light)
 const mobileColumns = [
   { header: "#", accessor: "position" },
-  { header: "Team", accessor: "team", width: "365px" },
-  { header: "G", accessor: "games", width: "83px" },
-  { header: "P", accessor: "points", width: "83px" },
-  { header: "W", accessor: "wins", width: "83px" },
-  { header: "D", accessor: "draws", width: "83px" },
-  { header: "L", accessor: "losses", width: "83px" },
-  { header: "GS", accessor: "goalsScored", width: "83px" },
-  { header: "GC", accessor: "goalsConceded", width: "83px" },
-  { header: "GD", accessor: "goalDifference", width: "83px" },
-  { header: "Form", accessor: "form", width: "140px" },
+  // max-w-0: on a narrow phone a long name is cut with an ellipsis instead of
+  // pushing the table wider than the screen
+  { header: "Team", accessor: "team", cellClassName: "max-w-0" },
+  // 1%: the numbers shrink to their digits and the team takes the rest
+  { header: "G", accessor: "games", width: "1%" },
+  { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
 ]
 
 // Team colors for 2024/25 season (historical - DO NOT CHANGE)
@@ -219,7 +216,7 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
           </span>
         ),
         team: (
-          <div className="flex items-center space-x-2">
+          <div className="flex min-w-0 items-center space-x-2">
             {/* The owner's dot, as in Results */}
             <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getColor(entry.team) }} />
             <Image
@@ -231,7 +228,7 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
               // a non-square crest and push the row open
               className="object-contain w-[28px] h-[28px] shrink-0"
             />
-            <span>
+            <span className="min-w-0 truncate">
               <span className="md:hidden">{shortenTeamName(teamName)}</span>
               <span className="hidden md:inline">{teamName}</span>
             </span>
@@ -266,7 +263,7 @@ function processFifaData2024(entries: any[]) {
       return {
       position: index + 1,
       team: (
-        <div className="flex items-center space-x-2">
+        <div className="flex min-w-0 items-center space-x-2">
           <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getTeamColor2024(entry.team) }} />
           <Image
             src={entry.logo || "/placeholder.svg"}
@@ -275,7 +272,10 @@ function processFifaData2024(entries: any[]) {
             height={28}
             className="object-contain w-[28px] h-[28px] shrink-0"
           />
-          <span>{teamName}</span>
+          <span className="min-w-0 truncate">
+            <span className="md:hidden">{shortenTeamName(teamName)}</span>
+            <span className="hidden md:inline">{teamName}</span>
+          </span>
         </div>
       ),
       games: entry.games,

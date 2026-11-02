@@ -14,6 +14,9 @@ const TEAM_SHORT: Record<string, string> = {
   "Olympique Lyon": "Lyon",
   "Dinamo Zagreb": "Dinamo Z.",
   "Adana Demirspor": "Adana DS",
+  "AFC Bournemouth": "Bournemouth",
+  Wolverhampton: "Wolves",
+  "AFC Richmond": "Richmond",
 }
 
 export function shortenTeamName(name: string): string {

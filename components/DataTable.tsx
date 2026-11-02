@@ -6,6 +6,8 @@ interface Column {
   header: string
   accessor: string
   width?: string
+  /** Extra classes for this column's cells (EA FC phones: points bold in the accent) */
+  cellClassName?: string
 }
 
 interface DataTableProps {
@@ -43,7 +45,9 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
+    // The trimmed phone columns are for a phone held upright only: turned sideways
+    // it shows the full table, every column, even on a narrow phone
+    const mq = window.matchMedia('(max-width: 767px) and (orientation: portrait)')
     setIsMobile(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
     mq.addEventListener('change', handler)
@@ -115,7 +119,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
               <th
                 key={index}
                 style={widthFor(column)}
-                className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
+                className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}
@@ -139,7 +143,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
               onMouseLeave={() => setHoveredRow(null)}
             >
               {activeColumns.map((column, colIndex) => (
-                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-5 pr-8 text-left md:pr-4' : 'px-4 text-center'}`}>
+                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${column.cellClassName ?? ''}`}>
                   {fmtCell(row[column.accessor])}
                 </td>
               ))}

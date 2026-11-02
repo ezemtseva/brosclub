@@ -9,7 +9,8 @@ import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { Panel, BearLegend, WinsSplit, EmptyPanel } from "./design/Panels"
+import { gamesCaption, phoneColumns } from "./design/gameweekTable"
+import { Panel, WinsSplit, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -889,7 +890,6 @@ export default function HoldemSeasonTabs({
       <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
         <Panel
           title="Season progress"
-          aside={<BearLegend names={toCards(data).map((card) => card.name)} />}
           className="min-w-0 flex-[999_1_560px]"
         >
           <PokerChart entries={chartData} />
@@ -946,7 +946,21 @@ export default function HoldemSeasonTabs({
       const allTimeData = computeAllTimeStandings()
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard heading="All time standings" cards={toCards(allTimeData)} columns={allTimeColumns} rows={allTimeData} />
+          <StandingsBoard
+            // Phones: "Standings" with the games played beside it, and a table
+            // without G (now in the heading) and SW
+            heading={
+              <>
+                <span className="md:hidden">Standings</span>
+                <span className="hidden md:inline">All time standings</span>
+              </>
+            }
+            cards={toCards(allTimeData)}
+            columns={allTimeColumns}
+            mobileColumns={phoneColumns(allTimeColumns, ["games", "seasonsWon"])}
+            tableCaption={gamesCaption("G", allTimeData)}
+            rows={allTimeData}
+          />
         </section>
       )
     } else {
@@ -969,7 +983,7 @@ export default function HoldemSeasonTabs({
         {highlights && highlights.length > 0 ? (
           <RecordGrid cards={highlights.map(toRecordCard)} />
         ) : (
-          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+          <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
         )}
       </section>
     )

@@ -1,46 +1,35 @@
 import type React from "react"
 import { bearColor } from "../Bear"
 
-/** Plain card used for charts and side panels. */
+/**
+ * Plain card used for charts and side panels. The title and its controls sit
+ * above the card, set like the "Standings" heading, not inside the frame.
+ */
 export function Panel({
   title,
   aside,
   className = "",
+  bodyClassName = "",
   children,
 }: {
   title?: React.ReactNode
   aside?: React.ReactNode
+  /** The whole block: heading and card (sizing in a row of panels) */
   className?: string
+  /** The framed card itself (its inner layout) */
+  bodyClassName?: string
   children: React.ReactNode
 }) {
   return (
-    // Phones trim the padding so a chart inside gets the width
-    <div className={`rounded-[20px] border border-hairline bg-surface p-4 md:p-7 ${className}`}>
+    <div className={className}>
       {(title || aside) && (
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
-          {title && <h2 className="font-display text-xl font-bold">{title}</h2>}
+        <div className="mb-4 flex min-h-11 flex-wrap items-center justify-between gap-2 md:gap-3">
+          {title && <h2 className="m-0 font-display text-2xl font-bold leading-none">{title}</h2>}
           {aside}
         </div>
       )}
-      {children}
-    </div>
-  )
-}
-
-/** Legend of bear names with a colour swatch — sits next to charts. Phones go without it. */
-export function BearLegend({ names }: { names: string[] }) {
-  return (
-    <div className="hidden gap-4 text-[13px] text-ink-2 md:flex">
-      {names.map((name) => (
-        <span key={name} className="inline-flex items-center gap-1.5">
-          <span
-            aria-hidden="true"
-            className="h-[3px] w-3.5 rounded-sm"
-            style={{ background: bearColor(name) }}
-          />
-          {name}
-        </span>
-      ))}
+      {/* Phones trim the padding so a chart inside gets the width */}
+      <div className={`rounded-[20px] border border-hairline bg-surface p-4 md:p-7 ${bodyClassName}`}>{children}</div>
     </div>
   )
 }
@@ -65,7 +54,11 @@ export function WinsSplit({
   const anyWins = rows.some((row) => row.wins > 0)
 
   return (
-    <Panel title={title} className={`${hideOnPhones ? "hidden md:flex" : "flex"} flex-[1_1_320px] flex-col gap-5`}>
+    <Panel
+      title={title}
+      className={`${hideOnPhones ? "hidden md:block" : ""} flex-[1_1_320px]`}
+      bodyClassName="flex flex-col gap-5"
+    >
       <div aria-hidden="true" className="flex h-3.5 gap-[3px] overflow-hidden rounded-full">
         {anyWins ? (
           rows.map((row) => (
@@ -100,11 +93,20 @@ export function WinsSplit({
 }
 
 /** Dashed box shown where a tab has nothing to display yet. */
-export function EmptyPanel({ title, text }: { title: string; text?: string }) {
+export function EmptyPanel({
+  title,
+  text,
+  titleOnlyOnPhones = false,
+}: {
+  title: string
+  text?: string
+  /** Phones show the title alone (empty insights) */
+  titleOnlyOnPhones?: boolean
+}) {
   return (
     <div className="rounded-[20px] border border-dashed border-hairline-strong px-8 py-[72px] text-center">
       <div className="font-display text-[22px] font-bold">{title}</div>
-      {text && <p className="mt-2 text-[15px] text-ink-muted">{text}</p>}
+      {text && <p className={`mt-2 text-[15px] text-ink-muted ${titleOnlyOnPhones ? "hidden md:block" : ""}`}>{text}</p>}
     </div>
   )
 }

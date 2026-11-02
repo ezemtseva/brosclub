@@ -63,9 +63,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,600..900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Unbounded:wght@500;700;800&display=swap"
         />
       </head>
-      <body className="bg-night text-ink font-sans text-base antialiased">
+      {/* At least a screen tall, with main taking the slack, so the footer sits at
+          the bottom even when a page has little or nothing to show */}
+      <body className="flex min-h-dvh flex-col bg-night text-ink font-sans text-base antialiased">
         <NavBar />
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

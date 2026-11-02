@@ -9,7 +9,8 @@ import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { Panel, BearLegend, EmptyPanel } from "./design/Panels"
+import { gameweekCaption, phoneColumnsWithoutGameweek } from "./design/gameweekTable"
+import { Panel, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
 
@@ -489,6 +490,8 @@ export default function FplSeasonTabs({
       }
     })
 
+  const mobileColumns = phoneColumnsWithoutGameweek(columns)
+
   /** Standings + chart, the shape every played season shares. */
   const renderSeason = (
     data: any[],
@@ -498,13 +501,18 @@ export default function FplSeasonTabs({
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
+          <StandingsBoard
+            cards={toCards(data)}
+            columns={columns}
+            mobileColumns={mobileColumns}
+            tableCaption={gameweekCaption(data)}
+            rows={data}
+          />
         </section>
 
         <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
           <Panel
             title="Season progress"
-            aside={<BearLegend names={toCards(data).map((card) => card.name)} />}
             className="min-w-0 flex-[999_1_560px]"
           >
             <FplChart entries={chartData} />
@@ -539,7 +547,13 @@ export default function FplSeasonTabs({
       const seasonData = pastSeasonsData[activeSeason]!
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
-          <StandingsBoard cards={toCards(seasonData.standings)} columns={columns} rows={seasonData.standings} />
+          <StandingsBoard
+            cards={toCards(seasonData.standings)}
+            columns={columns}
+            mobileColumns={mobileColumns}
+            tableCaption={gameweekCaption(seasonData.standings)}
+            rows={seasonData.standings}
+          />
         </section>
       )
     } else if (activeSeason === "All Time") {
@@ -573,7 +587,7 @@ export default function FplSeasonTabs({
     }
     return (
       <section className="mx-auto max-w-page px-8 pt-10">
-        <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." />
+        <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
       </section>
     )
   }

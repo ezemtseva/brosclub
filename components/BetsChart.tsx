@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { PLAYER_COLORS } from '../lib/teamColors'
 import { useChartColors } from '../lib/useChartColors'
 import { useIsMobile } from '../lib/useIsMobile'
-import { chartLayout } from '../lib/chartLayout'
+import { chartLayout, dataExtent, fitAxis } from '../lib/chartLayout'
 import { ChartTooltip } from './ChartTooltip'
 
 type BetsEntry = {
@@ -28,7 +28,8 @@ type BetsChartProps = {
 export default function BetsChart({ entries }: BetsChartProps) {
   const colors = useChartColors()
   // Phones: Y labels inside the plot, no side margins, fewer ticks
-  const layout = chartLayout(useIsMobile())
+  const isMobile = useIsMobile()
+  const layout = chartLayout(isMobile)
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -63,6 +64,11 @@ export default function BetsChart({ entries }: BetsChartProps) {
     setChartData(chartData)
   }, [entries])
 
+  // Phones zoom to the season so far: each axis ends at the first step that
+  // covers the games played and the highest total
+  const extent = dataExtent(chartData)
+  const fit = isMobile ? { x: fitAxis(extent.maxX, 10, 38), y: fitAxis(extent.maxY, 100) } : null
+
   return (
     <div className="h-[280px] md:h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -74,15 +80,15 @@ export default function BetsChart({ entries }: BetsChartProps) {
           <XAxis
             dataKey="games"
             type="number"
-            domain={[0, 38]}
-            ticks={layout.xTicks(Array.from({ length: 20 }, (_, i) => i * 2))}
+            domain={fit ? fit.x.domain : [0, 38]}
+            ticks={fit ? fit.x.ticks : layout.xTicks(Array.from({ length: 20 }, (_, i) => i * 2))}
             stroke={colors.grid}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
           <YAxis
             type="number"
-            domain={[0, 300]}
-            ticks={layout.yTicks([0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300])}
+            domain={fit ? fit.y.domain : [0, 300]}
+            ticks={fit ? fit.y.ticks : layout.yTicks([0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300])}
             interval={0}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11, ...layout.yTickOffset }}
             width={44}

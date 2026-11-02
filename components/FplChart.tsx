@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { PLAYER_COLORS } from '../lib/teamColors'
 import { useChartColors } from '../lib/useChartColors'
 import { useIsMobile } from '../lib/useIsMobile'
-import { chartLayout } from '../lib/chartLayout'
+import { chartLayout, dataExtent, fitAxis } from '../lib/chartLayout'
 import { ChartTooltip } from './ChartTooltip'
 
 type FplEntry = {
@@ -27,7 +27,8 @@ type FplChartProps = {
 export default function FplChart({ entries }: FplChartProps) {
   const colors = useChartColors()
   // Phones: Y labels inside the plot, no side margins, fewer ticks
-  const layout = chartLayout(useIsMobile())
+  const isMobile = useIsMobile()
+  const layout = chartLayout(isMobile)
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
 
   useEffect(() => {
@@ -61,6 +62,11 @@ export default function FplChart({ entries }: FplChartProps) {
     setChartData(chartData)
   }, [entries])
 
+  // Phones zoom to the season so far: each axis ends at the first step that
+  // covers the games played and the highest total
+  const extent = dataExtent(chartData)
+  const fit = isMobile ? { x: fitAxis(extent.maxX, 10, 38), y: fitAxis(extent.maxY, 500) } : null
+
   return (
     <div className="h-[280px] md:h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -72,16 +78,15 @@ export default function FplChart({ entries }: FplChartProps) {
           <XAxis
             dataKey="games"
             type="number"
-            domain={[0, 38]}
-            ticks={layout.xTicks(Array.from({ length: 20 }, (_, i) => i * 2))}
+            domain={fit ? fit.x.domain : [0, 38]}
+            ticks={fit ? fit.x.ticks : layout.xTicks(Array.from({ length: 20 }, (_, i) => i * 2))}
             stroke={colors.grid}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11 }}
           />
           <YAxis
             type="number"
-            domain={[0, 2500]}
-            // Phones step by 500, up to the 2500 ceiling
-            ticks={layout.yTicks([0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500], [500, 1000, 1500, 2000, 2500])}
+            domain={fit ? fit.y.domain : [0, 2500]}
+            ticks={fit ? fit.y.ticks : layout.yTicks([0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500])}
             interval={0}
             tick={{ fill: colors.tick, fontFamily: "Geist Mono, monospace", fontSize: 11, ...layout.yTickOffset }}
             width={44}

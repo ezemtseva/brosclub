@@ -3,13 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import ImageCarousel from "./ImageCarousel"
 import dynamicImport from "next/dynamic"
 import { PLAYER_COLORS } from "../lib/teamColors"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
 import StandingsBoard, { winPercent, type StandingCardData } from "./design/StandingsBoard"
-import { gameweekCaption, phoneColumnsWithoutGameweek } from "./design/gameweekTable"
+import { gameweekCaption, phoneColumns, phoneColumnsWithoutGameweek } from "./design/gameweekTable"
 import { Panel, EmptyPanel } from "./design/Panels"
 import { RecordGrid, type RecordCard } from "./design/RecordTile"
 import { splitRecordDate } from "./design/recordText"
@@ -343,15 +342,12 @@ type FplSeasonTabsProps = {
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
-  currentSeasonHighlights: any[]
   historicalSeasonData: any[]
   historicalSeasonChartData: any[]
   historicalSeasonPieData: any[]
-  historicalSeasonHighlights: any[]
   season2425Data: any[]
   season2425ChartData: any[]
   season2425PieData: any[]
-  season2425Highlights: any[]
   columns: any[]
 }
 
@@ -378,15 +374,12 @@ export default function FplSeasonTabs({
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
-  currentSeasonHighlights,
   historicalSeasonData,
   historicalSeasonChartData,
   historicalSeasonPieData,
-  historicalSeasonHighlights,
   season2425Data,
   season2425ChartData,
   season2425PieData,
-  season2425Highlights,
   columns,
 }: FplSeasonTabsProps) {
   const [activeSeason, setActiveSeason] = useState<Season>("2026/27")
@@ -485,27 +478,29 @@ export default function FplSeasonTabs({
         stats: [
           { label: "GW wins", value: row.wins ?? "—" },
           { label: "Win %", value: row.winPercent ?? winPercent(row.wins, row.games) },
-          { label: "Gameweeks", value: row.games ?? "—" },
+          // No gameweeks: every bear has the same count, stated beside the heading
         ],
       }
     })
 
+  // The gameweek count is the same for every bear, so on every screen it leaves
+  // the table and stands beside the heading
+  const seasonColumns = columns.filter((column) => column.accessor !== "games")
   const mobileColumns = phoneColumnsWithoutGameweek(columns)
+  // The static seasons never recorded gameweek wins, so phones leave out W and W%
+  const mobileColumnsWithoutWins = phoneColumns(columns, ["games", "wins", "winPercent"])
 
   /** Standings + chart, the shape every played season shares. */
-  const renderSeason = (
-    data: any[],
-    chartData: any[],
-    highlights: { src: string; alt: string; caption: string }[],
-  ) => {
+  const renderSeason = (data: any[], chartData: any[]) => {
     return (
       <>
         <section className="mx-auto max-w-page px-8 pt-10">
           <StandingsBoard
             cards={toCards(data)}
-            columns={columns}
+            columns={seasonColumns}
             mobileColumns={mobileColumns}
             tableCaption={gameweekCaption(data)}
+            captionEverywhere
             rows={data}
           />
         </section>
@@ -518,13 +513,6 @@ export default function FplSeasonTabs({
             <FplChart entries={chartData} />
           </Panel>
         </section>
-
-        {highlights.length > 0 && (
-          <section className="mx-auto max-w-page px-8 pt-10">
-            <h2 className="mb-4 font-display text-2xl font-bold">Highlights</h2>
-            <ImageCarousel images={highlights} />
-          </section>
-        )}
       </>
     )
   }
@@ -532,16 +520,12 @@ export default function FplSeasonTabs({
   // Render content based on active tab
   const renderStandingsContent = () => {
     if (activeSeason === "2026/27") {
-      return renderSeason(currentSeasonData, currentSeasonChartData, currentSeasonHighlights)
+      return renderSeason(currentSeasonData, currentSeasonChartData)
     } else if (activeSeason === "2025/26") {
       // 2025/26 season — archived data from fplEntry2526
-      return renderSeason(
-        historicalSeasonData,
-        historicalSeasonChartData,
-        historicalSeasonHighlights,
-      )
+      return renderSeason(historicalSeasonData, historicalSeasonChartData)
     } else if (activeSeason === "2024/25") {
-      return renderSeason(season2425Data, season2425ChartData, season2425Highlights)
+      return renderSeason(season2425Data, season2425ChartData)
     } else if (pastSeasonsData[activeSeason]) {
       // For seasons with static data, use the provided static data
       const seasonData = pastSeasonsData[activeSeason]!
@@ -549,9 +533,10 @@ export default function FplSeasonTabs({
         <section className="mx-auto max-w-page px-8 pt-10">
           <StandingsBoard
             cards={toCards(seasonData.standings)}
-            columns={columns}
-            mobileColumns={mobileColumns}
+            columns={seasonColumns}
+            mobileColumns={mobileColumnsWithoutWins}
             tableCaption={gameweekCaption(seasonData.standings)}
+            captionEverywhere
             rows={seasonData.standings}
           />
         </section>

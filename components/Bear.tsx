@@ -41,14 +41,23 @@ export function BearAvatar({
         boxShadow: ring ? `inset 0 0 0 2px ${bearColor(name)}` : undefined,
       }}
     >
-      <Image
-        src={BEAR_IMAGES[name] ?? "/placeholder.svg"}
-        alt={name}
-        width={size}
-        height={size}
-        className="rounded-full object-cover"
-        style={{ width: ring ? size - 6 : size, height: ring ? size - 6 : size }}
-      />
+      {/* No mascot for anyone else (DSQ): just the circle, filled grey */}
+      {BEAR_IMAGES[name] ? (
+        <Image
+          src={BEAR_IMAGES[name]}
+          alt={name}
+          width={size}
+          height={size}
+          className="rounded-full object-cover"
+          style={{ width: ring ? size - 6 : size, height: ring ? size - 6 : size }}
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="rounded-full"
+          style={{ width: ring ? size - 6 : size, height: ring ? size - 6 : size, background: bearColor(name) }}
+        />
+      )}
     </span>
   )
 }

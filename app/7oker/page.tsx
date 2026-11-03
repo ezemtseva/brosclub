@@ -229,9 +229,14 @@ export default async function SevenOkerPage() {
 
       <SevenOkerSeasonTabs
         title="7oker"
+        phoneDescription={
+          <>
+            <strong className="font-bold">III</strong> season
+          </>
+        }
         description={
           <>
-            III season of our beloved local{" "}
+            <strong className="font-bold">III</strong> season of our beloved local{" "}
             <Link
               href="https://bearos-poker.vercel.app/"
               className="link-accent"

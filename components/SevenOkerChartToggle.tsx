@@ -48,16 +48,15 @@ export default function SevenOkerChartToggle({ entries }: SevenOkerChartTogglePr
               {toggle("gamepoints", "Game points")}
             </div>
             {/* Phones: one GP switch on the title's line (right-aligned if it has to wrap);
-                off shows points, the default */}
+                off shows points, the default. Off it is filled in the ink (white in
+                dark, black in light) to stand out; on it turns lime like an active tab */}
             <button
               type="button"
               aria-pressed={chartView === "gamepoints"}
               aria-label="Show game points"
               onClick={() => setChartView((view) => (view === "points" ? "gamepoints" : "points"))}
-              className={`ml-auto min-h-9 self-center whitespace-nowrap rounded-full border px-3 text-[13px] transition-colors md:hidden ${
-                chartView === "gamepoints"
-                  ? "border-ink bg-ink font-semibold text-night"
-                  : "border-hairline-strong text-ink-2"
+              className={`ml-auto min-h-9 self-center whitespace-nowrap rounded-full px-3 text-[13px] font-semibold transition-colors md:hidden ${
+                chartView === "gamepoints" ? "bg-accent text-accent-foreground" : "bg-ink text-night"
               }`}
             >
               GP

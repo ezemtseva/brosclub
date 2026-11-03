@@ -4081,7 +4081,7 @@ export default function FifaSeasonTabs({
                 </button>
               </div>
               <div className="fifa-standings-table">
-                <DataTable columns={columns} mobileColumns={mobileColumns} data={currentSeasonData} />
+                <DataTable columns={columns} mobileColumns={mobileColumns} data={currentSeasonData} pointsFollowGamesWhenNarrow />
               </div>
             </div>
 
@@ -4147,7 +4147,7 @@ export default function FifaSeasonTabs({
                 <h2 className="m-0 font-display text-2xl font-bold leading-none">Standings</h2>
               </div>
               <div className="fifa-standings-table">
-                <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} />
+                <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={lastSeasonData} pointsFollowGamesWhenNarrow />
               </div>
             </div>
 
@@ -4190,7 +4190,7 @@ export default function FifaSeasonTabs({
       return (
         <>
           <div className="fifa-standings-table">
-            <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={historicalSeasonData} />
+            <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={historicalSeasonData} pointsFollowGamesWhenNarrow />
           </div>
 
           <section className="mt-12">
@@ -4208,7 +4208,7 @@ export default function FifaSeasonTabs({
         <>
           <h2 className="mb-4 font-display text-2xl font-bold">Standings by Team</h2>
           <div className="fifa-standings-table">
-            <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable />
+            <DataTable columns={allTimeColumns} mobileColumns={allTimeColumnsMobile} data={allTimeData} sortable pointsFollowGamesWhenNarrow />
           </div>
           <section className="mt-12">
             {/* Cards or the table, switched like every cup's standings */}
@@ -4235,6 +4235,7 @@ export default function FifaSeasonTabs({
               }))}
               columns={allTimePlayerColumns}
               mobileColumns={allTimePlayerColumnsMobile}
+              pointsFollowGamesWhenNarrow
               rows={allTimePlayerData}
             />
           </section>
@@ -4254,7 +4255,7 @@ export default function FifaSeasonTabs({
 
           <div className="fifa-standings-table">
             {pastSeasonData.length > 0 ? (
-              <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={pastSeasonData} />
+              <DataTable columns={columnsWithoutForm} mobileColumns={mobileColumnsWithoutForm} data={pastSeasonData} pointsFollowGamesWhenNarrow />
             ) : (
               <EmptyPanel title={`Season ${activeSeason}`} text={`No data available for the ${activeSeason} season.`} />
             )}

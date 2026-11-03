@@ -157,6 +157,11 @@ export default async function PokerPage() {
           </>
         }
         description="Permanently suspended after X seasons."
+        phoneDescription={
+          <>
+            Suspended after <strong className="font-bold">X</strong> seasons
+          </>
+        }
         currentSeasonData={currentSeasonData}
         currentSeasonChartData={currentEntries}
         currentSeasonPieData={currentSeasonPieData}

@@ -163,7 +163,8 @@ html.light .accent-word {
   -webkit-box-decoration-break: clone;
 }
 
-/* A cup's tagline: plain in dark, the same lime highlighter as "Sunday." in light */
+/* A cup's tagline: the same lime highlighter as "Sunday." in light, and on
+   phones in dark too (dark ink on the lime); plain on wide screens in dark */
 html.light .tagline-highlight {
   color: var(--ink);
   background: var(--lime);
@@ -171,6 +172,17 @@ html.light .tagline-highlight {
   border-radius: 0.08em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+@media (max-width: 767px) {
+  html:not(.light) .tagline-highlight {
+    color: #0b0c0f;
+    background: var(--lime);
+    padding: 0 0.15em;
+    border-radius: 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
 }
 
 /* A link inside body copy: lime text in dark, lime underline in light */
@@ -337,13 +349,10 @@ html.light .add-game-button {
   }
 }
 
-.standings-toggle button {
-  @apply text-ink-2 hover:text-ink;
-}
-
-html:not([data-standings-view="table"]) .standings-toggle [data-view="cards"],
-html[data-standings-view="table"] .standings-toggle [data-view="table"] {
-  @apply bg-ink font-semibold text-night;
+/* 7oker's Add game is white on every screen in the dark theme */
+html:not(.light) .add-game-button-white {
+  background-color: var(--ink);
+  color: var(--night);
 }
 
 /* Every table header on the site: the brand lime with dark ink, both themes */

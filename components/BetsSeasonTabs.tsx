@@ -622,10 +622,17 @@ export default function BetsSeasonTabs({
       return { name, points: row.points, stats }
     })
 
+  // The gameweek count is the same for every bear, so on every screen it leaves
+  // the table and stands beside the heading
+  const seasonColumns = columns.filter((column) => column.accessor !== "games")
   // An upright phone also leaves out the prediction splits, PS% and EPS%; turned
   // sideways the table shows them again
   const mobileColumns = phoneColumnsWithoutGameweek(columns).filter(
     (column) => column.accessor !== "outcomePercent" && column.accessor !== "exactPercent",
+  )
+  // The static seasons never recorded gameweek wins, so phones leave out W and GW%
+  const mobileColumnsWithoutWins = mobileColumns.filter(
+    (column) => column.accessor !== "wins" && column.accessor !== "winPercentage",
   )
 
   /** Standings + chart, the shape every played season shares. */
@@ -635,9 +642,10 @@ export default function BetsSeasonTabs({
         <section className="mx-auto max-w-page px-8 pt-10">
           <StandingsBoard
             cards={toCards(data)}
-            columns={columns}
+            columns={seasonColumns}
             mobileColumns={mobileColumns}
             tableCaption={gameweekCaption(data)}
+            captionEverywhere
             rows={data}
           />
         </section>
@@ -677,9 +685,10 @@ export default function BetsSeasonTabs({
         <section className="mx-auto max-w-page px-8 pt-10">
           <StandingsBoard
             cards={toCards(seasonData.standings)}
-            columns={columns}
-            mobileColumns={mobileColumns}
+            columns={seasonColumns}
+            mobileColumns={mobileColumnsWithoutWins}
             tableCaption={gameweekCaption(seasonData.standings)}
+            captionEverywhere
             rows={seasonData.standings}
           />
         </section>

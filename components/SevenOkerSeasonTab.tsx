@@ -115,6 +115,8 @@ const allTimeColumns = [
 type SevenOkerSeasonTabsProps = {
   title: string
   description: React.ReactNode
+  /** Phones' line under the title, just the season number */
+  phoneDescription?: React.ReactNode
   currentSeasonData: any[]
   currentSeasonChartData: any[]
   currentSeasonPieData: any[]
@@ -133,6 +135,7 @@ type SevenOkerSeasonTabsProps = {
 export default function SevenOkerSeasonTabs({
   title,
   description,
+  phoneDescription,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -256,18 +259,21 @@ export default function SevenOkerSeasonTabs({
       <section className="mx-auto max-w-page px-8 pt-10">
         <StandingsBoard
           cards={toCards(data)}
-          columns={columns}
-          // Upright phones: the games count moves beside the heading, and the two
-          // gaps to the leader (PD, GPD) are left out; sideways they come back
+          // Every screen: the games count (the same for every bear) stands beside
+          // the heading instead of in the table. Upright phones also leave out the
+          // two gaps to the leader (PD, GPD); sideways they come back
+          columns={columns.filter((column) => column.accessor !== "games")}
           mobileColumns={phoneColumns(columns, ["games", "pointsDifference", "gamepointsDifference"])}
           tableCaption={gamesCaption("G", data)}
+          captionEverywhere
           rows={data}
           actions={actions}
           footer={extras}
         />
       </section>
 
-      <section className="mx-auto max-w-page px-8 pt-10">
+      {/* Under the seating (which ends in its own 24px) the gap halves to 32px */}
+      <section className={`mx-auto max-w-page px-8 ${extras ? "pt-2" : "pt-10"}`}>
         <SevenOkerChartToggle entries={chartData} />
       </section>
 
@@ -295,6 +301,8 @@ export default function SevenOkerSeasonTabs({
         // the home page's "See bearos cards"; phones get the shorter label and line
         <MobileReveal
           everywhere
+          // Open, the seating ends 24px short of the next section, like the closed button
+          className="mb-6"
           showLabel={<><span className="md:hidden">SHOW SEATING</span><span className="hidden md:inline">SHOW NEXT TABLE SEATING</span></>}
           hideLabel={<><span className="md:hidden">HIDE SEATING</span><span className="hidden md:inline">HIDE NEXT TABLE SEATING</span></>}
         >
@@ -311,7 +319,7 @@ export default function SevenOkerSeasonTabs({
         <button
           onClick={() => setDialogOpen(true)}
           aria-label="Add game"
-          className="add-game-button flex h-11 w-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-accent text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:h-auto md:min-h-[44px] md:w-auto md:px-[18px]"
+          className="add-game-button add-game-button-white flex h-11 w-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-accent text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 md:h-auto md:min-h-[44px] md:w-auto md:px-[18px]"
         >
           <span aria-hidden="true" className="text-2xl font-medium leading-none md:hidden">+</span>
           <span className="hidden md:inline">+ Add game</span>
@@ -368,6 +376,7 @@ export default function SevenOkerSeasonTabs({
       <CupHeader
         title={title}
         tagline={description}
+        phoneTagline={phoneDescription}
         seasons={seasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {

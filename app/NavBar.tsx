@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
-import ThemeToggle, { applyTheme, useTheme } from "../components/ThemeToggle"
+import { applyTheme, useTheme } from "../components/ThemeToggle"
 import { applyStandingsView, useStandingsView } from "../lib/standingsView"
 
 const mainNavItems = [
@@ -105,6 +105,83 @@ function OtherMenu({ pathname }: { pathname: string }) {
   )
 }
 
+/**
+ * Wide screens: a gear holding the theme and the standings view, each a
+ * two-way switch; it stays open while switching and closes on a click elsewhere.
+ */
+function SettingsMenu({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
+  const view = useStandingsView()
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    document.addEventListener("pointerdown", close)
+    document.addEventListener("keydown", escape)
+    return () => {
+      document.removeEventListener("pointerdown", close)
+      document.removeEventListener("keydown", escape)
+    }
+  }, [open])
+  useEffect(() => setOpen(false), [pathname])
+
+  const option = (active: boolean) =>
+    `min-h-9 flex-1 whitespace-nowrap rounded-full px-3.5 text-[13px] transition-colors ${
+      active ? "bg-ink font-semibold text-night" : "text-ink-2 hover:text-ink"
+    }`
+  const label = "mb-2 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted"
+
+  return (
+    <div ref={ref} className="relative hidden md:block">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Settings"
+        title="Settings"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-hairline-strong text-ink transition-colors hover:border-ink"
+      >
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-[240px] rounded-xl border border-hairline-strong bg-surface-2 p-4 shadow-lg">
+          <div className={label}>Theme</div>
+          <div role="group" aria-label="Theme" className="flex rounded-full bg-track p-1">
+            <button type="button" aria-pressed={theme === "dark"} onClick={() => applyTheme("dark")} className={option(theme === "dark")}>
+              Dark
+            </button>
+            <button type="button" aria-pressed={theme === "light"} onClick={() => applyTheme("light")} className={option(theme === "light")}>
+              Light
+            </button>
+          </div>
+          {/* Offered on every page: where there are no standings it just stores
+              the choice for the cup pages */}
+          <div className={`${label} mt-4`}>Standings view</div>
+          <div role="group" aria-label="Standings view" className="flex rounded-full bg-track p-1">
+            <button type="button" aria-pressed={view === "cards"} onClick={() => applyStandingsView("cards")} className={option(view === "cards")}>
+              Cards
+            </button>
+            <button type="button" aria-pressed={view === "table"} onClick={() => applyStandingsView("table")} className={option(view === "table")}>
+              Table
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function NavBar() {
   const pathname = usePathname()
 
@@ -146,10 +223,8 @@ export default function NavBar() {
           <OtherMenu pathname={pathname} />
         </div>
 
-        {/* On phones the theme switch lives in Other */}
-        <div className="hidden md:block">
-          <ThemeToggle />
-        </div>
+        {/* On phones the theme and view switches live in Other */}
+        <SettingsMenu pathname={pathname} />
       </nav>
     </header>
   )

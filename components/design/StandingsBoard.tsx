@@ -4,7 +4,6 @@ import type React from "react"
 import { BearAvatar, bearColor } from "../Bear"
 import DataTable from "../DataTable"
 import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../../lib/cardFrame"
-import { applyStandingsView, useStandingsView, type StandingsView as View } from "../../lib/standingsView"
 
 export type StandingStat = { label: string; value: string | number }
 
@@ -21,27 +20,6 @@ const RANKS = ["1ST", "2ND", "3RD"]
 export function winPercent(wins: number | undefined, games: number | undefined): string {
   if (wins === undefined || !games) return "—"
   return `${((wins / games) * 100).toFixed(1)}%`
-}
-
-function ViewToggle({ view, onChange }: { view: View; onChange: (view: View) => void }) {
-  const button = (value: View, label: string) => (
-    <button
-      type="button"
-      data-view={value}
-      aria-pressed={view === value}
-      onClick={() => onChange(value)}
-      className="min-h-9 whitespace-nowrap rounded-full px-3.5 text-[13px] transition-colors"
-    >
-      {label}
-    </button>
-  )
-  return (
-    // Phones switch views from the nav's Other menu instead
-    <div role="group" aria-label="Standings view" className="standings-toggle hidden rounded-full bg-track p-1 md:flex">
-      {button("cards", "Cards")}
-      {button("table", "Table")}
-    </div>
-  )
 }
 
 function StandingCard({
@@ -75,7 +53,12 @@ function StandingCard({
           <span className="font-display text-xl font-bold">{card.name}</span>
           <span
             className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
-              isLeader ? "bg-accent text-accent-foreground" : "bg-surface-3 text-ink-2"
+              // 1st in the lime, 2nd in a fixed silver, both with the dark ink
+              isLeader
+                ? "bg-accent text-accent-foreground"
+                : index === 1
+                  ? "bg-[#C9CDD3] text-accent-foreground"
+                  : "bg-surface-3 text-ink-2"
             }`}
             style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
           >
@@ -91,12 +74,15 @@ function StandingCard({
           >
             {pointsLabel}
           </span>
-          <span
-            className="font-archivo whitespace-nowrap text-[22px] font-extrabold uppercase leading-none text-ink-muted"
-            style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-          >
-            {isLeader ? "Leader" : `−${(leaderPoints - card.points).toLocaleString("de-DE")} pts`}
-          </span>
+          {/* The gap to the leader; the leader's own card leaves it blank */}
+          {!isLeader && (
+            <span
+              className="font-archivo whitespace-nowrap text-[22px] font-extrabold uppercase leading-none text-ink-muted"
+              style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
+            >
+              −{(leaderPoints - card.points).toLocaleString("de-DE")} pts
+            </span>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-3 border-t border-[var(--card-rule)] pt-4">
@@ -118,9 +104,10 @@ function StandingCard({
 }
 
 /**
- * Standings on a cup page: a heading with a Cards | Table switch, then either a
- * framed card per bear or the plain table. Both views are rendered and CSS
- * picks one, so the stored choice applies before React hydrates.
+ * Standings on a cup page: a heading, then either a framed card per bear or the
+ * plain table, as chosen in the nav (Settings on wide screens, Other on phones).
+ * Both views are rendered and CSS picks one, so the stored choice applies
+ * before React hydrates.
  */
 export default function StandingsBoard({
   heading = "Standings",
@@ -128,6 +115,8 @@ export default function StandingsBoard({
   columns,
   mobileColumns,
   tableCaption,
+  captionEverywhere = false,
+  pointsFollowGamesWhenNarrow = false,
   rows,
   actions,
   footer,
@@ -140,14 +129,16 @@ export default function StandingsBoard({
   mobileColumns?: any[]
   /** Beside the heading on an upright phone, cards or table: what the phone columns leave out (FPL: the gameweek) */
   tableCaption?: React.ReactNode
+  /** The caption on every screen, the columns leaving its figure out everywhere (FPL) */
+  captionEverywhere?: boolean
+  /** Table view: P moves to just after G once the table is too narrow to show it (EA FC) */
+  pointsFollowGamesWhenNarrow?: boolean
   rows: any[]
-  /** Extra controls beside the switch (7oker: seating, add game) */
+  /** Extra controls beside the heading (7oker: seating, add game) */
   actions?: React.ReactNode
   /** Shown under the cards or table (7oker: the next table's seating) */
   footer?: React.ReactNode
 }) {
-  const view = useStandingsView()
-
   const leaderPoints = Math.max(...cards.map((card) => card.points), 0)
   // A static archive season fills fewer fields than the live tables — drop the empty columns
   const tableColumns = columns.filter((column) => rows.some((row) => row[column.accessor] !== undefined))
@@ -156,21 +147,25 @@ export default function StandingsBoard({
     <>
       <div className="mb-4 flex min-h-11 flex-wrap items-center justify-between gap-3">
         {/* Phones keep everything on the heading's line: the heading, then at the
-            right end the caption and the buttons; their view switch lives in the
-            Other menu */}
+            right end the caption and the buttons */}
         <div className="flex w-full items-center justify-between gap-3 md:w-auto">
           <h2 className="m-0 font-display text-2xl font-bold leading-none">{heading}</h2>
           <div className="flex items-center gap-3 md:hidden">
-            {/* An upright phone only (as DataTable decides), in either view */}
-            {tableCaption && <div className="standings-table-caption landscape:hidden">{tableCaption}</div>}
+            {/* An upright phone only (as DataTable decides), in either view;
+                with captionEverywhere a landscape phone too */}
+            {tableCaption && (
+              <div className={`standings-table-caption ${captionEverywhere ? "" : "landscape:hidden"}`}>{tableCaption}</div>
+            )}
             {actions}
           </div>
         </div>
-        {/* Wide screens: the buttons and the Cards | Table switch on the right */}
-        <div className="hidden flex-wrap items-center gap-3 md:flex">
-          {actions}
-          <ViewToggle view={view} onChange={applyStandingsView} />
-        </div>
+        {/* Wide screens: the caption (with captionEverywhere) and the buttons on the right */}
+        {((captionEverywhere && tableCaption) || actions) && (
+          <div className="hidden flex-wrap items-center gap-3 md:flex">
+            {captionEverywhere && tableCaption}
+            {actions}
+          </div>
+        )}
       </div>
       <div className="standings-cards grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
         {cards.map((card, index) => (
@@ -178,7 +173,12 @@ export default function StandingsBoard({
         ))}
       </div>
       <div className="standings-table">
-        <DataTable columns={tableColumns} mobileColumns={mobileColumns} data={rows} />
+        <DataTable
+          columns={tableColumns}
+          mobileColumns={mobileColumns}
+          data={rows}
+          pointsFollowGamesWhenNarrow={pointsFollowGamesWhenNarrow}
+        />
       </div>
       {footer && <div className="mt-4">{footer}</div>}
     </>

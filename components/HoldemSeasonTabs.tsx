@@ -771,6 +771,8 @@ const allTimeColumns = [
 type HoldemSeasonTabsProps = {
   title: React.ReactNode
   description: string
+  /** Phones' line under the title, in place of the short form taken from the description */
+  phoneDescription?: React.ReactNode
   currentSeasonData: StandingsData[]
   currentSeasonChartData: any[]
   currentSeasonPieData: PieChartData[]
@@ -785,6 +787,7 @@ type HoldemSeasonTabsProps = {
 export default function HoldemSeasonTabs({
   title,
   description,
+  phoneDescription,
   currentSeasonData,
   currentSeasonChartData,
   currentSeasonPieData,
@@ -863,20 +866,24 @@ export default function HoldemSeasonTabs({
   /** Processed table rows carry the bear in their colour — the cards want the name. */
   const toCards = (data: any[]): StandingCardData[] =>
     data.map((row) => {
-      const name = playerNameFromColor(row.hoverColor)
+      // The disqualified seat has no bear colour, so it goes by DSQ
+      const name = playerNameFromColor(row.hoverColor) || "DSQ"
       return {
         name,
         points: row.points,
         stats: [
           { label: "Wins", value: row.wins ?? "—" },
           { label: "Win %", value: row.winPercentage ?? winPercent(row.wins, row.games) },
-          // Titles are an all-time figure; a single season shows its games instead
-          row.seasonsWon !== undefined
-            ? { label: "Titles", value: row.seasonsWon }
-            : { label: "Games", value: row.games ?? "—" },
+          // Titles are an all-time figure; a season's games stand beside the heading
+          ...(row.seasonsWon !== undefined ? [{ label: "Titles", value: row.seasonsWon }] : []),
         ],
       }
     })
+
+  // A season's games count (the same for every bear) stands beside the heading
+  // on every screen instead of in the table
+  const seasonColumns = columns.filter((column: any) => column.accessor !== "games")
+  const mobileColumns = phoneColumns(columns, ["games"])
 
   const gamesIn = (data: any[]) => data.reduce((max: number, row: any) => Math.max(max, row.games ?? 0), 0)
 
@@ -884,7 +891,14 @@ export default function HoldemSeasonTabs({
   const renderSeason = (data: any[], chartData: any[], pieData: any[], highlights: any[]) => (
     <>
       <section className="mx-auto max-w-page px-8 pt-10">
-        <StandingsBoard cards={toCards(data)} columns={columns} rows={data} />
+        <StandingsBoard
+          cards={toCards(data)}
+          columns={seasonColumns}
+          mobileColumns={mobileColumns}
+          tableCaption={gamesCaption("G", data)}
+          captionEverywhere
+          rows={data}
+        />
       </section>
 
       <section className="mx-auto flex max-w-page flex-wrap gap-6 px-8 pt-10">
@@ -930,7 +944,14 @@ export default function HoldemSeasonTabs({
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
           {seasonData.standings ? (
-            <StandingsBoard cards={toCards(seasonData.standings)} columns={columns} rows={seasonData.standings} />
+            <StandingsBoard
+              cards={toCards(seasonData.standings)}
+              columns={seasonColumns}
+              mobileColumns={mobileColumns}
+              tableCaption={gamesCaption("G", seasonData.standings)}
+              captionEverywhere
+              rows={seasonData.standings}
+            />
           ) : (
             <>
               <h2 className="mb-4 font-display text-2xl font-bold">Standings</h2>
@@ -947,8 +968,8 @@ export default function HoldemSeasonTabs({
       return (
         <section className="mx-auto max-w-page px-8 pt-10">
           <StandingsBoard
-            // Phones: "Standings" with the games played beside it, and a table
-            // without G (now in the heading) and SW
+            // The games played beside the heading and out of the table on every
+            // screen; phones also say just "Standings" and leave out SW
             heading={
               <>
                 <span className="md:hidden">Standings</span>
@@ -956,9 +977,10 @@ export default function HoldemSeasonTabs({
               </>
             }
             cards={toCards(allTimeData)}
-            columns={allTimeColumns}
+            columns={allTimeColumns.filter((column) => column.accessor !== "games")}
             mobileColumns={phoneColumns(allTimeColumns, ["games", "seasonsWon"])}
             tableCaption={gamesCaption("G", allTimeData)}
+            captionEverywhere
             rows={allTimeData}
           />
         </section>
@@ -1000,6 +1022,7 @@ export default function HoldemSeasonTabs({
       <CupHeader
         title={title}
         tagline={description}
+        phoneTagline={phoneDescription}
         seasons={visibleSeasons}
         activeSeason={activeSeason}
         onSeasonChange={(season) => {

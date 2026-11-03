@@ -17,6 +17,8 @@ interface DataTableProps {
   maxHeight?: string
   sortable?: boolean
   sortableColumns?: string[]
+  /** When the table is too narrow to show P, P moves to just after G (EA FC) */
+  pointsFollowGamesWhenNarrow?: boolean
 }
 
 const NON_SORTABLE = new Set(['position', 'team', 'bearo', 'player', 'form'])
@@ -37,11 +39,12 @@ function parseValue(val: any): number {
   return 0
 }
 
-export default function DataTable({ columns, mobileColumns, data, maxHeight = '400px', sortable = false, sortableColumns }: DataTableProps) {
+export default function DataTable({ columns, mobileColumns, data, maxHeight = '400px', sortable = false, sortableColumns, pointsFollowGamesWhenNarrow = false }: DataTableProps) {
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [isMobile, setIsMobile] = useState(false)
+  const [pointsMoved, setPointsMoved] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -54,7 +57,45 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  const activeColumns = mobileColumns && isMobile ? mobileColumns : columns
+  const usingMobileColumns = !!mobileColumns && isMobile
+  const pointsAt = columns.findIndex((c) => c.accessor === 'points')
+  const gamesAt = columns.findIndex((c) => c.accessor === 'games')
+  const canMovePoints = pointsFollowGamesWhenNarrow && !usingMobileColumns && pointsAt > gamesAt + 1 && gamesAt >= 0
+
+  // P is cut off once the table overflows by more than the columns after it in
+  // their usual order; each column keeps its width wherever it stands, so the
+  // check holds whichever order is showing and never flips back and forth
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || !canMovePoints) {
+      setPointsMoved(false)
+      return
+    }
+    const trailing = new Set(columns.slice(pointsAt + 1).map((c) => c.accessor))
+    const measure = () => {
+      const overflow = el.scrollWidth - el.clientWidth
+      let trailingWidth = 0
+      el.querySelectorAll<HTMLElement>('th[data-accessor]').forEach((th) => {
+        if (trailing.has(th.dataset.accessor!)) trailingWidth += th.getBoundingClientRect().width
+      })
+      setPointsMoved(overflow > trailingWidth + 1)
+    }
+    measure()
+    // The box follows the window; the table inside follows its rows
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    if (el.firstElementChild) observer.observe(el.firstElementChild)
+    return () => observer.disconnect()
+  }, [canMovePoints, columns, pointsAt])
+
+  const orderedColumns = pointsMoved && canMovePoints
+    ? [
+        ...columns.slice(0, gamesAt + 1),
+        columns[pointsAt],
+        ...columns.slice(gamesAt + 1).filter((c) => c.accessor !== 'points'),
+      ]
+    : columns
+  const activeColumns = usingMobileColumns ? mobileColumns! : orderedColumns
 
   useEffect(() => {
     const el = scrollRef.current
@@ -118,6 +159,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
             {activeColumns.map((column, index) => (
               <th
                 key={index}
+                data-accessor={column.accessor}
                 style={widthFor(column)}
                 className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
                 onClick={() => handleSort(column.accessor)}
@@ -142,8 +184,9 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
               onMouseEnter={() => setHoveredRow(rowIndex)}
               onMouseLeave={() => setHoveredRow(null)}
             >
+              {/* Points (P) bold in the accent on every table and screen; olive in light */}
               {activeColumns.map((column, colIndex) => (
-                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${column.cellClassName ?? ''}`}>
+                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${column.accessor === 'points' ? 'font-bold text-[color:var(--accent-text)]' : ''} ${column.cellClassName ?? ''}`}>
                   {fmtCell(row[column.accessor])}
                 </td>
               ))}

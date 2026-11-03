@@ -689,6 +689,8 @@ type SeasonRecord = {
   key: string
   value: React.ReactNode
   title: string
+  /** A shorter title for phones, where the full one would wrap */
+  phoneTitle?: string
   /** Who holds it: a bear's pill, a team's pill or a match's crests */
   who: React.ReactNode
   /** The same holder drawn large, filling the tile's right side on phones */
@@ -709,7 +711,16 @@ function RecordTile({ record }: { record: SeasonRecord }) {
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1" style={{ background: color ?? "var(--track)" }} />
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <BigNumber size={64} color={color}>{record.value}</BigNumber>
-        <div className="mt-1 text-sm font-medium">{record.title}</div>
+        <div className="mt-1 text-sm font-medium">
+          {record.phoneTitle ? (
+            <>
+              <span className="md:hidden">{record.phoneTitle}</span>
+              <span className="hidden md:inline">{record.title}</span>
+            </>
+          ) : (
+            record.title
+          )}
+        </div>
         <div className="hidden min-w-0 flex-wrap items-center gap-2 md:flex">{record.who}</div>
       </div>
       <div className="flex shrink-0 items-center md:hidden">{record.big}</div>
@@ -784,7 +795,7 @@ function RecordsSection({
 
   if (records.highestScoring) {
     const { match, total } = records.highestScoring
-    list.push({ key: "highestScoring", value: total, title: "Highest-scoring game", ...forMatch(match) })
+    list.push({ key: "highestScoring", value: total, title: "Highest-scoring game", phoneTitle: "Highest score", ...forMatch(match) })
   }
   if (records.biggestWin) {
     const { match, margin, winner } = records.biggestWin

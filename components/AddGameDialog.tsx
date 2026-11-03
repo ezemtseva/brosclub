@@ -90,11 +90,11 @@ export default function AddGameDialog({ apiEndpoint, scoreOptions, onSuccess, on
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-night/80"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-night/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="rounded-2xl border border-hairline bg-surface shadow-xl p-6 w-full max-w-sm mx-4"
+        className="rounded-2xl border border-accent bg-surface shadow-xl p-6 w-full max-w-sm mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold mb-6">Add Game Result</h2>

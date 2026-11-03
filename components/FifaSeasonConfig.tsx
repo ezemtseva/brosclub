@@ -130,9 +130,9 @@ export default function FifaSeasonConfig({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-night/80" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-night/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="rounded-2xl border border-hairline bg-surface shadow-xl p-6 w-full max-w-3xl mx-4"
+        className="rounded-2xl border border-accent bg-surface shadow-xl p-6 w-full max-w-3xl mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">

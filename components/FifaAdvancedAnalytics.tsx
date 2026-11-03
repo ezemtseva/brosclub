@@ -640,7 +640,7 @@ function TopTeamsProjection({
         <div
           key={t.team}
           // The favourite is ringed in the brand lime
-          className={`flex items-center gap-5 rounded-[20px] border bg-surface px-[22px] py-5 ${
+          className={`flex items-center gap-3 rounded-[20px] border bg-surface px-4 py-5 md:gap-5 md:px-[22px] ${
             i === 0 ? "border-accent" : "border-hairline"
           }`}
         >
@@ -651,7 +651,8 @@ function TopTeamsProjection({
           >
             {i + 1}
           </BigNumber>
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          {/* Phones: the column is a size container so the caption can scale to it */}
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5 max-md:[container-type:inline-size]">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <Image
                 src={teamLogos[t.team] || "/placeholder.svg"}
@@ -662,9 +663,11 @@ function TopTeamsProjection({
               />
               <span className="text-[17px] font-semibold">{t.team}</span>
             </div>
-            <Label>
-              Now {t.currentPoints} pts
-              {t.avgOpponentStrength !== null && <> · Opp {t.avgOpponentStrength.toFixed(2)}</>} · Form{" "}
+            {/* Phones leave out the current points and size the caption to the
+                column so Opp and Form always share one line */}
+            <Label className="max-md:whitespace-nowrap max-md:text-[clamp(8px,7.6cqw,11px)] max-md:tracking-[0.04em]">
+              <span className="hidden md:inline">Now {t.currentPoints} pts · </span>
+              {t.avgOpponentStrength !== null && <>Opp {t.avgOpponentStrength.toFixed(2)} · </>}Form{" "}
               {t.formPPG.toFixed(2)}
             </Label>
           </div>
@@ -674,7 +677,8 @@ function TopTeamsProjection({
           </BigNumber>
         </div>
       ))}
-      <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">
+      {/* The method note is for wider screens only */}
+      <p className="mt-1 hidden text-[13px] leading-relaxed text-ink-muted md:block">
         Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
       </p>
     </div>

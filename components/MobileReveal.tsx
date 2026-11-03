@@ -16,8 +16,8 @@ export default function MobileReveal({
   className = "",
   children,
 }: {
-  showLabel: string
-  hideLabel: string
+  showLabel: React.ReactNode
+  hideLabel: React.ReactNode
   everywhere?: boolean
   className?: string
   children: React.ReactNode

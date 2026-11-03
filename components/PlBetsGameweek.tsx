@@ -369,7 +369,7 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
 
 
   const navButton =
-    "inline-flex min-h-[44px] items-center justify-center rounded-full border border-hairline-strong px-4 text-sm text-ink transition-colors hover:border-ink disabled:opacity-30"
+    "inline-flex min-h-[44px] min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-hairline-strong px-2 text-sm text-ink transition-colors hover:border-ink disabled:opacity-30 sm:flex-none sm:px-4"
 
   return (
     <div>
@@ -386,30 +386,36 @@ export default function PlBetsGameweek({ initialGameweek, initialMatches }: PlBe
             GW <span className="text-[color:var(--accent-text)]">{gameweek}</span>
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Phones: the buttons share the full width on one line; Prev/Next as
+            words where they fit, as arrows on the narrowest screens */}
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:flex-wrap">
           <button onClick={() => setGameweek(1)} disabled={gameweek === 1} className={navButton}>
             «
           </button>
           <button
             onClick={() => setGameweek((g) => Math.max(1, g - 1))}
             disabled={gameweek === 1}
-            className={navButton}
+            className={`${navButton} min-[360px]:flex-[2]`}
           >
-            ← Prev
+            <span className="min-[360px]:hidden">‹</span>
+            <span className="hidden min-[360px]:inline sm:hidden">Prev</span>
+            <span className="hidden sm:inline">← Prev</span>
           </button>
           <button
             onClick={() => setGameweek(initialGameweek)}
             disabled={gameweek === initialGameweek}
-            className={`${navButton} border-ink bg-ink font-semibold text-night hover:border-ink`}
+            className={`${navButton} flex-[3] border-ink bg-ink font-semibold text-night hover:border-ink`}
           >
             Current
           </button>
           <button
             onClick={() => setGameweek((g) => Math.min(38, g + 1))}
             disabled={gameweek === 38}
-            className={navButton}
+            className={`${navButton} min-[360px]:flex-[2]`}
           >
-            Next →
+            <span className="min-[360px]:hidden">›</span>
+            <span className="hidden min-[360px]:inline sm:hidden">Next</span>
+            <span className="hidden sm:inline">Next →</span>
           </button>
           <button onClick={() => setGameweek(38)} disabled={gameweek === 38} className={navButton}>
             »

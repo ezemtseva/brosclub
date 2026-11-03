@@ -292,11 +292,15 @@ export default function SevenOkerSeasonTabs({
         currentSeasonChartData,
         currentSeasonHighlights,
         // The next game's seating under the standings, opened from a button like
-        // the home page's "See bearos cards"
-        <MobileReveal everywhere showLabel="SHOW NEXT TABLE SEATING" hideLabel="HIDE NEXT TABLE SEATING">
+        // the home page's "See bearos cards"; phones get the shorter label and line
+        <MobileReveal
+          everywhere
+          showLabel={<><span className="md:hidden">SHOW SEATING</span><span className="hidden md:inline">SHOW NEXT TABLE SEATING</span></>}
+          hideLabel={<><span className="md:hidden">HIDE SEATING</span><span className="hidden md:inline">HIDE NEXT TABLE SEATING</span></>}
+        >
           <div className="rounded-2xl border border-hairline bg-surface-2 px-5 py-4 text-[15px] text-ink">
             <span className="md:hidden">
-              {nextTable}: {first} → {second} → {third}
+              {nextTable}: {first} (Owner) · {second} · {third}
             </span>
             <span className="hidden md:inline">
               {nextTable} creates {first}, then joins {second} and {third}

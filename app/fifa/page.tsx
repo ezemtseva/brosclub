@@ -24,8 +24,9 @@ const columns = [
 const mobileColumns = [
   { header: "#", accessor: "position" },
   // max-w-0: on a narrow phone a long name is cut with an ellipsis instead of
-  // pushing the table wider than the screen
-  { header: "Team", accessor: "team", cellClassName: "max-w-0" },
+  // pushing the table wider than the screen; a tighter left padding keeps it
+  // close to the rank
+  { header: "Team", accessor: "team", cellClassName: "max-w-0 !pl-2" },
   // 1%: the numbers shrink to their digits and the team takes the rest
   { header: "G", accessor: "games", width: "1%" },
   { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
@@ -208,10 +209,12 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
       const teamName = normalizeTeam(entry.team)
       const mv = movements[entry.team] ?? 0
       return {
+        // Phones: the rank sits right against the team, its movement arrow before
+        // it and only when it moved (a blank arrow kept its room and left a gap)
         position: (
-          <span className="flex items-center justify-center gap-0.5">
+          <span className="flex items-center justify-end gap-0.5 md:justify-center">
             <span>{index + 1}</span>
-            <span className="leading-none" style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
+            <span className={`order-first leading-none md:order-none ${mv === 0 ? "hidden md:inline" : ""}`} style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
               {mv > 0 ? '↑' : '↓'}
             </span>
           </span>

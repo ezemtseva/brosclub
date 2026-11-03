@@ -10,7 +10,7 @@ import FifaSeasonConfig from "./FifaSeasonConfig"
 import FifaMatchResults from "./FifaMatchResults"
 import FifaAdvancedAnalytics from "./FifaAdvancedAnalytics"
 import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
-import { countryOf, flagUrl } from "../lib/teamCountries"
+import CountryFlag from "./CountryFlag"
 import { CURRENT_FIFA_SEASON as FIFA_SEASON } from "../lib/fifaSeason"
 import PlayerCell from "./PlayerCell"
 import CupHeader from "./design/CupHeader"
@@ -101,25 +101,6 @@ const seasonHighlightCards: Partial<Record<Season, SeasonHighlightCard[]>> = {
   "2016": [
     { value: "1", description: "Smallest gap between 1st and 2nd place this season" },
   ],
-}
-
-/** Small rectangular flag of the club's country, blank when unknown. */
-function CountryFlag({ team }: { team: string }) {
-  const code = countryOf(team)
-  if (!code) return null
-  return (
-    <Image
-      src={flagUrl(code)}
-      alt={code}
-      width={40}
-      height={28}
-      // max-w-none: with Tailwind's img max-width the flag reports no width to
-      // the table, the column collapses to its padding and squeezes it flat
-      // Scaled rather than resized on mobile: a transform leaves the layout box
-      // alone, so the column keeps its width
-      className="inline-block max-w-none rounded-sm object-contain align-middle w-[26px] h-[18px] scale-[0.8] md:w-[20px] md:h-[14px] md:scale-100"
-    />
-  )
 }
 
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
@@ -3654,13 +3635,16 @@ export default function FifaSeasonTabs({
     { header: "SW", accessor: "seasonsWon" },
     { header: "SP", accessor: "seasonsPlayed" },
   ]
-  // Phones keep just games and points, the points bold in the accent (olive in light)
+  // Phones keep the flag, games and points, the points bold in the accent (olive in light)
   const allTimeColumnsMobile = [
-    { header: "#", accessor: "position", width: "4%" },
+    // No width: the position shrinks to its digits, as in the season tables
+    { header: "#", accessor: "position" },
     // max-w-0: on a narrow phone a long name is cut with an ellipsis instead of
-    // pushing the table wider than the screen
-    { header: "Team", accessor: "team", cellClassName: "max-w-0" },
-    // 1%: the numbers shrink to their digits and the name takes the rest
+    // pushing the table wider than the screen; a tighter left padding keeps it
+    // close to the rank
+    { header: "Team", accessor: "team", cellClassName: "max-w-0 !pl-2" },
+    // 1%: the flag and the numbers shrink to their content and the name takes the rest
+    { header: "C", accessor: "country", width: "1%", cellClassName: "!px-2" },
     { header: "G", accessor: "games", width: "1%" },
     { header: "P", accessor: "points", width: "1%", cellClassName: "font-bold text-[color:var(--accent-text)]" },
   ]
@@ -3680,7 +3664,7 @@ export default function FifaSeasonTabs({
     { header: "SW", accessor: "seasonsWon" },
   ]
   const allTimePlayerColumnsMobile = [
-    { header: "#", accessor: "position", width: "4%" },
+    { header: "#", accessor: "position" },
     { header: "Player", accessor: "player" },
     // 1%: the numbers shrink to their digits and the name takes the rest
     { header: "G", accessor: "games", width: "1%" },
@@ -3968,10 +3952,12 @@ export default function FifaSeasonTabs({
       const prevRank = prevRanks[entry.teamName] ?? currentRank
       const mv = prevRank - currentRank
       return {
+        // Phones: the rank sits right against the team, its movement arrow before
+        // it and only when it moved (a blank arrow kept its room and left a gap)
         position: (
-          <span className="flex items-center justify-center gap-0.5">
+          <span className="flex items-center justify-end gap-0.5 md:justify-center">
             <span>{currentRank}</span>
-            <span className="leading-none" style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
+            <span className={`order-first leading-none md:order-none ${mv === 0 ? "hidden md:inline" : ""}`} style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
               {mv > 0 ? '↑' : '↓'}
             </span>
           </span>

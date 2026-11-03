@@ -4266,7 +4266,14 @@ export default function FifaSeasonTabs({
 
   const renderInsightsContent = () => {
     if (activeSeason === "2026/27") {
-      return <FifaAdvancedAnalytics matches={matches} playerTeams={playerTeams} teamLogos={teamLogos} />
+      return (
+        <FifaAdvancedAnalytics
+          matches={matches}
+          playerTeams={playerTeams}
+          round2Teams={round2Teams}
+          teamLogos={teamLogos}
+        />
+      )
     }
     // The finished season keeps its insights — same computation, its own match log
     if (activeSeason === "2025/26") {

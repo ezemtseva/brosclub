@@ -28,6 +28,8 @@ interface PlayerTeams {
 interface FifaAdvancedAnalyticsProps {
   matches: MatchRecord[]
   playerTeams: PlayerTeams
+  /** The teams picked for round 2; left out for a season without the split */
+  round2Teams?: PlayerTeams
   teamLogos: Record<string, string>
 }
 
@@ -101,7 +103,6 @@ interface TeamProjection {
 const PLAYERS: PlayerName[] = ["Vanilla", "Choco", "Panda"]
 
 
-const GAMES_PER_PAIR = 2 // each team plays each opponent twice
 
 // ── Pure computation functions ───────────────────────────────────────────────
 
@@ -308,9 +309,18 @@ function computePredictions(matrix: H2HMatrix, stats: PlayerStats[]): Prediction
   })
 }
 
-function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams): TeamProjection[] {
+function computeTeamProjections(
+  matches: MatchRecord[],
+  playerTeams: PlayerTeams,
+  round2Teams?: PlayerTeams,
+): TeamProjection[] {
   const allTeams = [...playerTeams.Vanilla, ...playerTeams.Choco, ...playerTeams.Panda]
   const pairKey = (a: string, b: string) => [a, b].sort().join("|||")
+  // Round 1: each team meets every other bear's team once. Round 2 adds a
+  // second meeting, but only between two teams picked for it; until the picks
+  // are made, only round 1 is projected
+  const round2 = new Set(round2Teams ? [...round2Teams.Vanilla, ...round2Teams.Choco, ...round2Teams.Panda] : [])
+  const gamesForPair = (a: string, b: string) => (round2.has(a) && round2.has(b) ? 2 : 1)
 
   // Step 1: current stats per team
   const teamData: Record<string, {
@@ -388,7 +398,7 @@ function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams
       if (teamData[tA].player === teamData[tB].player) continue // only cross-player matches
 
       const played = pairCount[pairKey(tA, tB)] ?? 0
-      const remaining = Math.max(0, GAMES_PER_PAIR - played)
+      const remaining = Math.max(0, gamesForPair(tA, tB) - played)
       if (remaining === 0) continue
 
       const sA = teamData[tA].strength || avgStrength
@@ -413,7 +423,7 @@ function computeTeamProjections(matches: MatchRecord[], playerTeams: PlayerTeams
     let totalStr = 0, count = 0
     for (const other of allTeams) {
       if (!teamData[other] || teamData[other].player === teamData[team].player) continue
-      const remaining = Math.max(0, GAMES_PER_PAIR - (pairCount[pairKey(team, other)] ?? 0))
+      const remaining = Math.max(0, gamesForPair(team, other) - (pairCount[pairKey(team, other)] ?? 0))
       totalStr += (teamData[other].strength || avgStrength) * remaining
       count += remaining
     }
@@ -894,7 +904,7 @@ function PredictionSection({ predictions }: { predictions: PredictionEntry[] }) 
 
 // ── Root component ───────────────────────────────────────────────────────────
 
-export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos }: FifaAdvancedAnalyticsProps) {
+export default function FifaAdvancedAnalytics({ matches, playerTeams, round2Teams, teamLogos }: FifaAdvancedAnalyticsProps) {
   if (matches.length === 0) {
     return <p className="text-ink-muted text-center italic mt-32">No insights yet</p>
   }
@@ -903,7 +913,8 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
   const matrix = computeH2HMatrix(matches, playerTeams)
   const records = computeRecords(matches, playerTeams, stats)
   const predictions = computePredictions(matrix, stats)
-  const topTeams = computeTeamProjections(matches, playerTeams)
+  const topTeams = computeTeamProjections(matches, playerTeams, round2Teams)
+  const round2Picked = !!round2Teams && Object.values(round2Teams).some((teams) => teams.length > 0)
 
   return (
     <div className="flex flex-col gap-10">
@@ -924,7 +935,16 @@ export default function FifaAdvancedAnalytics({ matches, playerTeams, teamLogos 
           <H2HCards matrix={matrix} />
         </section>
         <section className="min-w-0 flex-[1_1_420px]">
-          <SectionTitle>Top 3 predicted</SectionTitle>
+          {/* Which rounds the projection covers, set like the GW beside "Bets":
+              R1 until round 2 is picked, R2 after */}
+          <div className="flex items-center justify-between gap-3">
+            <SectionTitle>Top 3 predicted</SectionTitle>
+            {round2Teams && (
+              <p className="m-0 mb-4 font-display text-xl font-bold leading-none">
+                R<span className="text-[color:var(--accent-text)]">{round2Picked ? 2 : 1}</span>
+              </p>
+            )}
+          </div>
           <TopTeamsProjection projections={topTeams} teamLogos={teamLogos} />
         </section>
       </div>

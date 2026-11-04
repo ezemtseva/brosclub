@@ -128,7 +128,7 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse 70% 60% at 50% 45%, #1a1d24 0%, #11131a 45%, var(--night) 100%);
+    background: radial-gradient(ellipse 100% 80% at 50% 45%, #1a1d24 0%, #11131a 45%, var(--night) 100%);
   }
 
   h1,

@@ -502,8 +502,14 @@ export default async function Home() {
                   <div className="flex items-center gap-3">
                     <span className="font-display text-xl font-bold">{member.name}</span>
                     <span
+                      // 1st in the lime, 2nd in a fixed silver, both with the dark ink,
+                      // as on the cup pages' standings cards
                       className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
-                        isLeader ? "bg-accent text-accent-foreground" : "bg-surface-3 text-ink-2"
+                        isLeader
+                          ? "bg-accent text-accent-foreground"
+                          : index === 1
+                            ? "bg-[#C9CDD3] text-accent-foreground"
+                            : "bg-surface-3 text-ink-2"
                       }`}
                       style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
                     >

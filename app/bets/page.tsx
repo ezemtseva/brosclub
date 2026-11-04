@@ -18,7 +18,7 @@ const columns = [
   { header: "W", accessor: "wins" },
   { header: "P", accessor: "points" },
   { header: "PD", accessor: "difference" },
-  { header: "GW%", accessor: "winPercentage" },
+  { header: "W%", accessor: "winPercentage" },
   { header: "PS%", accessor: "outcomePercent" },
   { header: "EPS%", accessor: "exactPercent" },
 ]

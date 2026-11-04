@@ -29,11 +29,16 @@ export const PLAYER_COLORS: Record<string, string> = {
   Panda:   "#3DF5A0",
 }
 
-/** Same colours at 14% — the fill behind a player chip. */
-export const PLAYER_TINTS: Record<string, string> = {
-  Vanilla: "rgba(255,77,109,0.14)",
-  Choco:   "rgba(76,141,255,0.14)",
-  Panda:   "rgba(61,245,160,0.14)",
+/** The bears who get a coloured chip (keys only; the colour is in PLAYER_COLORS). */
+export const PLAYER_TINTS: Record<string, string> = PLAYER_COLORS
+
+/**
+ * A player chip: no fill of its own for a bear — the colour is carried by the
+ * mascot's disc (BearAvatar `filled`, as on the standings cards). Anyone else
+ * gets the neutral chip.
+ */
+export function playerChipStyle(name: string | null | undefined): { background: string } {
+  return { background: name && PLAYER_COLORS[name] ? "transparent" : "var(--chip)" }
 }
 
 export const PLAYER_INITIALS: Record<string, string> = {

@@ -40,8 +40,8 @@ const CURRENT_FIFA_SEASON = FIFA_SEASON as Season
 
 const PLAYER_AVATARS: Record<string, string> = {
   Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
+  Choco: "/imgs/choco-cool.png",
+  Panda: "/imgs/panda-cool-1.png",
 }
 
 type FifaRecordCard = {

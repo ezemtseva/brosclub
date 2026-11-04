@@ -611,7 +611,7 @@ export default function BetsSeasonTabs({
         row.seasonsWon !== undefined
           ? [
               { label: "GW wins", value: row.wins ?? "—" },
-              { label: "GW %", value: winPercent(row.wins, row.games) },
+              { label: "Win %", value: winPercent(row.wins, row.games) },
               { label: "Titles", value: row.seasonsWon },
             ]
           : [
@@ -630,7 +630,7 @@ export default function BetsSeasonTabs({
   const mobileColumns = phoneColumnsWithoutGameweek(columns).filter(
     (column) => column.accessor !== "outcomePercent" && column.accessor !== "exactPercent",
   )
-  // The static seasons never recorded gameweek wins, so phones leave out W and GW%
+  // The static seasons never recorded gameweek wins, so phones leave out W and W%
   const mobileColumnsWithoutWins = mobileColumns.filter(
     (column) => column.accessor !== "wins" && column.accessor !== "winPercentage",
   )

@@ -1,6 +1,6 @@
 import { BearAvatar, bearColor } from "../Bear"
 import Image from "next/image"
-import { PLAYER_TINTS } from "../../lib/teamColors"
+import { playerChipStyle } from "../../lib/teamColors"
 
 export type RecordCard = {
   /** Big number or figure; left out when the record is a "first ever" */
@@ -59,14 +59,17 @@ export default function RecordTile({ card }: { card: RecordCard }) {
       </div>
       <p className={`m-0 flex-1 text-[15px] leading-normal ${lime ? "text-accent-foreground" : "text-ink-2"}`}>{card.text}</p>
       <div className="flex flex-wrap items-center gap-1.5">
-        {/* Same chip as the home page's Hall of champions: the bear's tint, bare avatar */}
+        {/* Same chip as in the tables: the mascot on the bear's colour disc, the
+            name in the tile's own text colour (dark on a lime tile) */}
         {who.map((name) => (
           <span
             key={name}
-            className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium"
-            style={{ background: PLAYER_TINTS[name] }}
+            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium ${
+              lime ? "text-accent-foreground" : "text-ink"
+            }`}
+            style={playerChipStyle(name)}
           >
-            <BearAvatar name={name} size={20} ring={false} />
+            <BearAvatar name={name} size={20} ring={false} filled />
             {name}
           </span>
         ))}

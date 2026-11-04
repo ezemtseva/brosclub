@@ -1,9 +1,10 @@
-import { PLAYER_TINTS } from "../lib/teamColors"
+import { playerChipStyle } from "../lib/teamColors"
 import { BearAvatar } from "./Bear"
 
 /**
- * Player in a table: the hall-of-champions pill — the mascot and the name on
- * the bear's tint. `color` is kept for callers that still pass it.
+ * Player in a table: the mascot on a disc of the bear's colour, as on the
+ * standings cards, and the name in the surrounding text colour (so it reads on
+ * a lime row too). `color` is kept for callers that still pass it.
  */
 export default function PlayerCell({
   name,
@@ -16,12 +17,12 @@ export default function PlayerCell({
 }) {
   return (
     <span
-      className={`inline-flex items-center whitespace-nowrap rounded-full py-[3px] pl-[3px] font-medium text-ink ${
+      className={`inline-flex items-center whitespace-nowrap rounded-full py-[3px] pl-[3px] font-medium ${
         small ? "gap-1.5 pr-2.5 text-xs" : "gap-[7px] pr-[11px] text-sm md:text-base"
       }`}
-      style={{ background: PLAYER_TINTS[name] ?? "var(--chip)" }}
+      style={playerChipStyle(name)}
     >
-      <BearAvatar name={name} size={small ? 18 : 20} ring={false} />
+      <BearAvatar name={name} size={small ? 18 : 20} ring={false} filled />
       {name}
     </span>
   )

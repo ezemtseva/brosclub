@@ -34,8 +34,8 @@ type PageTab = (typeof pageTabs)[number]
 
 const PLAYER_AVATARS: Record<string, string> = {
   Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
+  Choco: "/imgs/choco-cool.png",
+  Panda: "/imgs/panda-cool-1.png",
 }
 
 type StatCard = {
@@ -298,13 +298,13 @@ export default function SevenOkerSeasonTabs({
         currentSeasonChartData,
         currentSeasonHighlights,
         // The next game's seating under the standings, opened from a button like
-        // the home page's "See bearos cards"; phones get the shorter label and line
+        // the home page's "See bearos cards"; phones get the shorter seating line
         <MobileReveal
           everywhere
           // Open, the seating ends 24px short of the next section, like the closed button
           className="mb-6"
-          showLabel={<><span className="md:hidden">SHOW SEATING</span><span className="hidden md:inline">SHOW NEXT TABLE SEATING</span></>}
-          hideLabel={<><span className="md:hidden">HIDE SEATING</span><span className="hidden md:inline">HIDE NEXT TABLE SEATING</span></>}
+          showLabel="SHOW NEXT TABLE SEATING"
+          hideLabel="HIDE NEXT TABLE SEATING"
         >
           <div className="rounded-2xl border border-hairline bg-surface-2 px-5 py-4 text-[15px] text-ink">
             <span className="md:hidden">

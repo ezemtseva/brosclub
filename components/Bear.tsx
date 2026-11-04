@@ -1,10 +1,10 @@
 import Image from "next/image"
-import { PLAYER_COLORS, PLAYER_TINTS } from "../lib/teamColors"
+import { PLAYER_COLORS, PLAYER_TINTS, playerChipStyle } from "../lib/teamColors"
 
 const BEAR_IMAGES: Record<string, string> = {
   Vanilla: "/imgs/vanilla.png",
-  Choco: "/imgs/choco.png",
-  Panda: "/imgs/panda.png",
+  Choco: "/imgs/choco-cool.png",
+  Panda: "/imgs/panda-cool-1.png",
 }
 
 export function bearColor(name: string): string {
@@ -75,7 +75,7 @@ export function BearChip({
   return (
     <span
       className="inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-[13px] font-medium"
-      style={{ background: tinted ? PLAYER_TINTS[name] ?? "#1F2229" : "#1F2229" }}
+      style={tinted && PLAYER_TINTS[name] ? playerChipStyle(name) : { background: "#1F2229" }}
     >
       <BearAvatar name={name} size={size} />
       {name}

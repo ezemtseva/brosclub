@@ -2,7 +2,7 @@
 
 import React from "react"
 import Image from "next/image"
-import { PLAYER_COLORS, PLAYER_TINTS, shortenTeamName } from "../lib/teamColors"
+import { PLAYER_COLORS, playerChipStyle, shortenTeamName } from "../lib/teamColors"
 import { BearAvatar } from "./Bear"
 import PlayerCell from "./PlayerCell"
 import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../lib/cardFrame"
@@ -767,7 +767,7 @@ function RecordsSection({
     return (
       <span
         className="inline-flex min-w-0 items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[5px] pr-[11px] text-sm font-medium text-ink"
-        style={{ background: (bear && PLAYER_TINTS[bear]) || "var(--chip)" }}
+        style={playerChipStyle(bear)}
       >
         {crest(team, 18)}
         {shortenTeamName(team)}

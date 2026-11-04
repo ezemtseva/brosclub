@@ -50,7 +50,7 @@ const sevenOkerRecordCards: StatCard[] = [
   { player: "Vanilla", description: "Vanilla won the first ever 7oker game (29.03.2025)" },
   { player: "Panda", description: "Panda won the first season — took him 71 games to reach 100 points" },
   { player: "Choco", description: "Choco was the first to win a game by golden round against Panda (2024/25)" },
-  { value: "5", highlight: true, description: "Vanilla and Choco share the longest winning streak — 5 games (2024/25 and 2025/26)" },
+  { value: "5", highlight: true, description: "Vanilla, Choco and Panda share the longest winning streak — 5 games (2024/25 and 2025/26)" },
   { value: "298", player: "Panda", description: "Panda scored the biggest amount of points in a single game (2025/26)" },
   { value: "10.645", player: "Panda", description: "Panda holds the record for the most gamepoints in a season (2025/26)" },
 ]
@@ -59,7 +59,7 @@ const sevenOkerRecordCards: StatCard[] = [
 const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
   "2025/26": [
     { value: "298", player: "Panda", description: "Panda set the new record for the most points in a single game" },
-    { value: "5", player: "Vanilla", description: "Vanilla matched Choco's record with 5 consecutive wins" },
+    { value: "5", player: "Vanilla", description: "Vanilla matched Choco and Panda's record with 5 consecutive wins" },
     { value: "10.645", player: "Panda", description: "Panda broke his own record for the most gamepoints in a season" },
   ],
   "2024/25": [
@@ -67,6 +67,7 @@ const seasonHighlightCards: Partial<Record<Season, StatCard[]>> = {
     { player: "Panda", description: "Panda won the first cup" },
     { player: "Choco", description: "Choco was the first one to win the game by golden round against Panda" },
     { value: "5", player: "Choco", description: "Choco set the longest winning streak — 5 games in a row" },
+    { value: "5", player: "Panda", description: "Panda matched Choco's record with 5 consecutive wins" },
     { value: "294", player: "Vanilla", description: "Vanilla scored the biggest amount of points in a single game" },
     { value: "10.422", player: "Panda", description: "Panda scored the biggest amount of gamepoints in a season" },
   ],

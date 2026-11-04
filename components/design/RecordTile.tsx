@@ -14,6 +14,10 @@ export type RecordCard = {
   when?: string
   /** Club crest shown in place of the value (FIFA) */
   logo?: string
+  /** The club the record belongs to, as a chip beside the bear's (FIFA) */
+  team?: { name: string; logo: string }
+  /** A record game as a chip: home crest, score, away crest (FIFA) */
+  game?: { home: string; score: string; away: string }
   /** The brand lime with dark ink, in both themes */
   highlight?: boolean
 }
@@ -57,7 +61,9 @@ export default function RecordTile({ card }: { card: RecordCard }) {
           </span>
         )}
       </div>
-      <p className={`m-0 flex-1 text-[15px] leading-normal ${lime ? "text-accent-foreground" : "text-ink-2"}`}>{card.text}</p>
+      <p className={`m-0 flex-1 text-[15px] leading-normal ${lime ? "text-accent-foreground" : "text-ink-2"}`}>
+        {card.text}
+      </p>
       <div className="flex flex-wrap items-center gap-1.5">
         {/* Same chip as in the tables: the mascot on the bear's colour disc, the
             name in the tile's own text colour (dark on a lime tile) */}
@@ -73,6 +79,29 @@ export default function RecordTile({ card }: { card: RecordCard }) {
             {name}
           </span>
         ))}
+        {/* The club in the same chip: its crest where the mascot sits */}
+        {card.team && (
+          <span
+            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium ${
+              lime ? "text-accent-foreground" : "text-ink"
+            }`}
+          >
+            <Image src={card.team.logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+            {card.team.name}
+          </span>
+        )}
+        {/* A record game: the two crests either side of the score */}
+        {card.game && (
+          <span
+            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full px-[3px] py-[3px] text-sm font-semibold ${
+              lime ? "text-accent-foreground" : "text-ink"
+            }`}
+          >
+            <Image src={card.game.home} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+            {card.game.score}
+            <Image src={card.game.away} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+          </span>
+        )}
         {card.when && (
           <span className={`ml-auto font-mono text-xs ${lime ? "text-accent-foreground/70" : "text-ink-dim"}`}>{card.when}</span>
         )}

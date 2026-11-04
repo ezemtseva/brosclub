@@ -625,10 +625,7 @@ function TopTeamsProjection({
       {projections.map((t, i) => (
         <div
           key={t.team}
-          // The favourite is ringed in the brand lime
-          className={`flex items-center gap-3 rounded-[20px] border bg-surface px-4 py-5 md:gap-5 md:px-[22px] ${
-            i === 0 ? "border-accent" : "border-hairline"
-          }`}
+          className="flex items-center gap-3 rounded-[20px] border border-hairline bg-surface px-4 py-5 md:gap-5 md:px-[22px]"
         >
           {/* The favourite's numeral in the accent; olive in light, where lime can't be read */}
           <BigNumber

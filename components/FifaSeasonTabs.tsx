@@ -48,23 +48,56 @@ type FifaRecordCard = {
   value?: string
   // A club crest shown in place of the value, for records that belong to a team
   logo?: string
+  // The club the record belongs to, as a chip beside the bear's
+  team?: { name: string; logo: string }
+  // A record game as a chip: home crest, score, away crest
+  game?: { home: string; score: string; away: string }
   player?: keyof typeof PLAYER_COLORS
   description: string
   // Lime tile with dark ink, for the cup's signature record
   highlight?: boolean
 }
 
+// The bear and the club stand in the chips below each record, so the text
+// leaves their names out
+const LIVERPOOL = { name: "Liverpool", logo: "/imgs/fifa/liv1.png" }
+
 const fifaRecordCards: FifaRecordCard[] = [
   { value: "8 h 18 m", highlight: true, description: "The longest FIFA Night - 22 matches (23–24.09.2017)" },
-  { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Liverpool of Vanilla has won the cup three times (2020-22, 24/25)" },
-  { value: "73.21%", player: "Vanilla", description: "Vanilla holds the highest win rate in a season (2024/25)" },
-  { value: "95.65%", player: "Vanilla", description: "Vanilla, Liverpool — highest win rate for a team in a season (2024/25)" },
-  { player: "Choco", description: "Choco is the first to score a goal by a goalkeeper, Atletico Madrid (2017)" },
-  { player: "Vanilla", description: "Vanilla is the first to score a goal from their own half (empty net), Napoli (2017)" },
-  { player: "Vanilla", description: "Vanilla is the first to score an Olympic goal directly from a corner, Lille (2021/22)" },
-  { value: "5 min", player: "Vanilla", description: "Vanilla, Liverpool — fastest four goals (2025/26)" },
-  { value: "22", player: "Vanilla", description: "Vanilla holds the longest winning streak for a team, Liverpool (2024/25)" },
-  { value: "26", player: "Vanilla", description: "Vanilla holds the longest unbeaten streak for a team, Barcelona (2023/24)" },
+  // The crest above already names the club
+  { logo: "/imgs/fifa/liv1.png", player: "Vanilla", description: "Won the cup three times (2020-22, 24/25)" },
+  { value: "73.21%", player: "Vanilla", description: "Highest win rate in a season (2024/25)" },
+  { value: "95.65%", player: "Vanilla", team: LIVERPOOL, description: "Highest win rate for a team in a season (2024/25)" },
+  {
+    player: "Choco",
+    team: { name: "Atletico Madrid", logo: "/imgs/fifa/atm.png" },
+    description: "First goal scored by a goalkeeper (2017)",
+  },
+  {
+    player: "Vanilla",
+    team: { name: "Napoli", logo: "/imgs/fifa/nap1.png" },
+    description: "First goal from their own half, empty net (2017)",
+  },
+  {
+    player: "Vanilla",
+    team: { name: "Lille", logo: "/imgs/fifa/lil.png" },
+    description: "First Olympic goal (from a corner) (2021/22)",
+  },
+  { value: "5 min", player: "Vanilla", team: LIVERPOOL, description: "Fastest four goals (2025/26)" },
+  {
+    value: "18",
+    player: "Panda",
+    // Juventus 13:5 Manchester United
+    game: { home: "/imgs/fifa/juv1.png", score: "13:5", away: "/imgs/fifa/mu.png" },
+    description: "The most goals in a game (2025/26)",
+  },
+  { value: "22", player: "Vanilla", team: LIVERPOOL, description: "Longest winning streak for a team (2024/25)" },
+  {
+    value: "26",
+    player: "Vanilla",
+    team: { name: "Barcelona", logo: "/imgs/fifa/bar.png" },
+    description: "Longest unbeaten streak for a team (2023/24)",
+  },
 ]
 
 type SeasonHighlightCard = {
@@ -106,7 +139,16 @@ const seasonHighlightCards: Partial<Record<Season, SeasonHighlightCard[]>> = {
 /** Stat cards are written as one sentence — the tile wants value, text, bear and date apart. */
 function toRecordCard(card: FifaRecordCard): RecordCard {
   const { text, when } = splitRecordDate(card.description)
-  return { value: card.value, logo: card.logo, text, when, who: card.player ? [card.player] : [], highlight: card.highlight }
+  return {
+    value: card.value,
+    logo: card.logo,
+    team: card.team,
+    game: card.game,
+    text,
+    when,
+    who: card.player ? [card.player] : [],
+    highlight: card.highlight,
+  }
 }
 
 // Define types for season data

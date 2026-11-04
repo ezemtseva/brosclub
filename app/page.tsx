@@ -214,11 +214,22 @@ const HistoryCell = ({ value }: { value: string }) => {
     return <span className="font-mono text-[13px] text-ink-dim md:text-base">{value === "-" ? "—" : value}</span>
   }
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {winners.map((name) => (
-        <PlayerCell key={name} name={name} />
-      ))}
-    </div>
+    <>
+      {/* Phones: just the bear's disc, so the whole table fits the screen; a
+          shared title overlaps its discs a little to fit the narrow column */}
+      <div className="flex justify-center -space-x-1.5 md:hidden">
+        {winners.map((name) => (
+          <span key={name} title={name} className="rounded-full ring-2 ring-[var(--surface)]">
+            <BearAvatar name={name} size={20} ring={false} filled />
+          </span>
+        ))}
+      </div>
+      <div className="hidden flex-wrap gap-1.5 md:flex">
+        {winners.map((name) => (
+          <PlayerCell key={name} name={name} />
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -549,13 +560,14 @@ export default async function Home() {
             )
           })}
         </MobileReveal>
-        {/* Header plus five rows (53px each on wide screens; on phones a shared title wraps
-            its row to 79px), older seasons scroll under the sticky header */}
-        <div className="max-h-[330px] overflow-auto md:max-h-[320px] rounded-[20px] border border-hairline bg-surface">
-          <table className="w-full min-w-[760px] table-fixed border-collapse text-base">
+        {/* Header plus five rows, older seasons scroll under the sticky header. Phones
+            fit the width (discs instead of chips, tighter columns), so they only
+            scroll down, with no scrollbar and no rubber-band past the ends */}
+        <div className="max-h-[330px] overflow-y-auto overflow-x-hidden overscroll-none rounded-[20px] border border-hairline bg-surface [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-h-[320px] md:overflow-x-auto md:overscroll-auto md:[scrollbar-width:auto] md:[&::-webkit-scrollbar]:block">
+          <table className="w-full table-fixed border-collapse text-base md:min-w-[760px]">
             {/* Season gets a fixed width; the five cups split the rest evenly */}
             <colgroup>
-              <col className="w-[120px]" />
+              <col className="w-[64px] md:w-[120px]" />
               <col />
               <col />
               <col />
@@ -563,13 +575,13 @@ export default async function Home() {
               <col />
             </colgroup>
             <thead className="table-head sticky top-0 z-10">
-              <tr className="text-left font-mono text-xs tracking-[0.1em] text-ink-muted">
-                <th scope="col" className="border-b border-hairline px-6 py-[18px] font-medium">SEASON</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">FIFA</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">FPL</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">BETS</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">7OKER</th>
-                <th scope="col" className="border-b border-hairline px-4 py-[18px] font-medium">HOLDEM</th>
+              <tr className="text-center font-mono text-[10px] tracking-[0.04em] text-ink-muted md:text-left md:text-xs md:tracking-[0.1em]">
+                <th scope="col" className="border-b border-hairline px-3 py-[18px] text-left font-medium md:px-6">SEASON</th>
+                <th scope="col" className="border-b border-hairline px-0.5 py-[18px] font-medium md:px-4">FIFA</th>
+                <th scope="col" className="border-b border-hairline px-0.5 py-[18px] font-medium md:px-4">FPL</th>
+                <th scope="col" className="border-b border-hairline px-0.5 py-[18px] font-medium md:px-4">BETS</th>
+                <th scope="col" className="border-b border-hairline px-0.5 py-[18px] font-medium md:px-4">7OKER</th>
+                <th scope="col" className="border-b border-hairline px-0.5 py-[18px] font-medium md:px-4">HOLDEM</th>
               </tr>
             </thead>
             <tbody>
@@ -577,12 +589,14 @@ export default async function Home() {
                 <tr key={row.year}>
                   <th
                     scope="row"
-                    className="whitespace-nowrap border-b border-hairline-row px-6 py-3.5 text-left font-mono text-sm font-medium md:text-base"
+                    className="whitespace-nowrap border-b border-hairline-row px-3 py-3.5 text-left font-mono text-[13px] font-medium md:px-6 md:text-base"
                   >
-                    {row.year}
+                    {/* Phones: "25/26" for "2025/26"; a single year ("2019") stays whole */}
+                    <span className="md:hidden">{row.year.replace(/^20(?=\d\d\/)/, "")}</span>
+                    <span className="hidden md:inline">{row.year}</span>
                   </th>
                   {[row.fifa, row.fpl, row.bets, row.sevenOker, row.poker].map((value, i) => (
-                    <td key={i} className="border-b border-hairline-row px-4 py-2.5">
+                    <td key={i} className="border-b border-hairline-row px-0.5 py-2.5 text-center md:px-4 md:text-left">
                       <HistoryCell value={value} />
                     </td>
                   ))}

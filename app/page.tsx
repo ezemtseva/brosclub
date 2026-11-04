@@ -25,7 +25,8 @@ const FOUNDED = new Date(2012, 8, 6)
 const SCORE_FONT = {
   fontWeight: 900,
   fontVariationSettings: "'wdth' 62",
-  fontSize: "136px",
+  // Set on .season-panel (globals.css): 56px, 64px on phones
+  fontSize: "var(--score-size, 56px)",
   lineHeight: 1,
 } as const
 
@@ -361,19 +362,21 @@ export default async function Home() {
               {CURRENT_SEASON}
             </span>
           </div>
-          <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+          {/* Phones: one card a row, each a lower version of the wide one */}
+          <div className="grid gap-3 md:gap-4 md:[grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
             {summaries.map((summary) => (
               <Link
                 key={summary.title}
                 href={summary.link}
-                className="flex flex-col gap-4 rounded-[24px] border border-hairline bg-surface-2 p-4 transition-colors hover:border-hairline-strong"
+                className="flex min-w-0 flex-col gap-3 rounded-[20px] border border-hairline bg-surface-2 p-3 transition-colors hover:border-hairline-strong md:gap-4 md:rounded-[24px] md:p-4"
               >
                 <div className="flex items-center justify-between gap-3 px-1 pt-1">
-                  <span className="font-display text-xl font-bold">{summary.title}</span>
+                  <span className="font-display text-base font-bold md:text-xl">{summary.title}</span>
                   <svg
                     aria-hidden="true"
                     width="20"
                     height="20"
+                    className="h-4 w-4 md:h-5 md:w-5"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -385,8 +388,8 @@ export default async function Home() {
                     <path d="M8 7h9v9" />
                   </svg>
                 </div>
-                {/* The leader fills the panel: their colour behind, the score huge
-                    across the top, and the picture painted over it */}
+                {/* The leader fills the panel: their colour behind, their name and
+                    score across it in big type */}
                 <div
                   role="img"
                   aria-label={
@@ -395,58 +398,67 @@ export default async function Home() {
                       : summary.empty
                   }
                   title={summary.leader}
-                  className="relative h-[176px] overflow-hidden rounded-2xl"
+                  className="season-panel relative min-h-[72px] overflow-hidden rounded-xl md:min-h-[76px] md:rounded-2xl"
                   style={{ background: summary.color }}
                 >
-                  {summary.points !== undefined && (
-                    <div className="absolute left-3 right-[14px] top-[10px] flex justify-end">
-                      <span
-                        className="font-archivo"
-                        style={{
-                          ...SCORE_FONT,
-                          letterSpacing: "-0.02em",
-                          color: PANEL_INK,
-                          // The figure never shrinks; a longer number is squeezed instead
-                          transform:
-                            String(summary.points).length > 3
-                              ? `scaleX(${3 / String(summary.points).length})`
-                              : undefined,
-                          transformOrigin: "right center",
-                        }}
+                  {/* One line: the leader's name as big as the score but 30% see-through,
+                      the club's crest (FIFA) centred after it, and the score at the right.
+                      A long name is squeezed to fit, as a long score is */}
+                  {summary.points !== undefined && (summary.owner ?? summary.leader) && (() => {
+                    const name = (summary.owner ?? summary.leader)!
+                    const scoreLength = String(summary.points).length
+                    // The line holds about 4.1em of the score's type, on a 375px phone
+                    // (263px at 64px) and in a desktop card (about 230px at 56px): less
+                    // the score, the gaps and the crest; a letter is about 0.34em wide
+                    const room = 4.1 - Math.min(scoreLength, 3) * 0.4 - 0.3 - (summary.image ? 0.8 : 0)
+                    const squeeze = Math.min(1, room / (name.length * 0.34))
+                    return (
+                      <div
+                        aria-hidden="true"
+                        className="font-archivo flex items-baseline gap-2 px-3 pt-1.5 md:px-4 md:pt-2.5"
+                        style={{ ...SCORE_FONT, color: PANEL_INK }}
                       >
-                        {summary.points}
-                      </span>
-                    </div>
-                  )}
-                  {summary.image && (
-                    // Sits on the digits' baseline and rises to their cap height:
-                    // the zero-width strut carries the score's own font metrics
-                    <div
-                      aria-hidden="true"
-                      className="font-archivo pointer-events-none absolute left-4 right-[14px] top-[10px] flex items-baseline"
-                      style={SCORE_FONT}
-                    >
-                      <Image
-                        src={summary.image}
-                        alt=""
-                        width={120}
-                        height={99}
-                        className="leader-portrait shrink-0 object-contain"
-                      />
-                      <span className="w-0 overflow-hidden">0</span>
-                    </div>
-                  )}
-                  {(summary.owner ?? summary.leader) && (
-                    <span
-                      className="absolute bottom-3.5 right-[14px] text-2xl font-medium"
-                      style={{ color: PANEL_INK }}
-                    >
-                      {summary.owner ?? summary.leader}
-                    </span>
-                  )}
+                        {/* A squeezed name's box takes its squeezed width (estimated), so
+                            the room after it starts at the name's visible end */}
+                        <span
+                          className="min-w-0 shrink-0"
+                          style={squeeze < 1 ? { width: `${name.length * 0.34 * squeeze}em` } : undefined}
+                        >
+                          <span
+                            className="inline-block whitespace-nowrap opacity-70"
+                            style={{ letterSpacing: "-0.02em", transform: `scaleX(${squeeze})`, transformOrigin: "left center" }}
+                          >
+                            {name}
+                          </span>
+                        </span>
+                        {/* The crest centred in the room between the name and the score */}
+                        <span className="flex min-w-0 flex-1 items-baseline justify-center">
+                          {summary.image && (
+                            <Image
+                              src={summary.image}
+                              alt=""
+                              width={120}
+                              height={99}
+                              className="leader-portrait shrink-0 object-contain"
+                            />
+                          )}
+                        </span>
+                        <span
+                          className="shrink-0"
+                          style={{
+                            letterSpacing: "-0.02em",
+                            transform: scoreLength > 3 ? `scaleX(${3 / scoreLength})` : undefined,
+                            transformOrigin: "right center",
+                          }}
+                        >
+                          {summary.points}
+                        </span>
+                      </div>
+                    )
+                  })()}
                   {summary.points === undefined && (
                     <span
-                      className="absolute bottom-4 right-4 max-w-[60%] text-right text-[15px] font-medium"
+                      className="absolute bottom-3 right-3 max-w-[60%] text-right text-[14px] font-medium md:bottom-4 md:right-4 md:text-[15px]"
                       style={{ color: PANEL_INK }}
                     >
                       {summary.empty}
@@ -466,12 +478,12 @@ export default async function Home() {
                       aria-valuemax={max}
                       aria-valuenow={Math.min(value, max)}
                       aria-valuetext={`Gameweek ${gameweek}, ${percent}%`}
-                      className="relative mx-1 mb-1 h-6 overflow-hidden rounded-full bg-track"
+                      className="relative mx-0.5 mb-0.5 h-5 overflow-hidden rounded-full bg-track md:mx-1 md:mb-1 md:h-6"
                     >
                       <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
                       {/* Once the lime reaches the words they switch to its dark ink */}
                       <span
-                        className={`absolute inset-y-0 right-3 flex items-center font-mono text-[11px] font-medium uppercase tracking-[0.08em] ${
+                        className={`absolute inset-y-0 right-2 flex items-center whitespace-nowrap font-mono text-[10px] font-medium uppercase tracking-[0.04em] md:right-3 md:text-[11px] md:tracking-[0.08em] ${
                           percent >= 80 ? "text-accent-foreground" : "text-ink-2"
                         }`}
                       >
@@ -487,15 +499,19 @@ export default async function Home() {
       </section>
 
       <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-6 pt-10 md:pb-8 md:pt-[53px]">
-        <div className="mb-7 flex flex-wrap items-baseline justify-between gap-4">
-          <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
-            History
-          </h2>
-        </div>
         {/* The bears' cups, framed like the standings cards on the cup pages: rank,
-            the total in the bear's colour, then the five cups. Always shown on wide
-            screens; phones open them from a button */}
-        <MobileReveal showLabel="SEE BEAROS CARDS" hideLabel="HIDE BEAROS CARDS" className="mb-8 gap-5 md:grid-cols-3">
+            the total in the bear's colour, then the five cups. Opened from a button,
+            on the heading's line on wide screens and below it on phones */}
+        <MobileReveal
+          heading={
+            <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
+              History
+            </h2>
+          }
+          showLabel="SEE BEAROS CARDS"
+          hideLabel="HIDE BEAROS CARDS"
+          className="mb-8 gap-5 md:grid-cols-3"
+        >
           {standings.map((member, index) => {
             const color = bearColor(member.name)
             const isLeader = index === 0

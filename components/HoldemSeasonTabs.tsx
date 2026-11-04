@@ -872,10 +872,11 @@ export default function HoldemSeasonTabs({
         name,
         points: row.points,
         stats: [
+          // Titles (an all-time figure) lead the list; a season's games stand
+          // beside the heading
+          ...(row.seasonsWon !== undefined ? [{ label: "Titles", value: row.seasonsWon }] : []),
           { label: "Wins", value: row.wins ?? "—" },
           { label: "Win %", value: row.winPercentage ?? winPercent(row.wins, row.games) },
-          // Titles are an all-time figure; a season's games stand beside the heading
-          ...(row.seasonsWon !== undefined ? [{ label: "Titles", value: row.seasonsWon }] : []),
         ],
       }
     })

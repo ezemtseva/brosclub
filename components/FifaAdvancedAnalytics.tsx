@@ -5,7 +5,8 @@ import Image from "next/image"
 import { PLAYER_COLORS, playerChipStyle, shortenTeamName } from "../lib/teamColors"
 import { BearAvatar } from "./Bear"
 import PlayerCell from "./PlayerCell"
-import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../lib/cardFrame"
+import { ARCHIVO_CONDENSED } from "../lib/cardFrame"
+import PosterCard from "./design/PosterCard"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -484,91 +485,66 @@ const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : "
 const formPoints = (form: { result: "W" | "D" | "L" }[]) =>
   form.reduce((acc, f) => acc + (f.result === "W" ? 3 : f.result === "D" ? 1 : 0), 0)
 
-function FormBadge({ result, color, scored, conceded, opponent }: { result: "W" | "D" | "L"; color: string; scored?: number; conceded?: number; opponent?: string }) {
-  // A win takes the bear's colour, a draw a neutral fill, a loss only an outline
-  const cls = result === "W" ? "text-[#0B0C0F]" : result === "D" ? "bg-surface-3 text-ink-2" : "border border-hairline-strong text-ink-muted"
-  const hasTooltip = scored !== undefined && conceded !== undefined && opponent
+/**
+ * A last-games chip on a poster card: a win filled in the bear's colour (the
+ * card's --bear) with the dark ink, a draw or a loss only outlined; the score
+ * and opponent on hover.
+ */
+function PosterFormChip({ result, scored, conceded, opponent }: { result: "W" | "D" | "L"; scored: number; conceded: number; opponent: string }) {
   return (
-    <span className="relative group">
+    <span className="group relative">
       <span
-        className={`font-archivo inline-flex h-[26px] w-[26px] items-center justify-center rounded-md text-[15px] font-black leading-none ${cls}`}
-        style={{ background: result === "W" ? color : undefined, fontVariationSettings: ARCHIVO_CONDENSED }}
+        className={`font-archivo inline-flex h-6 w-6 items-center justify-center rounded-md text-[14px] font-black leading-none ${
+          result === "W" ? "text-[#0B0C0F]" : "text-ink-2"
+        }`}
+        style={{
+          fontVariationSettings: ARCHIVO_CONDENSED,
+          background: result === "W" ? "var(--bear)" : "transparent",
+          border: `1px solid ${result === "W" ? "var(--bear)" : "color-mix(in srgb, var(--bear) 45%, transparent)"}`,
+        }}
       >
         {result}
       </span>
-      {hasTooltip && (
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-50">
-          <span className="bg-accent text-accent-foreground text-[10px] font-medium rounded px-2 py-1 whitespace-nowrap">
-            {scored}–{conceded} vs {opponent}
-          </span>
-          <span className="w-1.5 h-1.5 bg-accent rotate-45 -mt-1" />
+      <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 flex-col items-center group-hover:flex">
+        <span className="whitespace-nowrap rounded bg-accent px-2 py-1 text-[10px] font-medium text-accent-foreground">
+          {scored}–{conceded} vs {opponent}
         </span>
-      )}
+        <span className="-mt-1 h-1.5 w-1.5 rotate-45 bg-accent" />
+      </span>
     </span>
   )
 }
 
-/** A bear's season, framed in their colour like the standings cards. */
+/** A bear's season on the poster card, with their last games in the footer. */
 function PlayerStatsCard({ s, rank }: { s: PlayerStats; rank: number }) {
+  // The form list runs from the latest game; form PPG is over the latest five
   const last5 = s.form.slice(0, 5)
   const formPPG = last5.length > 0 ? (formPoints(last5) / last5.length).toFixed(2) : "0.00"
-  const isLeader = rank === 0
 
   return (
-    <article
-      aria-label={`${RANKS[rank]?.toLowerCase() ?? rank + 1} ${s.player}, ${s.pts} points in ${s.played} games`}
-      className="rounded-[16px] p-[3px]"
-      style={{ clipPath: cardClip(28), background: s.color }}
-    >
-      <div
-        className="flex h-full flex-col gap-[18px] rounded-[13px] bg-surface px-6 pb-6 pt-[22px] text-ink"
-        style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
-      >
-        <div className="flex items-center gap-3">
-          <BearAvatar name={s.player} size={44} filled />
-          <span className="font-display text-xl font-bold">{s.player}</span>
-          <span
-            className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
-              isLeader ? "bg-accent text-accent-foreground" : "bg-surface-3 text-ink-2"
-            }`}
-            style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-          >
-            {RANKS[rank] ?? `${rank + 1}TH`}
-          </span>
-        </div>
-
-        <div className="flex items-end justify-between gap-3">
-          <div className="flex flex-col gap-2.5">
-            <BigNumber size={112} color={s.color}>{s.pts}</BigNumber>
-            <Label>Pts in {s.played} games</Label>
+    <PosterCard
+      name={s.player}
+      index={rank}
+      figure={String(s.pts)}
+      rows={[
+        { label: "Games", value: s.played },
+        { label: "Form PPG", value: formPPG },
+        { label: "W-D-L", value: `${s.wins}-${s.draws}-${s.losses}` },
+        { label: "Goals", value: `${s.gf}:${s.ga}` },
+        { label: "Goal diff", value: signed(s.gd) },
+      ]}
+      footer={
+        <>
+          <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-2">Last games</div>
+          <div className="flex flex-wrap gap-1">
+            {s.form.map((f, i) => (
+              <PosterFormChip key={i} result={f.result} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />
+            ))}
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <BigNumber size={30}>{formPPG}</BigNumber>
-            <Label>Form PPG</Label>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-1">
-          {s.form.map((f, i) => (
-            <FormBadge key={i} result={f.result} color={s.color} scored={f.scored} conceded={f.conceded} opponent={f.opponent} />
-          ))}
-        </div>
-
-        {/* Columns sized to their figures, never wrapped: "91-25-109" would break at a hyphen */}
-        <div className="flex justify-between gap-3 border-t border-[var(--card-rule)] pt-4">
-          {[
-            { label: "W-D-L", value: `${s.wins}-${s.draws}-${s.losses}` },
-            { label: "Goals", value: `${s.gf}:${s.ga}` },
-            { label: "Goal diff", value: signed(s.gd) },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1.5 whitespace-nowrap">
-              <BigNumber size={30}>{stat.value}</BigNumber>
-              <Label>{stat.label}</Label>
-            </div>
-          ))}
-        </div>
-      </div>
-    </article>
+        </>
+      }
+      label={`${RANKS[rank]?.toLowerCase() ?? rank + 1} ${s.player}, ${s.pts} points in ${s.played} games`}
+    />
   )
 }
 

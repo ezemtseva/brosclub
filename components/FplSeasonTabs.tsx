@@ -387,11 +387,11 @@ export default function FplSeasonTabs({
 
   // Compute All Time standings
   const computeAllTimeStandings = () => {
-    const totals: Record<string, { games: number; wins: number; points: number; titles: number; hoverColor: string }> = {}
+    const totals: Record<string, { games: number; wins: number; points: number; titles: number; bestGw: number; hoverColor: string }> = {}
 
     const ensurePlayer = (name: string) => {
       if (!totals[name]) {
-        totals[name] = { games: 0, wins: 0, points: 0, titles: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
+        totals[name] = { games: 0, wins: 0, points: 0, titles: 0, bestGw: 0, hoverColor: PLAYER_COLORS[name] ?? "#cccccc" }
       }
     }
 
@@ -420,17 +420,22 @@ export default function FplSeasonTabs({
         if (maxGames[p] === undefined || row.games > maxGames[p]) maxGames[p] = row.games
         if (maxPoints[p] === undefined || row.points > maxPoints[p]) maxPoints[p] = row.points
       }
-      // wins from processed standings
+      // wins and the best gameweek from processed standings
       const winsMap: Record<string, number> = {}
+      const bestGwMap: Record<string, number> = {}
       for (const row of standings) {
         const name = playerNameFromColor(row.hoverColor)
-        if (name) winsMap[name] = row.wins ?? 0
+        if (name) {
+          winsMap[name] = row.wins ?? 0
+          bestGwMap[name] = row.bestGw ?? 0
+        }
       }
       for (const [player, g] of Object.entries(maxGames)) {
         ensurePlayer(player)
         totals[player].games += g
         totals[player].points += maxPoints[player] ?? 0
         totals[player].wins += winsMap[player] ?? 0
+        totals[player].bestGw = Math.max(totals[player].bestGw, bestGwMap[player] ?? 0)
       }
       // A season is over once all 38 gameweeks are in
       if (Math.max(...Object.values(maxGames), 0) >= GAMEWEEKS_IN_SEASON) awardTitle(maxPoints)
@@ -464,6 +469,8 @@ export default function FplSeasonTabs({
         points: data.points,
         difference: index === 0 ? "-" : String(data.points - leaderPoints),
         seasonsWon: data.titles,
+        // Only the seasons kept gameweek by gameweek (2024/25 on) have one
+        bestGw: data.bestGw || undefined,
         hoverColor: data.hoverColor,
       }))
   }
@@ -476,9 +483,11 @@ export default function FplSeasonTabs({
         name,
         points: row.points,
         stats: [
-          { label: "GW wins", value: row.wins ?? "—" },
+          { label: "Wins", value: row.wins ?? "—" },
           { label: "Win %", value: row.winPercent ?? winPercent(row.wins, row.games) },
+          // The most points in one gameweek; the static seasons never kept them.
           // No gameweeks: every bear has the same count, stated beside the heading
+          { label: "Best GW", value: row.bestGw || "—" },
         ],
       }
     })

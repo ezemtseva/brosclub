@@ -17,6 +17,8 @@ type TableDataItem = {
   points: number
   difference: string
   winPercent: string
+  /** The most points in a single gameweek */
+  bestGw: number
   hoverColor: string
 }
 
@@ -77,6 +79,12 @@ function calculateWins(playersData: PlayerData[]): Record<string, number> {
   return wins
 }
 
+/** A player's best single gameweek: the biggest step between consecutive cumulative totals. */
+function bestGameweek(entries: FplEntry[]): number {
+  const sorted = [...entries].sort((a, b) => a.week - b.week)
+  return sorted.reduce((best, entry, i) => Math.max(best, entry.points - (sorted[i - 1]?.points ?? 0)), 0)
+}
+
 // Helper function to process FPL data for display
 function processFplData(playersData: PlayerData[]): TableDataItem[] {
   const wins = calculateWins(playersData)
@@ -90,6 +98,7 @@ function processFplData(playersData: PlayerData[]): TableDataItem[] {
         points: lastEntry?.points ?? 0,
         color: player.color,
         wins: wins[player.name] ?? 0,
+        bestGw: bestGameweek(player.entries),
       }
     })
     .sort((a, b) => b.points - a.points)
@@ -103,6 +112,7 @@ function processFplData(playersData: PlayerData[]): TableDataItem[] {
       points: entry.points,
       difference: index === 0 ? "-" : (sortedData[index - 1].points - entry.points).toString(),
       winPercent: entry.games > 0 ? `${((entry.wins / entry.games) * 100).toFixed(1)}%` : "0%",
+      bestGw: entry.bestGw,
       hoverColor: entry.color,
     }))
 }

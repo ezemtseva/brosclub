@@ -4203,16 +4203,15 @@ export default function FifaSeasonTabs({
               cards={allTimePlayerData.map((row) => ({
                 name: row.name,
                 points: row.points,
-                // Every column of the table but points, which the card shows large
+                // The poster lists games, win %, titles and goal diff; wins, draws
+                // and losses go to the strip below it. Points the card shows large
                 stats: [
                   { label: "Games", value: row.games.toLocaleString("de-DE") },
                   { label: "Win %", value: winPercent(row.wins, row.games) },
                   { label: "Titles", value: row.seasonsWon },
-                  { label: "Wins", value: row.wins.toLocaleString("de-DE") },
-                  { label: "Draws", value: row.draws.toLocaleString("de-DE") },
-                  { label: "Losses", value: row.losses.toLocaleString("de-DE") },
-                  { label: "Scored", value: row.goalsScored.toLocaleString("de-DE") },
-                  { label: "Conceded", value: row.goalsConceded.toLocaleString("de-DE") },
+                  { label: "Wins", value: row.wins.toLocaleString("de-DE"), strip: true },
+                  { label: "Draws", value: row.draws.toLocaleString("de-DE"), strip: true },
+                  { label: "Losses", value: row.losses.toLocaleString("de-DE"), strip: true },
                   {
                     label: "Goal diff",
                     value: `${row.goalDifference > 0 ? "+" : row.goalDifference < 0 ? "−" : ""}${Math.abs(row.goalDifference).toLocaleString("de-DE")}`,

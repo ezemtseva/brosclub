@@ -263,6 +263,36 @@ html.light .stat-number {
   color: var(--ink) !important;
 }
 
+/* Poster cards (design revision 7): the bear's colour, set as --bear on the
+   card, washed over the page at 10% (16% in light), framed at 35% (55%). The
+   fill is solid so the big figure's outline can match it exactly and read as a
+   gap cut out of the mascot, not a line. */
+.poster-card {
+  --poster-bg: color-mix(in srgb, var(--bear) 10%, var(--night));
+  background: var(--poster-bg);
+  border: 1px solid color-mix(in srgb, var(--bear) 35%, transparent);
+}
+
+html.light .poster-card {
+  --poster-bg: color-mix(in srgb, var(--bear) 16%, var(--night));
+  border-color: color-mix(in srgb, var(--bear) 55%, transparent);
+}
+
+.poster-row {
+  border-bottom: 1px solid color-mix(in srgb, var(--bear) 22%, transparent);
+}
+
+/* The strip under a split poster (a card with many stats) */
+.poster-strip {
+  border-top: 1px solid color-mix(in srgb, var(--bear) 22%, transparent);
+}
+
+.poster-figure {
+  color: var(--bear);
+  -webkit-text-stroke: 12px var(--poster-bg);
+  paint-order: stroke fill;
+}
+
 /* Dark-only crests turn white in dark; light shows them as they are.
    Matched by src so it covers raw paths and next/image (%2F-encoded) URLs */
 html:not(.light) img:is(

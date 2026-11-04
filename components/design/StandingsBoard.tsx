@@ -1,16 +1,16 @@
 "use client"
 
 import type React from "react"
-import { BearAvatar, bearColor } from "../Bear"
 import DataTable from "../DataTable"
-import { ARCHIVO_CONDENSED, CARD_STRIPES, cardClip } from "../../lib/cardFrame"
+import PosterCard from "./PosterCard"
 
-export type StandingStat = { label: string; value: string | number }
+/** `strip`: on a card with many stats, this one goes to the strip below the poster */
+export type StandingStat = { label: string; value: string | number; strip?: boolean }
 
 export type StandingCardData = {
   name: string
   points: number
-  /** Three to a row under the divider; most cups give three, EA FC all time nine */
+  /** The poster's list, before the gap; most cups give two or three, EA FC all time nine */
   stats: StandingStat[]
 }
 
@@ -22,6 +22,17 @@ export function winPercent(wins: number | undefined, games: number | undefined):
   return `${((wins / games) * 100).toFixed(1)}%`
 }
 
+/** More stats than this and the card splits into a poster and a strip below it */
+const POSTER_LIST_MAX = 5
+/** How many stats the split card's poster lists */
+const SPLIT_LIST = 4
+
+/**
+ * A bear's standing as a poster card: the stats, then the gap to the leader.
+ * A card with many stats (EA FC all time) lists four on the poster and puts the
+ * rest — those marked `strip`, or else the ones after the first four — in a
+ * strip below; it has no gap row.
+ */
 function StandingCard({
   card,
   index,
@@ -31,80 +42,43 @@ function StandingCard({
   index: number
   leaderPoints: number
 }) {
-  const color = bearColor(card.name)
-  const rank = RANKS[index] ?? `${index + 1}TH`
-  const isLeader = index === 0
-  const pointsLabel = card.points.toLocaleString("de-DE")
-  // 112px fits three digits beside the gap; longer totals step down to stay on one line
-  const pointsSize = pointsLabel.length <= 3 ? 112 : pointsLabel.length <= 5 ? 88 : 72
+  const rank = RANKS[index] ?? `${index + 1}th`
+  const gap = leaderPoints - card.points
+  const label = `${rank.toLowerCase()} ${card.name}, ${card.points} points`
+
+  if (card.stats.length > POSTER_LIST_MAX) {
+    const marked = card.stats.some((stat) => stat.strip)
+    const list = marked ? card.stats.filter((stat) => !stat.strip) : card.stats.slice(0, SPLIT_LIST)
+    const strip = marked ? card.stats.filter((stat) => stat.strip) : card.stats.slice(SPLIT_LIST)
+    return (
+      <PosterCard
+        name={card.name}
+        index={index}
+        figure={card.points.toLocaleString("de-DE")}
+        rows={list.slice(0, SPLIT_LIST)}
+        strip={strip}
+        label={label}
+      />
+    )
+  }
 
   return (
-    <article
-      aria-label={`${rank.toLowerCase()} ${card.name}, ${card.points} points`}
-      className="rounded-[16px] p-[3px]"
-      style={{ clipPath: cardClip(28), background: color }}
-    >
-      <div
-        className="flex h-full flex-col gap-5 rounded-[13px] bg-surface px-6 pb-[26px] pt-[22px] text-ink"
-        style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
-      >
-        <div className="flex items-center gap-3">
-          <BearAvatar name={card.name} size={44} filled />
-          <span className="font-display text-xl font-bold">{card.name}</span>
-          <span
-            className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
-              // 1st in the lime, 2nd in a fixed silver, both with the dark ink
-              isLeader
-                ? "bg-accent text-accent-foreground"
-                : index === 1
-                  ? "bg-[#C9CDD3] text-accent-foreground"
-                  : "bg-surface-3 text-ink-2"
-            }`}
-            style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-          >
-            {rank}
-          </span>
-        </div>
-
-        <div className="flex items-end justify-between gap-3">
-          {/* stat-number: the bear's colour in dark, plain ink in light */}
-          <span
-            className="stat-number font-archivo font-black leading-[0.8]"
-            style={{ color, fontSize: pointsSize, fontVariationSettings: ARCHIVO_CONDENSED }}
-          >
-            {pointsLabel}
-          </span>
-          {/* The gap to the leader; the leader's own card leaves it blank */}
-          {!isLeader && (
-            <span
-              className="font-archivo whitespace-nowrap text-[22px] font-extrabold uppercase leading-none text-ink-muted"
-              style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-            >
-              −{(leaderPoints - card.points).toLocaleString("de-DE")} pts
-            </span>
-          )}
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 border-t border-[var(--card-rule)] pt-4">
-          {card.stats.map((stat) => (
-            <div key={stat.label}>
-              <div
-                className="font-archivo text-[30px] font-black leading-none"
-                style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-              >
-                {stat.value}
-              </div>
-              <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </article>
+    <PosterCard
+      name={card.name}
+      index={index}
+      figure={card.points.toLocaleString("de-DE")}
+      rows={[
+        ...card.stats,
+        // The leader's own card has no gap; a real minus sign
+        { label: "Gap", value: index === 0 ? "—" : `−${gap.toLocaleString("de-DE")}` },
+      ]}
+      label={label}
+    />
   )
 }
 
 /**
- * Standings on a cup page: a heading, then either a framed card per bear or the
+ * Standings on a cup page: a heading, then either a poster card per bear or the
  * plain table, as chosen in the nav (Settings on wide screens, Other on phones).
  * Both views are rendered and CSS picks one, so the stored choice applies
  * before React hydrates.

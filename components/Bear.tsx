@@ -15,6 +15,17 @@ export function bearImage(name: string): string {
   return BEAR_IMAGES[name] ?? "/placeholder.svg"
 }
 
+const BEAR_FULL_IMAGES: Record<string, string> = {
+  Vanilla: "/imgs/bears/vanilla-full.png",
+  Choco: "/imgs/bears/choco-full.png",
+  Panda: "/imgs/bears/panda-full.png",
+}
+
+/** The full-body mascot (transparent, 720px tall) for the poster cards; none for anyone else. */
+export function bearFullImage(name: string): string | undefined {
+  return BEAR_FULL_IMAGES[name]
+}
+
 /**
  * The mascot in a circle ringed in the bear's colour — the redesign keeps the
  * drawings where the mockups use a coloured monogram.

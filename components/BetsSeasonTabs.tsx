@@ -610,12 +610,12 @@ export default function BetsSeasonTabs({
       const stats =
         row.seasonsWon !== undefined
           ? [
-              { label: "GW wins", value: row.wins ?? "—" },
+              { label: "Wins", value: row.wins ?? "—" },
               { label: "Win %", value: winPercent(row.wins, row.games) },
               { label: "Titles", value: row.seasonsWon },
             ]
           : [
-              { label: "GW wins", value: row.wins ?? "—" },
+              { label: "Wins", value: row.wins ?? "—" },
               { label: "PS %", value: row.outcomePercent ?? "—" },
               { label: "EPS %", value: row.exactPercent ?? "—" },
             ]

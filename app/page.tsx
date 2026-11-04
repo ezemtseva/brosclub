@@ -3,11 +3,10 @@ import Link from "next/link"
 import prisma from "../lib/prisma"
 import { PLAYER_TINTS } from "../lib/teamColors"
 import { CURRENT_FIFA_SEASON } from "../lib/fifaSeason"
-import { cardClip, CARD_STRIPES, ARCHIVO_CONDENSED } from "../lib/cardFrame"
 import { CURRENT_SEASON, CURRENT_SEASON_NUMERAL } from "../lib/season"
 import { BearAvatar, bearColor } from "../components/Bear"
 import PlayerCell from "../components/PlayerCell"
-import MobileReveal from "../components/MobileReveal"
+import PosterCard from "../components/design/PosterCard"
 import dynamicImport from "next/dynamic"
 import { SantaHat } from "../components/SantaHat"
 
@@ -51,8 +50,6 @@ type SeasonSummary = {
    */
   progress: { value: number; max: number; gameweek: number }
 }
-
-const RANKS = ["1ST", "2ND", "3RD"]
 
 const cupCategories = [
   { key: "fifa", label: "FIFA" },
@@ -499,83 +496,23 @@ export default async function Home() {
       </section>
 
       <section aria-labelledby="history" className="mx-auto max-w-page px-8 pb-6 pt-10 md:pb-8 md:pt-[53px]">
-        {/* The bears' cups, framed like the standings cards on the cup pages: rank,
-            the total in the bear's colour, then the five cups. Opened from a button,
-            on the heading's line on wide screens and below it on phones */}
-        <MobileReveal
-          heading={
-            <h2 id="history" className="font-display text-[32px] font-bold tracking-[-0.01em]">
-              History
-            </h2>
-          }
-          showLabel="SEE BEAROS CARDS"
-          hideLabel="HIDE BEAROS CARDS"
-          className="mb-8 gap-5 md:grid-cols-3"
-        >
-          {standings.map((member, index) => {
-            const color = bearColor(member.name)
-            const isLeader = index === 0
-            return (
-              <article
-                key={member.name}
-                aria-label={`${member.name}: ${member.total} cups`}
-                className="rounded-[16px] p-[3px]"
-                style={{ clipPath: cardClip(28), background: color }}
-              >
-                <div
-                  className="flex h-full flex-col gap-5 rounded-[13px] bg-surface px-6 pb-[26px] pt-[22px] text-ink"
-                  style={{ clipPath: cardClip(27), backgroundImage: CARD_STRIPES }}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-display text-xl font-bold">{member.name}</span>
-                    <span
-                      // 1st in the lime, 2nd in a fixed silver, both with the dark ink,
-                      // as on the cup pages' standings cards
-                      className={`font-archivo ml-auto rounded-full px-3 py-1 text-[18px] font-black leading-none ${
-                        isLeader
-                          ? "bg-accent text-accent-foreground"
-                          : index === 1
-                            ? "bg-[#C9CDD3] text-accent-foreground"
-                            : "bg-surface-3 text-ink-2"
-                      }`}
-                      style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-                    >
-                      {RANKS[index] ?? `${index + 1}TH`}
-                    </span>
-                  </div>
-
-                  {/* The total on the left, the bear large on the right */}
-                  <div className="flex items-center justify-between gap-3">
-                    {/* stat-number: the bear's colour in dark, plain ink in light */}
-                    <span
-                      className="stat-number font-archivo text-[112px] font-black leading-[0.8]"
-                      style={{ color, fontVariationSettings: ARCHIVO_CONDENSED }}
-                    >
-                      {member.total}
-                    </span>
-                    <BearAvatar name={member.name} size={112} filled />
-                  </div>
-
-                  <div className="grid grid-cols-5 gap-2 border-t border-[var(--card-rule)] pt-4">
-                    {cupCategories.map((category, column) => (
-                      <div key={category.key}>
-                        <div
-                          className="font-archivo text-[30px] font-black leading-none"
-                          style={{ fontVariationSettings: ARCHIVO_CONDENSED }}
-                        >
-                          {member.cups[column]}
-                        </div>
-                        <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">
-                          {category.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </article>
-            )
-          })}
-        </MobileReveal>
+        <h2 id="history" className="mb-7 font-display text-[32px] font-bold tracking-[-0.01em]">
+          History
+        </h2>
+        {/* The bears' cups on the same poster cards as the cup pages' standings: the
+            five cups as the list, the total huge in the corner. Always shown */}
+        <div className="mb-8 grid gap-5 md:grid-cols-3">
+          {standings.map((member, index) => (
+            <PosterCard
+              key={member.name}
+              name={member.name}
+              index={index}
+              figure={String(member.total)}
+              rows={cupCategories.map((category, column) => ({ label: category.label, value: member.cups[column] }))}
+              label={`${member.name}: ${member.total} cups`}
+            />
+          ))}
+        </div>
         {/* Header plus five rows, older seasons scroll under the sticky header. Phones
             fit the width (discs instead of chips, tighter columns), so they only
             scroll down, with no scrollbar and no rubber-band past the ends */}

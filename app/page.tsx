@@ -579,7 +579,10 @@ export default async function Home() {
         {/* Header plus five rows, older seasons scroll under the sticky header. Phones
             fit the width (discs instead of chips, tighter columns), so they only
             scroll down, with no scrollbar and no rubber-band past the ends */}
-        <div className="max-h-[330px] overflow-y-auto overflow-x-hidden overscroll-none rounded-[20px] border border-hairline bg-surface [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-h-[320px] md:overflow-x-auto md:overscroll-auto md:[scrollbar-width:auto] md:[&::-webkit-scrollbar]:block">
+        {/* The scrollbar rules are for phones only: any styled scrollbar turns a wide
+            screen's overlay bar into a classic one, which takes room and cut the
+            lime header short */}
+        <div className="max-h-[330px] overflow-y-auto overflow-x-hidden overscroll-none rounded-[20px] border border-hairline bg-surface max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden md:max-h-[320px] md:overflow-x-auto md:overscroll-auto">
           <table className="w-full table-fixed border-collapse text-base md:min-w-[760px]">
             {/* Season gets a fixed width; the five cups split the rest evenly */}
             <colgroup>

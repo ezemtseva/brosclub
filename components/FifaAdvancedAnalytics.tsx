@@ -667,7 +667,7 @@ function TopTeamsProjection({
       ))}
       {/* The method note is for wider screens only */}
       <p className="mt-1 hidden text-[13px] leading-relaxed text-ink-muted md:block">
-        Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG, both counted as if every team had also played 5 games at the league average, so a few early results don't decide everything). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
+        Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG, both counted as if every team had also played 5 games at the league average, so a few early results do not decide everything). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
       </p>
     </div>
   )

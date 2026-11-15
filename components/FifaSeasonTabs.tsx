@@ -52,7 +52,8 @@ type FifaRecordCard = {
   team?: { name: string; logo: string }
   // A record game as a chip: home crest, score, away crest
   game?: { home: string; score: string; away: string }
-  player?: keyof typeof PLAYER_COLORS
+  // One bear, or several when the record is shared (a game between two)
+  player?: keyof typeof PLAYER_COLORS | (keyof typeof PLAYER_COLORS)[]
   description: string
   // Lime tile with dark ink, for the cup's signature record
   highlight?: boolean
@@ -85,11 +86,13 @@ const fifaRecordCards: FifaRecordCard[] = [
   },
   { value: "5 min", player: "Vanilla", team: LIVERPOOL, description: "Fastest four goals (2025/26)" },
   {
-    value: "18",
-    player: "Panda",
-    // Juventus 13:5 Manchester United
-    game: { home: "/imgs/fifa/juv1.png", score: "13:5", away: "/imgs/fifa/mu.png" },
-    description: "The most goals in a game (2025/26)",
+    value: "19",
+    highlight: true,
+    // Panda's Manchester City against Choco's Bayern Munich
+    player: ["Panda", "Choco"],
+    // Manchester City 12:7 Bayern Munich (07.11.2026); before it, Juventus 13:5 Manchester United (2025/26)
+    game: { home: "/imgs/fifa/mci.png", score: "12:7", away: "/imgs/fifa/bay.png" },
+    description: "The most goals in a game (2026/27)",
   },
   { value: "22", player: "Vanilla", team: LIVERPOOL, description: "Longest winning streak for a team (2024/25)" },
   {
@@ -146,7 +149,7 @@ function toRecordCard(card: FifaRecordCard): RecordCard {
     game: card.game,
     text,
     when,
-    who: card.player ? [card.player] : [],
+    who: card.player ? ([] as string[]).concat(card.player) : [],
     highlight: card.highlight,
   }
 }
@@ -3966,44 +3969,9 @@ export default function FifaSeasonTabs({
   const computeAllTimeStandings = () => {
     const currentSorted = computeAllTimeTotals(currentRawEntries)
 
-    // Compute previous ranking by undoing the last match from currentRawEntries
-    let prevRanks: Record<string, number> = {}
-    if (matches.length > 0) {
-      const lastMatch = matches[0]
-      const prevCurrentEntries = currentRawEntries.map((e: any) => {
-        if (e.team !== lastMatch.teamA && e.team !== lastMatch.teamB) return e
-        const isA = e.team === lastMatch.teamA
-        const scored = isA ? lastMatch.scoreA : lastMatch.scoreB
-        const conceded = isA ? lastMatch.scoreB : lastMatch.scoreA
-        return {
-          ...e,
-          games: (e.games ?? 0) - 1,
-          wins: (e.wins ?? 0) - (scored > conceded ? 1 : 0),
-          draws: (e.draws ?? 0) - (scored === conceded ? 1 : 0),
-          losses: (e.losses ?? 0) - (scored < conceded ? 1 : 0),
-          goalsScored: (e.goalsScored ?? 0) - scored,
-          goalsConceded: (e.goalsConceded ?? 0) - conceded,
-        }
-      })
-      const prevSorted = computeAllTimeTotals(prevCurrentEntries)
-      prevRanks = prevSorted.reduce((acc, e, i) => { acc[e.teamName] = i + 1; return acc }, {} as Record<string, number>)
-    }
-
     return currentSorted.map((entry, index) => {
-      const currentRank = index + 1
-      const prevRank = prevRanks[entry.teamName] ?? currentRank
-      const mv = prevRank - currentRank
       return {
-        // Phones: the rank sits right against the team, its movement arrow before
-        // it and only when it moved (a blank arrow kept its room and left a gap)
-        position: (
-          <span className="flex items-center justify-end gap-0.5 md:justify-center">
-            <span>{currentRank}</span>
-            <span className={`order-first leading-none md:order-none ${mv === 0 ? "hidden md:inline" : ""}`} style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
-              {mv > 0 ? '↑' : '↓'}
-            </span>
-          </span>
-        ),
+        position: index + 1,
         team: (
           <div className="flex min-w-0 items-center space-x-2">
             <Image
@@ -4086,7 +4054,9 @@ export default function FifaSeasonTabs({
       // For the current season, use the live data from fifaEntry
       return (
         <>
-          <div className="flex flex-col lg:flex-row justify-between gap-6">
+          {/* Standings and Results side by side from 1280px: narrower, the
+              standings would not fit beside Results, so Results goes below */}
+          <div className="flex flex-col xl:flex-row justify-between gap-6">
             {/* Standings column */}
             <div className="flex-1 min-w-0">
               <div className="mb-4 flex h-11 items-center justify-between">
@@ -4109,12 +4079,13 @@ export default function FifaSeasonTabs({
                 </button>
               </div>
               <div className="fifa-standings-table">
-                <DataTable columns={columns} mobileColumns={mobileColumns} data={currentSeasonData} pointsFollowGamesWhenNarrow />
+                <DataTable columns={columns} mobileColumns={mobileColumns} data={currentSeasonData} pointsFollowGamesWhenNarrow compact />
               </div>
             </div>
 
-            {/* Results column */}
-            <div className="w-full lg:shrink-0 lg:w-[480px]">
+            {/* Results column: 430px leaves the standings beside it room for every
+                column, Form included, at the page's full width */}
+            <div className="w-full xl:shrink-0 xl:w-[430px]">
               <div className="mb-4 flex h-11 items-center justify-between gap-3">
                 <h2 className="m-0 font-display text-2xl font-bold leading-none">Results</h2>
                 <div className="flex items-center gap-2">
@@ -4167,7 +4138,9 @@ export default function FifaSeasonTabs({
         : lastSeasonMatches
       return (
         <>
-          <div className="flex flex-col lg:flex-row justify-between gap-6">
+          {/* Standings and Results side by side from 1280px: narrower, the
+              standings would not fit beside Results, so Results goes below */}
+          <div className="flex flex-col xl:flex-row justify-between gap-6">
             {/* Standings column */}
             <div className="flex-1 min-w-0">
               {/* h-11 matches the Results header, whose search box sets its height */}
@@ -4179,8 +4152,9 @@ export default function FifaSeasonTabs({
               </div>
             </div>
 
-            {/* Results column */}
-            <div className="w-full lg:shrink-0 lg:w-[480px]">
+            {/* Results column: 430px leaves the standings beside it room for every
+                column, Form included, at the page's full width */}
+            <div className="w-full xl:shrink-0 xl:w-[430px]">
               <div className="mb-4 flex h-11 items-center justify-between gap-3">
                 <h2 className="m-0 font-display text-2xl font-bold leading-none">Results</h2>
                 <input
@@ -4320,7 +4294,8 @@ export default function FifaSeasonTabs({
     return <EmptyPanel title="No insights yet" text="This cup has no insights for the season so far." titleOnlyOnPhones />
   }
 
-  const renderBrecordsContent = () => <RecordGrid cards={fifaRecordCards.map(toRecordCard)} />
+  // Tiles wide enough to name the club beside the bear (three to a row on a desktop)
+  const renderBrecordsContent = () => <RecordGrid cards={fifaRecordCards.map(toRecordCard)} minWidth={340} />
 
   return (
     <div className="pb-12">

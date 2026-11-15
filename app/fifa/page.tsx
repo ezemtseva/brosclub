@@ -4,6 +4,7 @@ import prisma from "../../lib/prisma"
 export const dynamic = 'force-dynamic'
 import FifaSeasonTabs from "../../components/FifaSeasonTabs"
 import AutoRefresh from "../../components/AutoRefresh"
+import HoverTip from "../../components/HoverTip"
 import { PLAYER_COLORS, shortenTeamName } from "../../lib/teamColors"
 
 const columns = [
@@ -122,8 +123,9 @@ function getTeamForm(team: string, matches: MatchRecord[]) {
     })
   return (
     <div className="flex items-center gap-1">
+      {/* The score and opponent on hover, drawn over the page so the table can't clip it */}
       {results.map(({ result, scored, conceded, opponent }, i) => (
-        <span key={i} className="relative group">
+        <HoverTip key={i} tip={`${scored}–${conceded} vs ${opponent}`}>
           <span
             // Win is a filled chip, a draw stays muted and a loss is an outline
             className={`inline-flex h-6 w-6 items-center justify-center rounded-md font-mono text-[12px] font-medium leading-none ${
@@ -136,57 +138,14 @@ function getTeamForm(team: string, matches: MatchRecord[]) {
           >
             {result}
           </span>
-          <span className="absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 flex-col items-center pointer-events-none group-hover:flex">
-            <span className="whitespace-nowrap rounded-md border border-hairline-strong bg-surface-2 px-2 py-1 font-mono text-[10px] text-ink">
-              {scored}–{conceded} vs {opponent}
-            </span>
-            <span className="-mt-1 h-1.5 w-1.5 rotate-45 border-b border-r border-hairline-strong bg-surface-2" />
-          </span>
-        </span>
+        </HoverTip>
       ))}
     </div>
   )
 }
 
-// Compute position movements based on last match
-function computePositionMovements(entries: any[], matches: MatchRecord[]): Record<string, number> {
-  if (matches.length === 0) return {}
-  const lastMatch = matches[0] // sorted desc
-
-  const rankEntries = (ents: any[]) =>
-    [...ents]
-      .map((e) => ({ team: e.team, pts: e.wins * 3 + e.draws, gd: e.goalsScored - e.goalsConceded }))
-      .sort((a, b) => b.pts - a.pts || b.gd - a.gd)
-      .reduce((acc, e, i) => { acc[e.team] = i + 1; return acc }, {} as Record<string, number>)
-
-  const current = rankEntries(entries)
-
-  const prevEntries = entries.map((e) => {
-    if (e.team !== lastMatch.teamA && e.team !== lastMatch.teamB) return e
-    const isA = e.team === lastMatch.teamA
-    const scored = isA ? lastMatch.scoreA : lastMatch.scoreB
-    const conceded = isA ? lastMatch.scoreB : lastMatch.scoreA
-    return {
-      ...e,
-      games: e.games - 1,
-      wins: e.wins - (scored > conceded ? 1 : 0),
-      draws: e.draws - (scored === conceded ? 1 : 0),
-      losses: e.losses - (scored < conceded ? 1 : 0),
-      goalsScored: e.goalsScored - scored,
-      goalsConceded: e.goalsConceded - conceded,
-    }
-  })
-  const prev = rankEntries(prevEntries)
-
-  const movements: Record<string, number> = {}
-  for (const team of Object.keys(current)) {
-    movements[team] = (prev[team] ?? current[team]) - current[team]
-  }
-  return movements
-}
-
 // Helper function to process FIFA data for 2025/26 season
-function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }, matches: MatchRecord[], movements: Record<string, number> = {}) {
+function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; Choco: string[]; Panda: string[] }, matches: MatchRecord[]) {
   const getColor = (team: string) => {
     for (const [player, teams] of Object.entries(playerTeams)) {
       if (teams.includes(team)) return PLAYER_COLORS[player] ?? "transparent"
@@ -207,18 +166,8 @@ function processFifaData2025(entries: any[], playerTeams: { Vanilla: string[]; C
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference)
     .map((entry, index) => {
       const teamName = normalizeTeam(entry.team)
-      const mv = movements[entry.team] ?? 0
       return {
-        // Phones: the rank sits right against the team, its movement arrow before
-        // it and only when it moved (a blank arrow kept its room and left a gap)
-        position: (
-          <span className="flex items-center justify-end gap-0.5 md:justify-center">
-            <span>{index + 1}</span>
-            <span className={`order-first leading-none md:order-none ${mv === 0 ? "hidden md:inline" : ""}`} style={{fontSize:'12px', color: mv > 0 ? 'var(--accent-text)' : mv < 0 ? 'var(--ink-muted)' : 'transparent'}}>
-              {mv > 0 ? '↑' : '↓'}
-            </span>
-          </span>
-        ),
+        position: index + 1,
         team: (
           <div className="flex min-w-0 items-center space-x-2">
             {/* The owner's dot, as in Results */}
@@ -368,9 +317,8 @@ export default async function FIFAPage() {
   const allKnownTeams = Array.from(everyTeam).sort((a, b) => a.localeCompare(b))
   const playerTeams = seasonTeams.round1
   const round2Teams = seasonTeams.round2
-  const positionMovements = computePositionMovements(currentEntries, matches)
-  const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches, positionMovements)
-  const lastSeasonData = processFifaData2025(lastSeasonEntries, lastSeasonTeams.round1, lastSeasonMatches, {})
+  const currentSeasonData = processFifaData2025(currentEntries, playerTeams, matches)
+  const lastSeasonData = processFifaData2025(lastSeasonEntries, lastSeasonTeams.round1, lastSeasonMatches)
   const historicalSeasonData = processFifaData2024(historicalEntries)
 
   // New season starts with no highlights — add them as they happen

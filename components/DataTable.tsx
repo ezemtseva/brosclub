@@ -19,6 +19,8 @@ interface DataTableProps {
   sortableColumns?: string[]
   /** When the table is too narrow to show P, P moves to just after G (EA FC) */
   pointsFollowGamesWhenNarrow?: boolean
+  /** Figure columns keep their phone padding on wide screens too, for a table with many columns (EA FC with Form) */
+  compact?: boolean
 }
 
 const NON_SORTABLE = new Set(['position', 'team', 'bearo', 'player', 'form'])
@@ -39,7 +41,9 @@ function parseValue(val: any): number {
   return 0
 }
 
-export default function DataTable({ columns, mobileColumns, data, maxHeight = '400px', sortable = false, sortableColumns, pointsFollowGamesWhenNarrow = false }: DataTableProps) {
+export default function DataTable({ columns, mobileColumns, data, maxHeight = '400px', sortable = false, sortableColumns, pointsFollowGamesWhenNarrow = false, compact = false }: DataTableProps) {
+  // A figure column's padding: 12px a side on phones, 16px on wide screens unless compact
+  const figurePadding = compact ? 'px-3 text-center' : 'px-3 text-center md:px-4'
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
@@ -161,7 +165,7 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
                 key={index}
                 data-accessor={column.accessor}
                 style={widthFor(column)}
-                className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
+                className={`border-b border-hairline py-3 font-medium shadow-[inset_0_-1px_0_var(--hairline)] ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : figurePadding} ${isSortable(column.accessor) ? 'cursor-pointer select-none hover:text-ink' : ''}`}
                 onClick={() => handleSort(column.accessor)}
               >
                 {column.header}
@@ -186,8 +190,11 @@ export default function DataTable({ columns, mobileColumns, data, maxHeight = '4
             >
               {/* Points (P) bold in the accent on every table and screen; olive in light */}
               {activeColumns.map((column, colIndex) => (
-                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : 'px-3 text-center md:px-4'} ${column.accessor === 'points' ? 'font-bold text-[color:var(--accent-text)]' : ''} ${column.cellClassName ?? ''}`}>
-                  {fmtCell(row[column.accessor])}
+                <td key={colIndex} style={widthFor(column)} className={`py-2.5 ${column.accessor === 'position' ? 'w-px whitespace-nowrap px-2 text-center font-mono text-ink-muted' : column.accessor === 'team' || column.accessor === 'bearo' || column.accessor === 'player' ? 'whitespace-nowrap pl-4 pr-3 text-left md:pl-5 md:pr-4' : figurePadding} ${column.accessor === 'points' ? 'font-bold text-[color:var(--accent-text)]' : ''} ${column.cellClassName ?? ''}`}>
+                  {/* Goal difference reads "+8" above zero (EA FC); the data stays a number for sorting */}
+                  {column.accessor === 'goalDifference' && typeof row[column.accessor] === 'number' && row[column.accessor] > 0
+                    ? `+${fmtCell(row[column.accessor])}`
+                    : fmtCell(row[column.accessor])}
                 </td>
               ))}
             </tr>

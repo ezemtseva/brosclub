@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { PLAYER_COLORS, shortenTeamName } from "../lib/teamColors"
+import { PLAYER_COLORS, shortenTeamName, teamAbbr } from "../lib/teamColors"
 
 const TEAM_NAME_MAP: Record<string, string> = {
   "Nottingham Forrest": "Nottingham Forest",
@@ -89,14 +90,39 @@ function TeamCell({
         className="h-6 w-6 shrink-0 object-contain"
       />
       <span className="truncate">
-        <span className="hidden md:inline">{normalized}</span>
-        <span className="inline md:hidden">{shortenTeamName(normalized)}</span>
+        {/* Phones: the three-letter code. Full names while Results runs the page's
+            width; the short ones in the narrow column beside the standings (1280px+) */}
+        <span className="inline md:hidden">{teamAbbr(normalized)}</span>
+        <span className="hidden md:inline xl:hidden">{normalized}</span>
+        <span className="hidden xl:inline">{shortenTeamName(normalized)}</span>
       </span>
     </span>
   )
 }
 
+/** Height of the fade at the bottom of the list while more results lie below. */
+const FADE = 80
+
 export default function FifaMatchResults({ matches, playerTeams, teamLogos }: FifaMatchResultsProps) {
+  const listRef = useRef<HTMLDivElement>(null)
+  // More results below the fold: the last visible card fades out, so the list
+  // reads as one to scroll; gone once scrolled to the end or with nothing to scroll
+  const [moreBelow, setMoreBelow] = useState(false)
+
+  useEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const update = () => setMoreBelow(list.scrollTop + list.clientHeight < list.scrollHeight - 4)
+    update()
+    list.addEventListener("scroll", update, { passive: true })
+    const observer = new ResizeObserver(update)
+    observer.observe(list)
+    return () => {
+      list.removeEventListener("scroll", update)
+      observer.disconnect()
+    }
+  }, [matches.length])
+
   if (matches.length === 0) {
     return (
       <div className="rounded-[20px] border border-dashed border-hairline-strong px-6 py-12 text-center text-[15px] text-ink-muted">
@@ -106,7 +132,19 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
   }
 
   return (
-    <div className="table-scroll flex flex-col gap-2 overflow-y-auto">
+    <div
+      ref={listRef}
+      className="table-scroll flex flex-col gap-2 overflow-y-auto"
+      // The list's bottom edge fades to nothing over FADE px while more lies below
+      style={
+        moreBelow
+          ? {
+              maskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
+              WebkitMaskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
+            }
+          : undefined
+      }
+    >
       {matches.map((match) => (
         <div
           key={match.id}
@@ -130,6 +168,20 @@ export default function FifaMatchResults({ matches, playerTeams, teamLogos }: Fi
           />
         </div>
       ))}
+      {/* A blur that deepens toward the bottom, pinned to the list's lower edge
+          while more lies below; it takes no room in the list */}
+      {moreBelow && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none sticky bottom-0 shrink-0 backdrop-blur-[3px]"
+          style={{
+            height: FADE,
+            marginTop: -FADE - 8,
+            maskImage: "linear-gradient(to bottom, transparent, #000)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent, #000)",
+          }}
+        />
+      )}
     </div>
   )
 }

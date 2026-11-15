@@ -64,36 +64,46 @@ export default function RecordTile({ card }: { card: RecordCard }) {
       <p className={`m-0 flex-1 text-[15px] leading-normal ${lime ? "text-accent-foreground" : "text-ink-2"}`}>
         {card.text}
       </p>
-      <div className="flex flex-wrap items-center gap-1.5">
+      {/* One line in every tile, as on every cup's Brecords: the chips, then the
+          date at the right end. Never wrapped; a club's name gives way first */}
+      <div className="flex min-w-0 items-center gap-1.5">
         {/* Same chip as in the tables: the mascot on the bear's colour disc, the
             name in the tile's own text colour (dark on a lime tile) */}
-        {who.map((name) => (
-          <span
-            key={name}
-            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium ${
-              lime ? "text-accent-foreground" : "text-ink"
-            }`}
-            style={playerChipStyle(name)}
-          >
-            <BearAvatar name={name} size={20} ring={false} filled />
-            {name}
-          </span>
-        ))}
-        {/* The club in the same chip: its crest where the mascot sits */}
+        {/* Two bears beside a game chip don't fit a phone's line: there the
+            mascots stand alone, the game chip naming the clubs */}
+        {who.map((name) => {
+          const compact = who.length > 1 && !!card.game
+          return (
+            <span
+              key={name}
+              title={name}
+              className={`inline-flex shrink-0 items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] text-sm font-medium ${
+                compact ? "max-md:pr-[3px] md:pr-[11px]" : "pr-[11px]"
+              } ${lime ? "text-accent-foreground" : "text-ink"}`}
+              style={playerChipStyle(name)}
+            >
+              <BearAvatar name={name} size={20} ring={false} filled />
+              <span className={compact ? "max-md:hidden" : undefined}>{name}</span>
+            </span>
+          )
+        })}
+        {/* The club in the same chip: its crest where the mascot sits. The grid
+            keeps a tile wide enough for the name (RecordGrid's minWidth) */}
         {card.team && (
           <span
-            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium ${
+            title={card.team.name}
+            className={`inline-flex min-w-0 items-center gap-[7px] rounded-full py-[3px] pl-[3px] pr-[11px] text-sm font-medium ${
               lime ? "text-accent-foreground" : "text-ink"
             }`}
           >
-            <Image src={card.team.logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
-            {card.team.name}
+            <Image src={card.team.logo} alt="" width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />
+            <span className="truncate">{card.team.name}</span>
           </span>
         )}
         {/* A record game: the two crests either side of the score */}
         {card.game && (
           <span
-            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full px-[3px] py-[3px] text-sm font-semibold ${
+            className={`inline-flex shrink-0 items-center gap-[7px] whitespace-nowrap rounded-full px-[3px] py-[3px] text-sm font-semibold ${
               lime ? "text-accent-foreground" : "text-ink"
             }`}
           >
@@ -103,16 +113,30 @@ export default function RecordTile({ card }: { card: RecordCard }) {
           </span>
         )}
         {card.when && (
-          <span className={`ml-auto font-mono text-xs ${lime ? "text-accent-foreground/70" : "text-ink-dim"}`}>{card.when}</span>
+          <span
+            className={`ml-auto shrink-0 whitespace-nowrap pl-1.5 font-mono text-xs ${
+              lime ? "text-accent-foreground/70" : "text-ink-dim"
+            }`}
+          >
+            {card.when}
+          </span>
         )}
       </div>
     </article>
   )
 }
 
-export function RecordGrid({ cards }: { cards: RecordCard[] }) {
+/**
+ * The tiles in as many columns as fit. `minWidth` raises the narrowest a tile
+ * may get, for records whose chips need the room (EA FC: a bear, a club and a
+ * date on one line).
+ */
+export function RecordGrid({ cards, minWidth = 280 }: { cards: RecordCard[]; minWidth?: number }) {
   return (
-    <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+    <div
+      className="grid gap-4"
+      style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(${minWidth}px, 100%), 1fr))` }}
+    >
       {cards.map((card, i) => (
         <RecordTile key={i} card={card} />
       ))}

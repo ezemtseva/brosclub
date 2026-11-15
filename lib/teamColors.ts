@@ -4,7 +4,7 @@ const TEAM_SHORT: Record<string, string> = {
   "Borussia Dortmund": "Borussia D.",
   "Borussia Mönchengladbach": "Borussia M.",
   "Eintracht Frankfurt": "Eintracht F.",
-  "Nottingham Forest": "Not. Forest",
+  "Nottingham Forest": "Nottingham",
   "Atletico Madrid": "Atletico M.",
   "Athletic Bilbao": "Athletic B.",
   "Bayern Munich": "Bayern M.",
@@ -14,7 +14,6 @@ const TEAM_SHORT: Record<string, string> = {
   "Olympique Lyon": "Lyon",
   "Dinamo Zagreb": "Dinamo Z.",
   "Adana Demirspor": "Adana DS",
-  "AFC Bournemouth": "Bournemouth",
   Wolverhampton: "Wolves",
   "AFC Richmond": "Richmond",
 }
@@ -84,6 +83,21 @@ export const TEAM_ABBR: Record<string, string> = {
   'Sporting CP':        'SPO',
   Atalanta:             'ATA',
   'Eintracht Frankfurt':'EIN',
+  // 2026/27 additions
+  Porto:                'POR',
+  PSV:                  'PSV',
+  'Real Betis':         'BET',
+  'RB Leipzig':         'RBL',
+  'Como 1907':          'COM',
+  'Fenerbahçe':         'FEN',
+  Benfica:              'BEN',
+  Bournemouth:          'BOU',
+  'Al Hilal':           'HIL',
+}
+
+/** A club's three-letter code (phones' Results), else its short name. */
+export function teamAbbr(name: string): string {
+  return TEAM_ABBR[name] ?? shortenTeamName(name)
 }
   
   export const getTeamColor = (team: string) => {

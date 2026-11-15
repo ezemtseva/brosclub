@@ -323,6 +323,15 @@ function computeTeamProjections(
   const round2 = new Set(round2Teams ? [...round2Teams.Vanilla, ...round2Teams.Choco, ...round2Teams.Panda] : [])
   const gamesForPair = (a: string, b: string) => (round2.has(a) && round2.has(b) ? 2 : 1)
 
+  // The league's points per game, the prior every team's figures are pulled
+  // toward: each game hands out 3 points (a win) or 2 (a draw) over two teams
+  const leaguePoints = matches.reduce((sum, m) => sum + (m.scoreA === m.scoreB ? 2 : 3), 0)
+  const leaguePPG = matches.length > 0 ? leaguePoints / (2 * matches.length) : 1.5
+  // As if every team had also played this many games at the league average: one
+  // early win no longer reads as a perfect team, nor one loss as a hopeless one
+  const PRIOR_GAMES = 5
+  const shrunk = (points: number, games: number) => (points + PRIOR_GAMES * leaguePPG) / (games + PRIOR_GAMES)
+
   // Step 1: current stats per team
   const teamData: Record<string, {
     player: PlayerName; games: number; points: number
@@ -364,20 +373,16 @@ function computeTeamProjections(
 
     const formPts = last5.reduce((s, r) => s + (r.result === "W" ? 3 : r.result === "D" ? 1 : 0), 0)
     const formPPG = last5.length > 0 ? formPts / last5.length : overallPPG
-    const strength = last5.length >= 3 ? 0.6 * formPPG + 0.4 * overallPPG : overallPPG
+    // Strength: 60% recent form, 40% season, both pulled toward the league
+    // average (shown form and PPG stay the raw figures). Never zero, so a team
+    // without a point is the weakest, not mistaken for an average one
+    const strength = last5.length >= 3
+      ? 0.6 * shrunk(formPts, last5.length) + 0.4 * shrunk(points, games)
+      : shrunk(points, games)
     const trend: "up" | "down" | "stable" =
       formPPG > overallPPG + 0.25 ? "up" : formPPG < overallPPG - 0.25 ? "down" : "stable"
 
     teamData[team] = { player, games, points, formPPG, overallPPG, strength, form: last5, trend }
-  }
-
-  // Average strength fallback for teams with no games yet
-  const teamsWithData = allTeams.filter((t) => teamData[t]?.games > 0)
-  const avgStrength = teamsWithData.length > 0
-    ? teamsWithData.reduce((s, t) => s + teamData[t].strength, 0) / teamsWithData.length
-    : 1.5
-  for (const team of allTeams) {
-    if (teamData[team] && teamData[team].games === 0) teamData[team].strength = avgStrength
   }
 
   // Step 2: count how many times each pair has played
@@ -402,9 +407,9 @@ function computeTeamProjections(
       const remaining = Math.max(0, gamesForPair(tA, tB) - played)
       if (remaining === 0) continue
 
-      const sA = teamData[tA].strength || avgStrength
-      const sB = teamData[tB].strength || avgStrength
-      const rA = (sA + sB) > 0 ? sA / (sA + sB) : 0.5
+      const sA = teamData[tA].strength
+      const sB = teamData[tB].strength
+      const rA = sA / (sA + sB)
 
       // Draw probability: higher when teams are evenly matched
       const evenness = 1 - Math.abs(rA - 0.5) * 2
@@ -425,7 +430,7 @@ function computeTeamProjections(
     for (const other of allTeams) {
       if (!teamData[other] || teamData[other].player === teamData[team].player) continue
       const remaining = Math.max(0, gamesForPair(team, other) - (pairCount[pairKey(team, other)] ?? 0))
-      totalStr += (teamData[other].strength || avgStrength) * remaining
+      totalStr += teamData[other].strength * remaining
       count += remaining
     }
     avgOppStrength[team] = count > 0 ? totalStr / count : null
@@ -662,7 +667,7 @@ function TopTeamsProjection({
       ))}
       {/* The method note is for wider screens only */}
       <p className="mt-1 hidden text-[13px] leading-relaxed text-ink-muted md:block">
-        Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
+        Predicted final points = current points + expected points from remaining fixtures. Each remaining match is simulated using opponent strength (60% recent form PPG + 40% season PPG, both counted as if every team had also played 5 games at the league average, so a few early results don't decide everything). Win/draw/loss probabilities are calculated proportionally, with draw likelihood increasing when teams are evenly matched.
       </p>
     </div>
   )
